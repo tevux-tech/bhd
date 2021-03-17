@@ -15,6 +15,13 @@ namespace BlazorHomiePlayground.Pages {
 
         private string _actualState;
 
+        private bool _isEditting;
+
+        private void Edit() {
+            _isEditting = !_isEditting;
+            StateHasChanged();
+        }
+
         protected override async Task OnInitializedAsync() {
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
