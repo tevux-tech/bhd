@@ -5,7 +5,6 @@
 @*<p>Shelly button state: @_actualState</p>*@
 
 <div class="container-fluid">
-
     <RadzenTabs>
         <Tabs>
             <RadzenTabsItem Text="Air conditioning unit">
@@ -13,7 +12,7 @@
                     <Tabs>
                         <RadzenTabsItem Text="General information and properties">
 
-                            <div class="row">
+                            <div class="row mt-3">
                                 <div class="col">
                                     <RadzenCard>
                                         <h4>Actual measured air temperature</h4>
@@ -47,6 +46,31 @@
                                 </div>
                             </div>
 
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <RadzenCard>
+                                        <h4>On/off switch</h4>
+                                        @*<h2 class="text-center">ON</h2>*@
+                                        @*<div class="input-group justify-content-center">*@
+                                        @*<RadzenButton Text="True"></RadzenButton>
+                                        <RadzenButton Text="False"></RadzenButton>*@
+
+                                        <div class="input-group justify-content-center">
+                                            @*<button type="button" class="btn btn-primary">Primary</button>
+                                            <button type="button" class="btn btn-secondary">Secondary</button>*@
+                                            <div>
+                                                <RadzenButton Text="True"></RadzenButton>
+                                                <RadzenButton Text="False"></RadzenButton>
+                                            </div>
+                                        </div>
+                                        @*</div>*@
+                                    </RadzenCard>
+                                </div>
+
+                                <div class="col"></div>
+                                <div class="col"></div>
+                            </div>
+
                         </RadzenTabsItem>
 
                         <RadzenTabsItem Text="Ventilation information and properties">
@@ -69,34 +93,4 @@
             </RadzenTabsItem>
         </Tabs>
     </RadzenTabs>
-
-    <!--<h1>Air conditioning unit</h1>
-    <div class="row">
-        <div class="col">
-            <RadzenCard>
-                <h4>Actual measured air temperature</h4>
-                <h2 class="text-center">23.9 °C</h2>
-            </RadzenCard>
-        </div>
-        <div class="col">
-            <RadzenCard>
-                <h4>Target air temperature</h4>
-                <h2 class="text-center">24.0 °C</h2>
-            </RadzenCard>
-        </div>
-        <div class="col">
-            <RadzenCard>
-                <h4>Actual power state</h4>
-                <h2 class="text-center">ON</h2>
-            </RadzenCard>
-        </div>
-    </div>
-    <div class="row">-->
-    @*<div class="col-8">col-8</div>
-        <div class="col-4">col-4</div>*@
-    <!--</div>-->
-
-
 </div>
-@*<button class="btn btn-primary" @onclick="TurnOn">ON</button>
-<button class="btn btn-primary" @onclick="TurnOff">OFF</button>*@
