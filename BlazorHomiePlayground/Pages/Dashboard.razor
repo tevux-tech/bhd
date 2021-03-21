@@ -1,6 +1,7 @@
 ﻿@page "/dashboard"
 
 <div class="container-fluid">
+    <RadzenButton Text="Create dashboard" Click="CreateDashboard"></RadzenButton>
     <RadzenTabs>
         <Tabs>
             @foreach (var tab in _tabs) {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Web;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -15,58 +16,69 @@ namespace BlazorHomiePlayground.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
-
         private List<MqttTabData> _tabs = new List<MqttTabData>();
-
-        private MqttIndicatorData _someIndicator;
-
         private MqttObject _rootMqttObject = new MqttObject();
 
-        private MqttTabData CreateAirConditioningTab() {
+        private void CreateDashboard(MouseEventArgs obj) {
+            var dashboard = new List<MqttTabData>();
+
+            foreach (var mqttObject in _rootMqttObject.Children) {
+                dashboard.Add(CreateTab(mqttObject));
+            }
+
+            _tabs = dashboard;
+            StateHasChanged();
+        }
+
+        private MqttTabData CreateTab(MqttObject mqttObject) {
             var tab = new MqttTabData();
-            tab.Caption = "Air conditioning unit";
+            tab.Caption = mqttObject.Name;
 
-            var subtab1 = new MqttTabData() { Caption = "General information and properties" };
-            subtab1.Controls.Add(_someIndicator);
-            subtab1.Controls.Add(new MqttIndicatorData { Caption = "Actual power state", Value = "OFF" });
-            subtab1.Controls.Add(new MqttCommandData { Caption = "On/off switch" });
-            subtab1.Controls.Add(new MqttNudData { Caption = "Target air temperature", ActualValue = 24, Units = "°C" });
+            foreach (var nodeName in mqttObject.Nodes) {
+                var subTabMqttObject = mqttObject.Children.First(c => c.NodeName == nodeName);
+                tab.SubTabs.Add(CreateTab(subTabMqttObject));
+            }
 
-            var subtab2 = new MqttTabData { Caption = "Ventilation information and properties" };
-            var subtab3 = new MqttTabData { Caption = "Service related properties" };
+            foreach (var propertyName in mqttObject.Properties) {
+                var propertyObject = mqttObject.Children.First(c => c.NodeName == propertyName);
 
-            tab.SubTabs.Add(subtab1);
-            tab.SubTabs.Add(subtab2);
-            tab.SubTabs.Add(subtab3);
+                if (propertyObject.Settable == false) {
+                    var indicatorData = new MqttIndicatorData();
+                    indicatorData.Caption = propertyObject.Name;
+                    indicatorData.Value = propertyObject.Value;
+                    if (propertyObject.Unit != null) {
+                        indicatorData.Value += " " + propertyObject.Unit;
+                    }
+
+                    tab.Controls.Add(indicatorData);
+                } else {
+
+                    if (propertyObject.Retained) {
+                        var nudData = new MqttNudData();
+                        nudData.Caption = propertyObject.Name;
+                        tab.Controls.Add(nudData);
+                    } else {
+                        var commandData = new MqttCommandData();
+                        commandData.Caption = propertyObject.Name;
+                        tab.Controls.Add(commandData);
+                    }
+                }
+            }
+
             return tab;
         }
 
-        private MqttTabData CreatePedroTab() {
-            var tab = new MqttTabData();
-            tab.Caption = "Bybis";
-
-            var subtab1 = new MqttTabData() { Caption = "General x information and properties" };
-            subtab1.Controls.Add(new MqttNudData { Caption = "Target air temperature", ActualValue = 24, Units = "°C" });
-
-            var subtab2 = new MqttTabData { Caption = "Ventilation x information and properties" };
-            var subtab3 = new MqttTabData { Caption = "Service related properties" };
-
-            tab.SubTabs.Add(subtab1);
-            tab.SubTabs.Add(subtab2);
-            tab.SubTabs.Add(subtab3);
-            return tab;
-        }
+        private object pedroLock = new object();
 
         protected override async Task OnInitializedAsync() {
-            _someIndicator = new MqttIndicatorData { Caption = "Actual measured air temperature", Value = "23.9 °C" };
-
-            _tabs.Add(CreateAirConditioningTab());
-            _tabs.Add(CreatePedroTab());
-
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
-            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
+            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate((args) => {
+                lock (pedroLock) {
+                    HandleMessage(args);
+                }
+            });
 
             var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://192.168.2.2:9001/" } };
 
@@ -93,6 +105,7 @@ namespace BlazorHomiePlayground.Pages {
             await base.OnInitializedAsync();
         }
 
+
         private void HandleMessage(MqttApplicationMessageReceivedEventArgs obj) {
             var payload = Encoding.UTF8.GetString(obj.ApplicationMessage.Payload);
             var topic = obj.ApplicationMessage.Topic;
@@ -101,7 +114,9 @@ namespace BlazorHomiePlayground.Pages {
 
             var objectToUpdate = _rootMqttObject;
 
-            for (int i = 1; i < topicSplits.Length - 1; i++) {
+            for (int i = 1; i < topicSplits.Length; i++) {
+                if (topicSplits[i].StartsWith("$")) break;
+
                 var childToUpdate = objectToUpdate.Children.FirstOrDefault(c => c.NodeName == topicSplits[i]);
 
                 if (childToUpdate == null) {
@@ -160,18 +175,6 @@ namespace BlazorHomiePlayground.Pages {
             }
 
             Console.WriteLine($"{topic} = {payload}");
-        }
-
-        private async Task TurnOn() {
-            var message = new MqttApplicationMessageBuilder().WithTopic("shellies/shelly1pm-68C63AFADFF9/relay/0/command").WithPayload("on").Build();
-
-            await _mqttClient.PublishAsync(message);
-        }
-
-        private async Task TurnOff() {
-            var message = new MqttApplicationMessageBuilder().WithTopic("shellies/shelly1pm-68C63AFADFF9/relay/0/command").WithPayload("off").Build();
-
-            await _mqttClient.PublishAsync(message);
         }
     }
 }
