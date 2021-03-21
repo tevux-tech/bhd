@@ -2,12 +2,12 @@
     <div>
         <h4>@Data.Caption</h4>
         <a href="javascript:;" @onclick="Edit">
-            <h2 class="text-center" hidden="@_isEditting">@Data.ActualValue @Data.Units</h2>
+            <h2 class="text-center" hidden="@_isEditting">@Data.ActualValue</h2>
         </a>
     </div>
 
     <div class="input-group justify-content-center" hidden="@(!_isEditting)">
-        <RadzenNumeric ShowUpDown="true" TValue="double" Value="@Data.TargetValue" Placeholder=""/>
+        <RadzenTextBox Value="@Data.TargetValue" Placeholder="" />
         <RadzenButton Text="SET" Click="Edit"></RadzenButton>
     </div>
 
@@ -16,7 +16,7 @@
 @code {
 
     [Parameter]
-    public MqttNudData Data { get; set; }
+    public MqttColorParameterData Data { get; set; }
 
     private bool _isEditting;
 

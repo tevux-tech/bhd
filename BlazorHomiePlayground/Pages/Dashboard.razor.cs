@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -16,8 +17,8 @@ namespace BlazorHomiePlayground.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
-        private List<MqttTabData> _tabs = new List<MqttTabData>();
-        private MqttObject _rootMqttObject = new MqttObject();
+        private List<MqttTabData> _tabs = new();
+        private readonly MqttObject _rootMqttObject = new();
 
         private void CreateDashboard(MouseEventArgs obj) {
             var dashboard = new List<MqttTabData>();
@@ -46,17 +47,35 @@ namespace BlazorHomiePlayground.Pages {
                     var indicatorData = new MqttIndicatorData();
                     indicatorData.Caption = propertyObject.Name;
                     indicatorData.Value = propertyObject.Value;
+
                     if (propertyObject.Unit != null) {
                         indicatorData.Value += " " + propertyObject.Unit;
                     }
 
                     tab.Controls.Add(indicatorData);
                 } else {
-
                     if (propertyObject.Retained) {
-                        var nudData = new MqttNudData();
-                        nudData.Caption = propertyObject.Name;
-                        tab.Controls.Add(nudData);
+                        if (propertyObject.DataType == "float") {
+                            var nudData = new MqttFloatParameterData();
+                            nudData.Caption = propertyObject.Name;
+                            nudData.Units = propertyObject.Unit;
+                            nudData.ActualValue = double.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
+                            nudData.TargetValue = nudData.ActualValue;
+                            tab.Controls.Add(nudData);
+                        } else if (propertyObject.DataType == "integer") {
+                            var nudData = new MqttIntegerParameterData();
+                            nudData.Caption = propertyObject.Name;
+                            nudData.Units = propertyObject.Unit;
+                            nudData.ActualValue = int.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
+                            nudData.TargetValue = nudData.ActualValue;
+                            tab.Controls.Add(nudData);
+                        } else if (propertyObject.DataType == "color") {
+                            var nudData = new MqttColorParameterData();
+                            nudData.Caption = propertyObject.Name;
+                            nudData.ActualValue = propertyObject.Value;
+                            nudData.TargetValue = propertyObject.Value;
+                            tab.Controls.Add(nudData);
+                        }
                     } else {
                         var commandData = new MqttCommandData();
                         commandData.Caption = propertyObject.Name;
@@ -68,17 +87,12 @@ namespace BlazorHomiePlayground.Pages {
             return tab;
         }
 
-        private object pedroLock = new object();
 
         protected override async Task OnInitializedAsync() {
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
-            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate((args) => {
-                lock (pedroLock) {
-                    HandleMessage(args);
-                }
-            });
+            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
 
             var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://192.168.2.2:9001/" } };
 

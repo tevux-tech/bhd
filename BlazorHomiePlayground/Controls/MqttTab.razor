@@ -20,13 +20,21 @@
                         <div class="col">
                             <MqttIndicator Data="(MqttIndicatorData)Data.Controls[index]"></MqttIndicator>
                         </div>
-                    } else if (Data.Controls[index] is MqttNudData) {
+                    } else if (Data.Controls[index] is MqttFloatParameterData) {
                         <div class="col">
-                            <MqttNud Data="(MqttNudData)Data.Controls[index]"></MqttNud>
+                            <MqttFloatParameter Data="(MqttFloatParameterData)Data.Controls[index]"></MqttFloatParameter>
+                        </div>
+                    } else if (Data.Controls[index] is MqttIntegerParameterData) {
+                        <div class="col">
+                            <MqttIntegerParameter Data="(MqttIntegerParameterData)Data.Controls[index]"></MqttIntegerParameter>
                         </div>
                     } else if (Data.Controls[index] is MqttCommandData) {
                         <div class="col">
                             <MqttCommand Data="(MqttCommandData)Data.Controls[index]"></MqttCommand>
+                        </div>
+                    } else if (Data.Controls[index] is MqttColorParameterData) {
+                        <div class="col">
+                            <MqttColorParameter Data="(MqttColorParameterData)Data.Controls[index]"></MqttColorParameter>
                         </div>
                     } else {
                         <div class="col"></div>
