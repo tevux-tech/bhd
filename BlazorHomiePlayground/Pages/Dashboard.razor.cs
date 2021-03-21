@@ -113,6 +113,35 @@ namespace BlazorHomiePlayground.Pages {
                         }
                     } else {
                         var commandData = new MqttCommandData();
+
+                        var command1 = "";
+                        var command2 = "";
+
+                        if (propertyObject.DataType == "enum") {
+                            var enumValues = propertyObject.Format.Split(",");
+                            commandData.Button1Caption = enumValues[0];
+                            commandData.Button2Caption = enumValues[1];
+                            command1 = enumValues[0];
+                            command2 = enumValues[1];
+                        } else if (propertyObject.DataType == "boolean") {
+                            commandData.Button1Caption = "True";
+                            commandData.Button2Caption = "False";
+                            command1 = "true";
+                            command2 = "false";
+                        }
+
+                        commandData.ExecuteButton1Action = async () => {
+                            var topicToSet = propertyObject.Topic + "/set";
+                            var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(command1).Build();
+                            await _mqttClient.PublishAsync(message);
+                        };
+
+                        commandData.ExecuteButton2Action = async () => {
+                            var topicToSet = propertyObject.Topic + "/set";
+                            var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(command2).Build();
+                            await _mqttClient.PublishAsync(message);
+                        };
+
                         commandData.Caption = propertyObject.Name;
                         tab.Controls.Add(commandData);
                     }
@@ -183,6 +212,10 @@ namespace BlazorHomiePlayground.Pages {
                         objectToUpdate.Name = payload;
                         break;
 
+                    case "$format":
+                        objectToUpdate.Format = payload;
+                        break;
+
                     case "$datatype":
                         objectToUpdate.DataType = payload;
                         break;
@@ -221,8 +254,7 @@ namespace BlazorHomiePlayground.Pages {
                 }
             } else {
                 objectToUpdate.Topic = topic;
-
-                Console.WriteLine($"{topic}={payload} goes to {objectToUpdate.GetHashCode()}");
+                Console.WriteLine($"{topic}={payload}");
 
                 var previousValue = objectToUpdate.Value;
                 objectToUpdate.Value = payload;

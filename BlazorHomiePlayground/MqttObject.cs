@@ -5,6 +5,7 @@ namespace BlazorHomiePlayground {
     public class MqttObject {
         public string Name { get; set; }
         public string DataType { get; set; }
+        public string Format { get; set; }
         public bool Settable { get; set; }
         public bool Retained { get; set; }
         public string Unit { get; set; }
