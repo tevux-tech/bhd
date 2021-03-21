@@ -109,6 +109,12 @@ namespace BlazorHomiePlayground.Pages {
                                 StateHasChanged();
                             };
 
+                            parameterData.SetTargetValue = async () => {
+                                var topicToSet = propertyObject.Topic + "/set";
+                                var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(parameterData.TargetValue).Build();
+                                await _mqttClient.PublishAsync(message);
+                            };
+
                             tab.Controls.Add(parameterData);
                         }
                     } else {
