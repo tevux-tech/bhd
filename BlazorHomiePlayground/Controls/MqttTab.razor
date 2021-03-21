@@ -1,7 +1,7 @@
 ﻿<RadzenTabsItem Text="@Data.Caption">
 
     @if (Data.SubTabs.Count > 0) {
-        <RadzenTabs>
+        <RadzenTabs SelectedIndexChanged="TabSelected">
             <Tabs>
                 @foreach (var tab in Data.SubTabs) {
                     <MqttTab Data="@tab"></MqttTab>
@@ -53,4 +53,9 @@
 @code {
     [Parameter]
     public MqttTabData Data { get; set; }
+
+    private void TabSelected() {
+        StateHasChanged();
+    }
+
 }

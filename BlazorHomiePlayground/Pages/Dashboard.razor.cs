@@ -46,35 +46,58 @@ namespace BlazorHomiePlayground.Pages {
                 if (propertyObject.Settable == false) {
                     var indicatorData = new MqttIndicatorData();
                     indicatorData.Caption = propertyObject.Name;
-                    indicatorData.Value = propertyObject.Value;
+                    indicatorData.ActualValue = propertyObject.Value;
+                    indicatorData.Units = propertyObject.Unit;
 
-                    if (propertyObject.Unit != null) {
-                        indicatorData.Value += " " + propertyObject.Unit;
-                    }
+                    propertyObject.ValueChanged += () => {
+                        indicatorData.ActualValue = propertyObject.Value;
+                        StateHasChanged();
+                    };
 
                     tab.Controls.Add(indicatorData);
                 } else {
                     if (propertyObject.Retained) {
                         if (propertyObject.DataType == "float") {
-                            var nudData = new MqttFloatParameterData();
-                            nudData.Caption = propertyObject.Name;
-                            nudData.Units = propertyObject.Unit;
-                            nudData.ActualValue = double.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
-                            nudData.TargetValue = nudData.ActualValue;
-                            tab.Controls.Add(nudData);
+                            var parameterData = new MqttFloatParameterData();
+                            parameterData.Caption = propertyObject.Name;
+                            parameterData.Units = propertyObject.Unit;
+                            parameterData.ActualValue = double.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
+                            parameterData.TargetValue = parameterData.ActualValue;
+
+                            propertyObject.ValueChanged += () => {
+                                parameterData.ActualValue = double.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
+                                parameterData.TargetValue = parameterData.ActualValue;
+                                StateHasChanged();
+                            };
+
+                            tab.Controls.Add(parameterData);
                         } else if (propertyObject.DataType == "integer") {
-                            var nudData = new MqttIntegerParameterData();
-                            nudData.Caption = propertyObject.Name;
-                            nudData.Units = propertyObject.Unit;
-                            nudData.ActualValue = int.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
-                            nudData.TargetValue = nudData.ActualValue;
-                            tab.Controls.Add(nudData);
+                            var parameterData = new MqttIntegerParameterData();
+                            parameterData.Caption = propertyObject.Name;
+                            parameterData.Units = propertyObject.Unit;
+                            parameterData.ActualValue = int.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
+                            parameterData.TargetValue = parameterData.ActualValue;
+
+                            propertyObject.ValueChanged += () => {
+                                parameterData.ActualValue = int.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
+                                parameterData.TargetValue = parameterData.ActualValue;
+                                StateHasChanged();
+                            };
+
+                            tab.Controls.Add(parameterData);
                         } else if (propertyObject.DataType == "color") {
-                            var nudData = new MqttColorParameterData();
-                            nudData.Caption = propertyObject.Name;
-                            nudData.ActualValue = propertyObject.Value;
-                            nudData.TargetValue = propertyObject.Value;
-                            tab.Controls.Add(nudData);
+                            var parameterData = new MqttColorParameterData();
+                            parameterData.Caption = propertyObject.Name;
+                            parameterData.ActualValue = propertyObject.Value;
+                            parameterData.TargetValue = parameterData.ActualValue;
+
+                            propertyObject.ValueChanged += () => {
+                                parameterData.ActualValue = propertyObject.Value;
+                                parameterData.TargetValue = propertyObject.Value;
+                                StateHasChanged();
+                            };
+
+                            tab.Controls.Add(parameterData);
                         }
                     } else {
                         var commandData = new MqttCommandData();
@@ -185,10 +208,15 @@ namespace BlazorHomiePlayground.Pages {
                         break;
                 }
             } else {
-                objectToUpdate.Value = payload;
-            }
+                Console.WriteLine($"{topic}={payload} goes to {objectToUpdate.GetHashCode()}");
 
-            Console.WriteLine($"{topic} = {payload}");
+                var previousValue = objectToUpdate.Value;
+                objectToUpdate.Value = payload;
+
+                if (previousValue != payload) {
+                    objectToUpdate.ValueChanged();
+                }
+            }
         }
     }
 }

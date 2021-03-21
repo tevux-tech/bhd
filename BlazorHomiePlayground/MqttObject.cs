@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BlazorHomiePlayground {
     public class MqttObject {
@@ -15,5 +16,7 @@ namespace BlazorHomiePlayground {
         public string Type { get; set; }
         public List<MqttObject> Children = new();
         public string Value { get; set; }
+
+        public Action ValueChanged = () => {};
     }
 }
