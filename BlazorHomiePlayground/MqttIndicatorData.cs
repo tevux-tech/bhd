@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BlazorHomiePlayground {
+﻿namespace BlazorHomiePlayground {
     public class MqttIndicatorData {
         public string Caption { get; set; }
         public string Value { get; set; }

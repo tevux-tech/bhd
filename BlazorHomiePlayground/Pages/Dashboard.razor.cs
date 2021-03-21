@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ namespace BlazorHomiePlayground.Pages {
         private List<MqttTabData> _tabs = new List<MqttTabData>();
 
         private MqttIndicatorData _someIndicator;
+
+        private MqttObject _rootMqttObject = new MqttObject();
 
         private MqttTabData CreateAirConditioningTab() {
             var tab = new MqttTabData();
@@ -57,7 +60,6 @@ namespace BlazorHomiePlayground.Pages {
         protected override async Task OnInitializedAsync() {
             _someIndicator = new MqttIndicatorData { Caption = "Actual measured air temperature", Value = "23.9 °C" };
 
-
             _tabs.Add(CreateAirConditioningTab());
             _tabs.Add(CreatePedroTab());
 
@@ -71,7 +73,8 @@ namespace BlazorHomiePlayground.Pages {
             _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e => {
                 Console.WriteLine("### CONNECTED ###");
 
-                await _mqttClient.SubscribeAsync("shellies/shelly1pm-68C63AFADFF9/relay/0");
+                await _mqttClient.SubscribeAsync("homie/#");
+                //await _mqttClient.SubscribeAsync("homie/shelly1pm-68C63AFADFF9/relay/0");
 
                 Console.WriteLine("### SUBSCRIBED ###");
             });
@@ -88,28 +91,75 @@ namespace BlazorHomiePlayground.Pages {
             }
 
             await base.OnInitializedAsync();
-
-            StateHasChanged();
-
-            await Task.Run(async () => {
-                var i = 0;
-                while (true) {
-                    _someIndicator.Value = i.ToString();
-                    StateHasChanged();
-                    i++;
-                    await Task.Delay(200);
-                }
-            });
         }
 
         private void HandleMessage(MqttApplicationMessageReceivedEventArgs obj) {
-            if (obj.ApplicationMessage.Topic == "shellies/shelly1pm-68C63AFADFF9/relay/0") {
-                var value = Encoding.UTF8.GetString(obj.ApplicationMessage.Payload);
-                //_actualState = value;
-                Console.WriteLine(value);
+            var payload = Encoding.UTF8.GetString(obj.ApplicationMessage.Payload);
+            var topic = obj.ApplicationMessage.Topic;
 
-                StateHasChanged();
+            var topicSplits = topic.Split('/');
+
+            var objectToUpdate = _rootMqttObject;
+
+            for (int i = 1; i < topicSplits.Length - 1; i++) {
+                var childToUpdate = objectToUpdate.Children.FirstOrDefault(c => c.NodeName == topicSplits[i]);
+
+                if (childToUpdate == null) {
+                    childToUpdate = new MqttObject();
+                    childToUpdate.NodeName = topicSplits[i];
+                    objectToUpdate.Children.Add(childToUpdate);
+                }
+
+                objectToUpdate = childToUpdate;
             }
+
+            if (topicSplits.Last().StartsWith("$")) {
+                switch (topicSplits.Last()) {
+                    case "$name":
+                        objectToUpdate.Name = payload;
+                        break;
+
+                    case "$datatype":
+                        objectToUpdate.DataType = payload;
+                        break;
+
+                    case "$settable":
+                        objectToUpdate.Settable = payload == "true";
+                        break;
+
+                    case "$retained":
+                        objectToUpdate.Retained = payload == "true";
+                        break;
+
+                    case "$unit":
+                        objectToUpdate.Unit = payload;
+                        break;
+
+                    case "$homie":
+                        objectToUpdate.Homie = payload;
+                        break;
+
+                    case "$type":
+                        objectToUpdate.Type = payload;
+                        break;
+
+                    case "$state":
+                        objectToUpdate.State = payload;
+                        break;
+
+                    case "$nodes":
+                        objectToUpdate.Nodes = payload.Split(',').ToList();
+                        break;
+
+                    case "$properties":
+                        objectToUpdate.Properties = payload.Split(',').ToList();
+                        break;
+                }
+            } else {
+                objectToUpdate.Value = payload;
+            }
+
+            Console.WriteLine($"{topic} = {payload}");
         }
 
         private async Task TurnOn() {
