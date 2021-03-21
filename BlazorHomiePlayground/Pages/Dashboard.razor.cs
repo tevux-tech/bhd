@@ -70,6 +70,12 @@ namespace BlazorHomiePlayground.Pages {
                                 StateHasChanged();
                             };
 
+                            parameterData.SetTargetValue = async () => {
+                                var topicToSet = propertyObject.Topic + "/set";
+                                var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(parameterData.TargetValue.ToString(CultureInfo.InvariantCulture)).Build();
+                                await _mqttClient.PublishAsync(message);
+                            };
+
                             tab.Controls.Add(parameterData);
                         } else if (propertyObject.DataType == "integer") {
                             var parameterData = new MqttIntegerParameterData();
@@ -82,6 +88,12 @@ namespace BlazorHomiePlayground.Pages {
                                 parameterData.ActualValue = int.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
                                 parameterData.TargetValue = parameterData.ActualValue;
                                 StateHasChanged();
+                            };
+
+                            parameterData.SetTargetValue = async () => {
+                                var topicToSet = propertyObject.Topic + "/set";
+                                var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(parameterData.TargetValue.ToString(CultureInfo.InvariantCulture)).Build();
+                                await _mqttClient.PublishAsync(message);
                             };
 
                             tab.Controls.Add(parameterData);
@@ -208,6 +220,8 @@ namespace BlazorHomiePlayground.Pages {
                         break;
                 }
             } else {
+                objectToUpdate.Topic = topic;
+
                 Console.WriteLine($"{topic}={payload} goes to {objectToUpdate.GetHashCode()}");
 
                 var previousValue = objectToUpdate.Value;

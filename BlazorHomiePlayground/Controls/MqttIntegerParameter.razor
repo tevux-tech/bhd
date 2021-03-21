@@ -7,8 +7,8 @@
     </div>
 
     <div class="input-group justify-content-center" hidden="@(!_isEditting)">
-        <RadzenNumeric ShowUpDown="true" TValue="int" Value="@Data.TargetValue" Placeholder=""/>
-        <RadzenButton Text="SET" Click="Edit"></RadzenButton>
+        <RadzenNumeric ShowUpDown="true" TValue="int" @bind-Value=@Data.TargetValue Placeholder=""/>
+        <RadzenButton Text="SET" Click="SetTargetValue"></RadzenButton>
     </div>
 
 </RadzenCard>
@@ -25,4 +25,9 @@
         StateHasChanged();
     }
 
+    private void SetTargetValue() {
+        Data.SetTargetValue();
+        _isEditting = false;
+        StateHasChanged();
+    }
 }

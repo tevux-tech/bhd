@@ -16,6 +16,7 @@ namespace BlazorHomiePlayground {
         public string Type { get; set; }
         public List<MqttObject> Children = new();
         public string Value { get; set; }
+        public string Topic { get; set; }
 
         public Action ValueChanged = () => {};
     }
