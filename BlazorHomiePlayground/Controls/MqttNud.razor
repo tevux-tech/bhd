@@ -1,0 +1,28 @@
+﻿<RadzenCard>
+    <div>
+        <h4>@Data.Caption</h4>
+        <a href="javascript:;" @onclick="Edit">
+            <h2 class="text-center" hidden="@_isEditting">@Data.ActualValue @Data.Units</h2>
+        </a>
+    </div>
+
+    <div class="input-group justify-content-center" hidden="@(!_isEditting)">
+        <RadzenNumeric ShowUpDown="true" TValue="double" Value="@Data.TargetValue" Placeholder=""/>
+        <RadzenButton Text="SET" Click="Edit"></RadzenButton>
+    </div>
+
+</RadzenCard>
+
+@code {
+
+    [Parameter]
+    public MqttNudData Data { get; set; }
+
+    private bool _isEditting;
+
+    private void Edit() {
+        _isEditting = !_isEditting;
+        StateHasChanged();
+    }
+
+}

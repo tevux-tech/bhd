@@ -1,96 +1,11 @@
 ﻿@page "/dashboard"
 
-@*<h1>Amazing dashboard x</h1>*@
-
-@*<p>Shelly button state: @_actualState</p>*@
-
 <div class="container-fluid">
     <RadzenTabs>
         <Tabs>
-            <RadzenTabsItem Text="Air conditioning unit">
-                <RadzenTabs>
-                    <Tabs>
-                        <RadzenTabsItem Text="General information and properties">
-
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <RadzenCard>
-                                        <h4>Actual measured air temperature</h4>
-                                        <h2 class="text-center">23.9 °C</h2>
-                                    </RadzenCard>
-                                </div>
-                                <div class="col">
-                                    <RadzenCard>
-                                        <div>
-                                            <h4>Target air temperature</h4>
-                                            <a href="javascript:;" @onclick="Edit">
-                                                <h2 class="text-center" hidden="@_isEditting">24.0 °C</h2>
-                                            </a>
-                                        </div>
-
-                                        @*<a href="javascript:;" @onclick="Edit" class="stretched-link"></a>*@
-
-                                        <div class="input-group justify-content-center" hidden="@(!_isEditting)">
-                                            <RadzenNumeric ShowUpDown="true" TValue="double" Value="24.0" Placeholder=""/>
-                                            <RadzenButton Text="SET" Click="Edit"></RadzenButton>
-                                        </div>
-
-
-                                    </RadzenCard>
-                                </div>
-                                <div class="col">
-                                    <RadzenCard>
-                                        <h4>Actual power state</h4>
-                                        <h2 class="text-center">ON</h2>
-                                    </RadzenCard>
-                                </div>
-                            </div>
-
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <RadzenCard>
-                                        <h4>On/off switch</h4>
-                                        @*<h2 class="text-center">ON</h2>*@
-                                        @*<div class="input-group justify-content-center">*@
-                                        @*<RadzenButton Text="True"></RadzenButton>
-                                        <RadzenButton Text="False"></RadzenButton>*@
-
-                                        <div class="input-group justify-content-center">
-                                            @*<button type="button" class="btn btn-primary">Primary</button>
-                                            <button type="button" class="btn btn-secondary">Secondary</button>*@
-                                            <div>
-                                                <RadzenButton Text="True"></RadzenButton>
-                                                <RadzenButton Text="False"></RadzenButton>
-                                            </div>
-                                        </div>
-                                        @*</div>*@
-                                    </RadzenCard>
-                                </div>
-
-                                <div class="col"></div>
-                                <div class="col"></div>
-                            </div>
-
-                        </RadzenTabsItem>
-
-                        <RadzenTabsItem Text="Ventilation information and properties">
-
-                        </RadzenTabsItem>
-
-                        <RadzenTabsItem Text="Service related properties">
-
-                        </RadzenTabsItem>
-                    </Tabs>
-                </RadzenTabs>
-            </RadzenTabsItem>
-
-            <RadzenTabsItem Text="Recuperator">
-
-            </RadzenTabsItem>
-
-            <RadzenTabsItem Text="Colorful lightbulb">
-
-            </RadzenTabsItem>
+            @foreach (var tab in _tabs) {
+                <MqttTab Data="@tab"></MqttTab>
+            }
         </Tabs>
     </RadzenTabs>
 </div>

@@ -1,0 +1,14 @@
+﻿<RadzenCard>
+    <h4>@Data.Caption</h4>
+    <div class="input-group justify-content-center">
+        <div>
+            <RadzenButton Text="True"></RadzenButton>
+            <RadzenButton Text="False"></RadzenButton>
+        </div>
+    </div>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public MqttCommandData Data { get; set; }
+}

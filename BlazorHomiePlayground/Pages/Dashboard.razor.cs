@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,35 @@ namespace BlazorHomiePlayground.Pages {
             StateHasChanged();
         }
 
+
+        private List<MqttTabData> _tabs = new List<MqttTabData>();
+
+
+        private MqttTabData CreateAirConditioningTab() {
+            var tab = new MqttTabData();
+            tab.Caption = "Air conditioning unit";
+
+            var subtab1 = new MqttTabData() { Caption = "General information and properties" };
+            subtab1.Controls.Add(new MqttIndicatorData { Caption = "Actual measured air temperature", Value = "23.9 °C" });
+            subtab1.Controls.Add(new MqttIndicatorData { Caption = "Actual power state", Value = "OFF" });
+            subtab1.Controls.Add(new MqttCommandData { Caption = "On/off switch" });
+            subtab1.Controls.Add(new MqttNudData { Caption = "Target air temperature", ActualValue = 24, Units = "°C" });
+
+            var subtab2 = new MqttTabData { Caption = "Ventilation information and properties" };
+            var subtab3 = new MqttTabData { Caption = "Service related properties" };
+
+            tab.SubTabs.Add(subtab1);
+            tab.SubTabs.Add(subtab2);
+            tab.SubTabs.Add(subtab3);
+            return tab;
+        }
+
+
         protected override async Task OnInitializedAsync() {
+            _tabs.Add(CreateAirConditioningTab());
+            _tabs.Add(CreateAirConditioningTab());
+            _tabs.Add(CreateAirConditioningTab());
+
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
@@ -50,6 +79,8 @@ namespace BlazorHomiePlayground.Pages {
             }
 
             await base.OnInitializedAsync();
+
+            StateHasChanged();
         }
 
         private void HandleMessage(MqttApplicationMessageReceivedEventArgs obj) {

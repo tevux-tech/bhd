@@ -1,0 +1,48 @@
+﻿<RadzenTabsItem Text="@Data.Caption">
+
+    @if (Data.SubTabs.Count > 0) {
+        <RadzenTabs>
+            <Tabs>
+                @foreach (var tab in Data.SubTabs) {
+                    <MqttTab Data="@tab"></MqttTab>
+                }
+            </Tabs>
+        </RadzenTabs>
+    }
+
+    @{
+        var index = 0;
+        while (index < Data.Controls.Count) {
+        <div class="row mt-3">
+            @for (int i = 0; i < 3; i++) {
+                @if (index < Data.Controls.Count) {
+                    if (Data.Controls[index] is MqttIndicatorData) {
+                        <div class="col">
+                            <MqttIndicator Data="(MqttIndicatorData)Data.Controls[index]"></MqttIndicator>
+                        </div>
+                    } else if (Data.Controls[index] is MqttNudData) {
+                        <div class="col">
+                            <MqttNud Data="(MqttNudData)Data.Controls[index]"></MqttNud>
+                        </div>
+                    } else if (Data.Controls[index] is MqttCommandData) {
+                        <div class="col">
+                            <MqttCommand Data="(MqttCommandData)Data.Controls[index]"></MqttCommand>
+                        </div>
+                    } else {
+                        <div class="col"></div>
+                    }
+                } else {
+                    <div class="col"></div>
+                }
+
+                index++;
+            }
+        </div>
+        }
+    }
+</RadzenTabsItem>
+
+@code {
+    [Parameter]
+    public MqttTabData Data { get; set; }
+}
