@@ -4,18 +4,6 @@
 </RadzenCard>
 
 @code {
-    private MqttIndicatorData _data;
-
     [Parameter]
-    public MqttIndicatorData Data {
-        get { return _data; }
-        set {
-            _data = value;
-
-            _data.StateChanged += (sender, args) => {
-                Console.WriteLine("BBBBBB State changed");
-                this.StateHasChanged();
-            };
-        }
-    }
+    public MqttIndicatorData Data { get; set; }
 }

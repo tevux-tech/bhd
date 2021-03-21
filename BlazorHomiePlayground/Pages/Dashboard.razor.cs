@@ -95,11 +95,9 @@ namespace BlazorHomiePlayground.Pages {
                 var i = 0;
                 while (true) {
                     _someIndicator.Value = i.ToString();
-                    _someIndicator.OnStateChanged();
+                    StateHasChanged();
                     i++;
                     await Task.Delay(200);
-
-                    //StateHasChanged();
                 }
             });
         }
