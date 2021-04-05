@@ -6,8 +6,10 @@
     </p>
     <RadzenTabs>
         <Tabs>
-            @foreach (var tab in _tabs) {
-                <MqttTab Data="@tab"></MqttTab>
+            @foreach (var homieDevice in _homieDevices) {
+                <RadzenTabsItem Text="@homieDevice.Name">
+                    <HomieDeviceView Data="@homieDevice"/>
+                </RadzenTabsItem>
             }
         </Tabs>
     </RadzenTabs>

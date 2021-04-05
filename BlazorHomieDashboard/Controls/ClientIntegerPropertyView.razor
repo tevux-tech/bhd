@@ -1,0 +1,39 @@
+﻿<RadzenCard>
+    @if (Data.Type == PropertyType.State) {
+        <h4>@Data.Name</h4>
+        <h2 class="text-center">@Data.Value @Data.Unit</h2>
+    } else {
+        <div>
+            <h4>@Data.Name</h4>
+            <a href="javascript:;" @onclick="Edit">
+                <h2 class="text-center" hidden="@_isEditting">@Data.Value @Data.Unit</h2>
+            </a>
+        </div>
+
+        <div class="input-group justify-content-center" hidden="@(!_isEditting)">
+            <RadzenNumeric ShowUpDown="true" TValue="int" @bind-Value=@_targetValue Placeholder=""/>
+            <RadzenButton Text="SET" Click="SetTargetValue"></RadzenButton>
+        </div>
+    }
+
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public ClientIntegerProperty Data { get; set; }
+
+    private bool _isEditting;
+
+    private int _targetValue;
+
+    private void Edit() {
+        _isEditting = !_isEditting;
+        StateHasChanged();
+    }
+
+    private void SetTargetValue() {
+        Data.Value = _targetValue;
+        _isEditting = false;
+        StateHasChanged();
+    }
+}

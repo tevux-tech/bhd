@@ -1,0 +1,28 @@
+﻿<RadzenCard>
+    <h4>@Data.Name</h4>
+
+    @if (Data.Type == PropertyType.State) {
+        <h2 class="text-center">@Data.Value @Data.Unit</h2>
+    } else if (Data.Type == PropertyType.Command) {
+        <div class="input-group justify-content-center">
+            <div>
+                <RadzenButton Text="True" Click="@SetTrue"></RadzenButton>
+                <RadzenButton Text="False" Click="@SetFalse"></RadzenButton>
+            </div>
+        </div>
+    }
+</RadzenCard>
+
+@code {
+
+    [Parameter]
+    public ClientBooleanProperty Data { get; set; }
+
+    private void SetTrue() {
+        Data.Value = true;
+    }
+
+    private void SetFalse() {
+        Data.Value = false;
+    }
+}
