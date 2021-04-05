@@ -46,11 +46,22 @@ namespace BlazorHomiePlayground.Pages {
                 if (propertyObject.Settable == false) {
                     var indicatorData = new MqttIndicatorData();
                     indicatorData.Caption = propertyObject.Name;
-                    indicatorData.ActualValue = propertyObject.Value;
+
+                    if (propertyObject.DataType == "datetime") {
+                        indicatorData.ActualValue = DateTime.Parse(propertyObject.Value).ToString(CultureInfo.InvariantCulture);
+                    } else {
+                        indicatorData.ActualValue = propertyObject.Value;
+                    }
+
                     indicatorData.Units = propertyObject.Unit;
 
                     propertyObject.ValueChanged += () => {
-                        indicatorData.ActualValue = propertyObject.Value;
+                        if (propertyObject.DataType == "datetime") {
+                            indicatorData.ActualValue = DateTime.Parse(propertyObject.Value).ToString(CultureInfo.InvariantCulture);
+                        } else {
+                            indicatorData.ActualValue = propertyObject.Value;
+                        }
+
                         StateHasChanged();
                     };
 
