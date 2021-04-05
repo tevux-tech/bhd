@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Radzen;
 
-namespace BlazorHomiePlayground {
+namespace BlazorHomieDashboard {
     public class Program {
         public static async Task Main(string[] args) {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);

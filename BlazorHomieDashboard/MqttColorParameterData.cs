@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlazorHomiePlayground {
+namespace BlazorHomieDashboard {
     public class MqttColorParameterData {
         public string Caption { get; set; }
         public string ActualValue { get; set; }

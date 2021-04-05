@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BlazorHomiePlayground {
+namespace BlazorHomieDashboard {
     public class MqttFloatParameterData {
         public string Caption { get; set; }
         public double ActualValue { get; set; }

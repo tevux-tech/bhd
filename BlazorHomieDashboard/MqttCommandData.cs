@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlazorHomiePlayground {
+namespace BlazorHomieDashboard {
     public class MqttCommandData {
         public string Caption { get; set; }
         public string Button1Caption { get; set; }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BlazorHomiePlayground {
+namespace BlazorHomieDashboard {
     public class MqttTabData {
         public string Caption { get; set; }
         public List<MqttTabData> SubTabs { get; set; } = new();

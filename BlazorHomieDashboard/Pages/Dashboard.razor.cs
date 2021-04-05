@@ -13,7 +13,7 @@ using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
 
-namespace BlazorHomiePlayground.Pages {
+namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
@@ -181,7 +181,6 @@ namespace BlazorHomiePlayground.Pages {
                 Console.WriteLine("### CONNECTED ###");
 
                 await _mqttClient.SubscribeAsync("homie/#");
-                //await _mqttClient.SubscribeAsync("homie/shelly1pm-68C63AFADFF9/relay/0");
 
                 Console.WriteLine("### SUBSCRIBED ###");
             });

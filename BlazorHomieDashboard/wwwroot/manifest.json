@@ -1,6 +1,6 @@
 {
-    "name": "BlazorHomiePlayground",
-    "short_name": "BlazorHomiePlayground",
+    "name": "BlazorHomieDashboard",
+    "short_name": "BlazorHomieDashboard",
     "start_url": "./",
     "display": "standalone",
     "background_color": "#ffffff",
