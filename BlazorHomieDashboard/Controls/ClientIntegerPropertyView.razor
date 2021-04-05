@@ -31,6 +31,13 @@
         StateHasChanged();
     }
 
+    protected override void OnInitialized() {
+        Data.PropertyChanged += (sender, args) => {
+            StateHasChanged();
+        };
+        base.OnInitialized();
+    }
+
     private void SetTargetValue() {
         Data.Value = _targetValue;
         _isEditting = false;

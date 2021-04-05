@@ -18,6 +18,13 @@
     [Parameter]
     public ClientBooleanProperty Data { get; set; }
 
+    protected override void OnInitialized() {
+        Data.PropertyChanged += (sender, args) => {
+            StateHasChanged();
+        };
+        base.OnInitialized();
+    }
+
     private void SetTrue() {
         Data.Value = true;
     }
@@ -25,4 +32,5 @@
     private void SetFalse() {
         Data.Value = false;
     }
+
 }
