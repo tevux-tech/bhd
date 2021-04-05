@@ -16,8 +16,8 @@ namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
-        private List<HomieDevice> _homieDevices0 = new List<HomieDevice>();
-        private List<HomieDevice> _homieDevices = new List<HomieDevice>();
+        private List<HomieDevice> _homieDevices0 = new();
+        private List<HomieDevice> _homieDevices = new();
         private readonly Dictionary<string, HashSet<string>> _multiDeviceTopics = new();
 
         private async Task CreateDashboard(MouseEventArgs obj) {

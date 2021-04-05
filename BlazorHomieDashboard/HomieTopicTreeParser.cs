@@ -71,8 +71,6 @@ namespace TestApp {
                             if (Enum.TryParse<DataType>(uppercasedPayload, out var parsedType)) {
                                 propertyMetadata.DataType = parsedType;
                             }
-
-                            ;
                         }
 
                         if (parts[0] == "$format") {
