@@ -1,13 +1,23 @@
-﻿<h3>ClientStringPropertyView</h3>
+﻿@implements IDisposable
+
+<h3>ClientStringPropertyView</h3>
 
 @code {
+
     [Parameter]
     public ClientStringProperty Data { get; set; }
 
     protected override void OnInitialized() {
-        Data.PropertyChanged += (sender, args) => {
-            StateHasChanged();
-        };
+        Data.PropertyChanged += HandleDataPropertyChanged;
         base.OnInitialized();
     }
+
+    private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose() {
+        Data.PropertyChanged -= HandleDataPropertyChanged;
+    }
+
 }

@@ -4,13 +4,11 @@
     <p>
         <RadzenButton Text="Regenerate dashboard" Click="CreateDashboard"></RadzenButton>
     </p>
-    <RadzenTabs>
-        <Tabs>
-            @foreach (var homieDevice in _homieDevices) {
-                <RadzenTabsItem Text="@homieDevice.Name">
-                    <HomieDeviceView Data="@homieDevice"/>
-                </RadzenTabsItem>
-            }
-        </Tabs>
-    </RadzenTabs>
+
+    @foreach (var homieDevice in _homieDevices) {
+        <h2>@homieDevice.Name</h2>
+        <div>
+            <HomieDeviceView Data="@homieDevice"/>
+        </div>
+    }
 </div>

@@ -1,4 +1,6 @@
-﻿<RadzenCard>
+﻿@implements IDisposable
+
+<RadzenCard>
     @if (Data.Type == PropertyType.State) {
         <h4>@Data.Name</h4>
         <h2 class="text-center">@Data.Value @Data.Unit</h2>
@@ -33,10 +35,16 @@
     }
 
     protected override void OnInitialized() {
-        Data.PropertyChanged += (sender, args) => {
-            StateHasChanged();
-        };
+        Data.PropertyChanged += HandleDataPropertyChanged;
         base.OnInitialized();
+    }
+
+    private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose() {
+        Data.PropertyChanged -= HandleDataPropertyChanged;
     }
 
     private void SetTargetValue() {
