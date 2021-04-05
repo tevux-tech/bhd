@@ -13,13 +13,13 @@ namespace BlazorHomieDashboard {
         public void Initialize(string[] topicDump, Device.PublishToTopicDelegate publish, Device.SubscribeToTopicDelegate subscribe) {
             var deviceMetadata = HomieTopicTreeParser.Parse(topicDump, "homie")[0];
 
-            Name = deviceMetadata.Id;
+            Name = deviceMetadata.Attributes["$name"];
 
             _clientDevice = DeviceFactory.CreateClientDevice(deviceMetadata.Id);
 
             foreach (var nodeMetaData in deviceMetadata.Nodes) {
                 var node = new HomieNode();
-                node.Name = nodeMetaData.Id;
+                node.Name = nodeMetaData.Attributes["$name"];
                 Nodes.Add(node);
 
                 foreach (var propertyMetadata in nodeMetaData.Properties) {
