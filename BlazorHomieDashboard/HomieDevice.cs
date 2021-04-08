@@ -10,9 +10,7 @@ namespace BlazorHomieDashboard {
 
         private ClientDevice _clientDevice;
 
-        public void Initialize(string[] topicDump, Device.PublishToTopicDelegate publish, Device.SubscribeToTopicDelegate subscribe) {
-            var deviceMetadata = HomieTopicTreeParser.Parse(topicDump, "homie")[0];
-
+        public void Initialize(HomieTopicTreeParser.Device deviceMetadata, Device.PublishToTopicDelegate publish, Device.SubscribeToTopicDelegate subscribe) {
             Name = deviceMetadata.Attributes["$name"];
 
             _clientDevice = DeviceFactory.CreateClientDevice(deviceMetadata.Id);
