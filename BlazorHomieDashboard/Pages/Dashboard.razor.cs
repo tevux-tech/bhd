@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +10,7 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
+using TestApp;
 
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
@@ -18,15 +18,20 @@ namespace BlazorHomieDashboard.Pages {
 
         private List<HomieDevice> _homieDevices0 = new();
         private List<HomieDevice> _homieDevices = new();
-        private readonly Dictionary<string, HashSet<string>> _multiDeviceTopics = new();
+        private readonly Dictionary<string, string> _topicDump = new();
 
         private async Task CreateDashboard(MouseEventArgs obj) {
             var newHomieDevices = new List<HomieDevice>();
 
-            foreach (var singleDeviceTopics in _multiDeviceTopics) {
-                var singleDeviceTopicsArray = singleDeviceTopics.Value.ToArray();
+            var localDumpList = new List<string>();
+            foreach (var item in _topicDump) {
+                localDumpList.Add(item.Key + ":" + item.Value);
+            }
+
+            var allDevices = HomieTopicTreeParser.Parse(localDumpList.ToArray(), "homie");
+            foreach (var deviceMetadata in allDevices) {
                 var homieDevice = new HomieDevice();
-                homieDevice.Initialize(singleDeviceTopicsArray, Publish, Subscribe);
+                homieDevice.Initialize(deviceMetadata, Publish, Subscribe);
                 newHomieDevices.Add(homieDevice);
             }
 
@@ -55,7 +60,7 @@ namespace BlazorHomieDashboard.Pages {
 
             _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
 
-            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://192.168.2.2:9001/" } };
+            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://172.16.0.2:9001/" } };
 
             _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e => {
                 Console.WriteLine("### CONNECTED ###");
@@ -84,11 +89,8 @@ namespace BlazorHomieDashboard.Pages {
             var payload = Encoding.UTF8.GetString(obj.ApplicationMessage.Payload);
             var topic = obj.ApplicationMessage.Topic;
 
-            var topicSplits = topic.Split('/');
-
-            var devicePath = $"{topicSplits[0]}/{topicSplits[1]}";
-            if (_multiDeviceTopics.ContainsKey(devicePath) == false) _multiDeviceTopics[devicePath] = new HashSet<string>();
-            _multiDeviceTopics[devicePath].Add($"{topic}:{payload}");
+            if (_topicDump.ContainsKey(payload) == false) _topicDump.Add(topic, payload);
+            else _topicDump[topic] = payload;
 
             foreach (var homieDevice in _homieDevices0) {
                 homieDevice.HandlePublishReceived(topic, payload);
