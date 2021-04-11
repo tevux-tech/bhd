@@ -8,11 +8,11 @@
         <div>
             <h4>@Data.Name</h4>
             <a href="javascript:;" @onclick="Edit">
-                <h2 class="text-center" hidden="@_isEditting">@Data.Value.ToString("F2") @Data.Unit</h2>
+                <h2 class="text-center" hidden="@_isEditing">@Data.Value.ToString("F2") @Data.Unit</h2>
             </a>
         </div>
 
-        <div class="input-group justify-content-center" hidden="@(!_isEditting)">
+        <div class="input-group justify-content-center" hidden="@(!_isEditing)">
             <RadzenNumeric ShowUpDown="true" TValue="float" @bind-Value=@_targetValue Placeholder="" Format="F2"/>
             <RadzenButton Text="SET" Click="SetTargetValue"></RadzenButton>
         </div>
@@ -25,13 +25,13 @@
     [Parameter]
     public ClientFloatProperty Data { get; set; }
 
-    private bool _isEditting;
+    private bool _isEditing;
 
     private float _targetValue;
 
     private void Edit() {
         _targetValue = Data.Value;
-        _isEditting = !_isEditting;
+        _isEditing = !_isEditing;
         StateHasChanged();
     }
 
@@ -50,7 +50,7 @@
 
     private void SetTargetValue() {
         Data.Value = _targetValue;
-        _isEditting = false;
+        _isEditing = false;
         StateHasChanged();
     }
 
