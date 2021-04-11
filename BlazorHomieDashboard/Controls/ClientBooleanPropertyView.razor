@@ -6,8 +6,13 @@
     @if (Data.Type == PropertyType.State) {
         <h2 class="text-center">@Data.Value @Data.Unit</h2>
     } else if (Data.Type == PropertyType.Parameter) {
-        <h2 class="text-center">@Data.Value @Data.Unit</h2>
-        <div class="input-group justify-content-center">
+        <div>
+            <a href="javascript:;" @onclick="Edit">
+                <h2 class="text-center" hidden="@_isEditing">@Data.Value @Data.Unit</h2>
+            </a>
+        </div>
+
+        <div class="input-group justify-content-center" hidden="@(!_isEditing)">
             <div>
                 <RadzenButton Text="True" Click="@SetTrue"></RadzenButton>
                 <RadzenButton Text="False" Click="@SetFalse"></RadzenButton>
@@ -28,6 +33,8 @@
     [Parameter]
     public ClientBooleanProperty Data { get; set; }
 
+    bool _isEditing = false;
+
     protected override void OnInitialized() {
         Data.PropertyChanged += HandleDataPropertyChanged;
         base.OnInitialized();
@@ -47,10 +54,15 @@
 
     private void SetTrue() {
         Data.Value = true;
+        _isEditing = false;
     }
 
     private void SetFalse() {
         Data.Value = false;
+        _isEditing = false;
     }
 
+    private void Edit() {
+        _isEditing = true;
+    }
 }
