@@ -4,7 +4,7 @@
     @if (Data.Type == PropertyType.State) {
         <h4>@Data.Name</h4>
         <h2 class="text-center">@Data.Value @Data.Unit</h2>
-    } else {
+    } else if (Data.Type == PropertyType.Parameter) {
         <div>
             <h4>@Data.Name</h4>
             <a href="javascript:;" @onclick="Edit">
