@@ -30,8 +30,8 @@ namespace BlazorHomieDashboard {
             _histories[property] = new List<FloatHistoryItem>();
         }
 
-        public List<FloatHistoryItem> GetFloatHistory(ClientFloatProperty property) {
-            return _histories[property].ToList();
+        public List<FloatHistoryItem> GetFloatHistory(ClientFloatProperty property, DateTime from) {
+            return _histories[property].Where(h => h.Date > from).ToList();
         }
     }
 }

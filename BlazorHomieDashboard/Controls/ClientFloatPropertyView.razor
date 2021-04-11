@@ -15,8 +15,13 @@
             <RadzenValueAxis FormatString="{0:F2}"/>
             <RadzenCategoryAxis FormatString="{0:HH:mm:ss}"/>
         </RadzenChart>
-        <div class="input-group justify-content-center">
-            <RadzenButton hidden="@(!_isHistoryVisible)" Text="Clear" Click="ClearHistory"/>
+        <div class="input-group justify-content-center" hidden="@(!_isHistoryVisible)">
+            <RadzenButton Text="1min" Click="() => SetHistory(1 * 60)"/>
+            <RadzenButton Text="5min" Click="() => SetHistory(5 * 60)"/>
+            <RadzenButton Text="30min" Click="() => SetHistory(30 * 60)"/>
+            <RadzenButton Text="1h" Click="() => SetHistory(1 * 60 * 60)"/>
+            <RadzenButton Text="24h" Click="() => SetHistory(24 * 60 * 60)"/>
+            <RadzenButton Text="Clear" Click="ClearHistory"/>
         </div>
     } else {
         <div>
@@ -45,6 +50,8 @@
 
     private bool _isHistoryVisible;
 
+    private int _historySeconds = 36000;
+
 
     private List<HistoryService.FloatHistoryItem> _history = new();
 
@@ -59,14 +66,14 @@
     }
 
     protected override void OnInitialized() {
-        _history = HistoryService.Instance.GetFloatHistory(Data);
+        _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
         Data.PropertyChanged += HandleDataPropertyChanged;
         base.OnInitialized();
     }
 
     private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
         if (e.PropertyName == nameof(ClientFloatProperty.Value)) {
-            _history = HistoryService.Instance.GetFloatHistory(Data);
+            _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
             StateHasChanged();
         }
     }
@@ -83,7 +90,13 @@
 
     private void ClearHistory() {
         HistoryService.Instance.ClearHistory(Data);
-        _history = HistoryService.Instance.GetFloatHistory(Data);
+        _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
+    }
+
+    private void SetHistory(int seconds) {
+        _historySeconds = seconds;
+        _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
+        StateHasChanged();
     }
 
 }
