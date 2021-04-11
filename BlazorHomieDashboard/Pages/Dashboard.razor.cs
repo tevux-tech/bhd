@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Web;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -16,10 +15,15 @@ namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
+        private string _mqttServerUri = "ws://192.168.2.2:9001/";
+
         private List<HomieDevice> _homieDevices = new();
         private readonly Dictionary<string, string> _topicDump = new();
 
-        private void CreateDashboard(MouseEventArgs obj) {
+        private bool _isLoading = true;
+        private string _loadingMessage = "";
+
+        private void CreateDashboard() {
             var newHomieDevices = new List<HomieDevice>();
 
             var localDumpList = new List<string>();
@@ -41,32 +45,63 @@ namespace BlazorHomieDashboard.Pages {
 
         private void Subscribe(string topic) {
             Console.WriteLine("Subscribing to " + topic);
-            _mqttClient.SubscribeAsync(topic);
+
+            try {
+                _mqttClient.SubscribeAsync(topic);
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
+            }
         }
 
         private void Publish(string topic, string payload, byte qoslevel, bool isretained) {
             Console.WriteLine($"Publishing {topic} = {payload}");
-            var message = new MqttApplicationMessageBuilder().WithTopic(topic).WithPayload(payload).WithQualityOfServiceLevel(qoslevel).WithRetainFlag(isretained).Build();
-            _mqttClient.PublishAsync(message);
+
+            try {
+                var message = new MqttApplicationMessageBuilder().WithTopic(topic).WithPayload(payload).WithQualityOfServiceLevel(qoslevel).WithRetainFlag(isretained).Build();
+                _mqttClient.PublishAsync(message);
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
+            }
         }
 
         protected override async Task OnInitializedAsync() {
+            _loadingMessage = $"Connecting to {_mqttServerUri}...";
+
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
             _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
 
-            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://192.168.2.2:9001/" } };
+            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = _mqttServerUri } };
 
             _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e => {
-                Console.WriteLine("### CONNECTED ###");
+                _loadingMessage = "Server connected. Fetching homie topics...";
 
                 await _mqttClient.SubscribeAsync("homie/#");
 
-                Console.WriteLine("### SUBSCRIBED ###");
+                var _ = Task.Run(async () => {
+                    for (var i = 0; i < 20; i++) {
+                        _loadingMessage = $"Server connected. Fetching homie topics {_topicDump.Count}...";
+                        StateHasChanged();
+                        await Task.Delay(100);
+                    }
+
+                    if (_topicDump.Count == 0) {
+                        _loadingMessage = "No topics found.";
+                        StateHasChanged();
+                    } else {
+                        _loadingMessage = "Creating dashboard...";
+                        CreateDashboard();
+                        _isLoading = false;
+                        StateHasChanged();
+                    }
+                });
             });
 
             _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e => {
+                _isLoading = true;
+                _loadingMessage = "Server disconnected";
+                StateHasChanged();
                 Console.WriteLine("### DISCONNECTED ###");
             });
 
@@ -74,6 +109,7 @@ namespace BlazorHomieDashboard.Pages {
             try {
                 await _mqttClient.ConnectAsync(clientOptions, CancellationToken.None);
             } catch (Exception exception) {
+                _loadingMessage = $"Failed connecting to {_mqttServerUri}";
                 Console.WriteLine("### CONNECTING FAILED ###" + Environment.NewLine + exception);
             }
 

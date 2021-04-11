@@ -1,14 +1,15 @@
-﻿@page "/dashboard"
+﻿@page "/"
 
 <div class="container-fluid">
-    <p>
-        <RadzenButton Text="Regenerate dashboard" Click="CreateDashboard"></RadzenButton>
-    </p>
 
-    @foreach (var homieDevice in _homieDevices) {
-        <h2>@homieDevice.Name</h2>
-        <div>
-            <HomieDeviceView Data="@homieDevice"/>
-        </div>
+    @if (_isLoading) {
+        <h2>@_loadingMessage</h2>
+    } else {
+        @foreach (var homieDevice in _homieDevices) {
+            <h2>@homieDevice.Name</h2>
+            <div>
+                <HomieDeviceView Data="@homieDevice"/>
+            </div>
+        }
     }
 </div>
