@@ -80,7 +80,7 @@ namespace BlazorHomieDashboard.Pages {
                 await _mqttClient.SubscribeAsync("homie/#");
 
                 var _ = Task.Run(async () => {
-                    for (var i = 0; i < 20; i++) {
+                    for (var i = 0; i < 10; i++) {
                         _loadingMessage = $"Server connected. Fetching homie topics {_topicDump.Count}...";
                         StateHasChanged();
                         await Task.Delay(100);

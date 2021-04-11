@@ -3,7 +3,21 @@
 <RadzenCard>
     @if (Data.Type == PropertyType.State) {
         <h4>@Data.Name</h4>
-        <h2 class="text-center">@Data.Value @Data.Unit</h2>
+        <h2 class="text-center">@Data.Value.ToString("F2") @Data.Unit</h2>
+        <a class="text-center" href="javascript:;" @onclick="ToggleHistory" hidden="@(!_isHistoryVisible)">Hide history</a>
+        <a class="text-center" href="javascript:;" @onclick="ToggleHistory" hidden="@_isHistoryVisible">Show history</a>
+
+
+        <RadzenChart hidden="@(!_isHistoryVisible)">
+            <RadzenLineSeries Data="@_history" CategoryProperty="Date" ValueProperty="Value" Title="Value">
+                <RadzenMarkers MarkerType="MarkerType.Circle"/>
+            </RadzenLineSeries>
+            <RadzenValueAxis FormatString="{0:F2}"/>
+            <RadzenCategoryAxis FormatString="{0:HH:mm:ss}"/>
+        </RadzenChart>
+        <div class="input-group justify-content-center">
+            <RadzenButton hidden="@(!_isHistoryVisible)" Text="Clear" Click="ClearHistory"/>
+        </div>
     } else {
         <div>
             <h4>@Data.Name</h4>
@@ -29,6 +43,15 @@
 
     private float _targetValue;
 
+    private bool _isHistoryVisible;
+
+
+    private List<HistoryService.FloatHistoryItem> _history = new();
+
+    private void ToggleHistory() {
+        _isHistoryVisible = !_isHistoryVisible;
+    }
+
     private void Edit() {
         _targetValue = Data.Value;
         _isEditing = !_isEditing;
@@ -36,12 +59,16 @@
     }
 
     protected override void OnInitialized() {
+        _history = HistoryService.Instance.GetFloatHistory(Data);
         Data.PropertyChanged += HandleDataPropertyChanged;
         base.OnInitialized();
     }
 
     private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
-        StateHasChanged();
+        if (e.PropertyName == nameof(ClientFloatProperty.Value)) {
+            _history = HistoryService.Instance.GetFloatHistory(Data);
+            StateHasChanged();
+        }
     }
 
     void IDisposable.Dispose() {
@@ -52,6 +79,11 @@
         Data.Value = _targetValue;
         _isEditing = false;
         StateHasChanged();
+    }
+
+    private void ClearHistory() {
+        HistoryService.Instance.ClearHistory(Data);
+        _history = HistoryService.Instance.GetFloatHistory(Data);
     }
 
 }

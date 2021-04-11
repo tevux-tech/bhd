@@ -31,6 +31,7 @@ namespace BlazorHomieDashboard {
                         case DataType.Float: {
                             var newProperty = _clientDevice.CreateClientFloatProperty(propertyMetadata);
                             node.Properties.Add(newProperty);
+                            HistoryService.Instance.StartHistoryMonitoring(newProperty);
                             break;
                         }
 
