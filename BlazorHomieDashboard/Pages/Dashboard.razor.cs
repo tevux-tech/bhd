@@ -16,11 +16,10 @@ namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
-        private List<HomieDevice> _homieDevices0 = new();
         private List<HomieDevice> _homieDevices = new();
         private readonly Dictionary<string, string> _topicDump = new();
 
-        private async Task CreateDashboard(MouseEventArgs obj) {
+        private void CreateDashboard(MouseEventArgs obj) {
             var newHomieDevices = new List<HomieDevice>();
 
             var localDumpList = new List<string>();
@@ -35,10 +34,7 @@ namespace BlazorHomieDashboard.Pages {
                 newHomieDevices.Add(homieDevice);
             }
 
-            _homieDevices0 = newHomieDevices;
-            // Something is wrong with initialization of bool properties.
-            await Task.Delay(2000);
-            _homieDevices = _homieDevices0;
+            _homieDevices = newHomieDevices;
 
             StateHasChanged();
         }
@@ -60,7 +56,7 @@ namespace BlazorHomieDashboard.Pages {
 
             _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
 
-            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://172.16.0.2:9001/" } };
+            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://192.168.2.2:9001/" } };
 
             _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e => {
                 Console.WriteLine("### CONNECTED ###");
@@ -89,10 +85,11 @@ namespace BlazorHomieDashboard.Pages {
             var payload = Encoding.UTF8.GetString(obj.ApplicationMessage.Payload);
             var topic = obj.ApplicationMessage.Topic;
 
-            if (_topicDump.ContainsKey(payload) == false) _topicDump.Add(topic, payload);
-            else _topicDump[topic] = payload;
+            Console.WriteLine($"Handling {topic}={payload}");
 
-            foreach (var homieDevice in _homieDevices0) {
+            _topicDump[topic] = payload;
+
+            foreach (var homieDevice in _homieDevices) {
                 homieDevice.HandlePublishReceived(topic, payload);
             }
         }
