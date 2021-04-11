@@ -5,9 +5,23 @@
             @for (int i = 0; i < 3; i++) {
                 @if (index < Data.Properties.Count) {
                     if (Data.Properties[index] is ClientStringProperty) {
-                        <div class="col">
-                            <ClientStringPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientStringPropertyView>
-                        </div>
+                        if (Data.Properties[index].DataType == DataType.Color) {
+                            <div class="col">
+                                <ClientColorPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientColorPropertyView>
+                            </div>
+                        } else if (Data.Properties[index].DataType == DataType.DateTime) {
+                            <div class="col">
+                                <ClientDateTimePropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientDateTimePropertyView>
+                            </div>
+                        } else if (Data.Properties[index].DataType == DataType.Enum) {
+                            <div class="col">
+                                <ClientEnumPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientEnumPropertyView>
+                            </div>
+                        } else {
+                            <div class="col">
+                                <ClientStringPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientStringPropertyView>
+                            </div>
+                        }
                     } else if (Data.Properties[index] is ClientFloatProperty) {
                         <div class="col">
                             <ClientFloatPropertyView Data="(ClientFloatProperty)Data.Properties[index]"></ClientFloatPropertyView>
