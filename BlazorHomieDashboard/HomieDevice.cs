@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DevBot9.Protocols.Homie;
 using TestApp;
 
@@ -21,24 +21,34 @@ namespace BlazorHomieDashboard {
                 Nodes.Add(node);
 
                 foreach (var propertyMetadata in nodeMetaData.Properties) {
-                    if (propertyMetadata.DataType == DataType.String) {
-                        var newProperty = _clientDevice.CreateClientStringProperty(propertyMetadata);
-                        node.Properties.Add(newProperty);
-                    }
+                    switch (propertyMetadata.DataType) {
+                        case DataType.Integer: {
+                            var newProperty = _clientDevice.CreateClientIntegerProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
 
-                    if (propertyMetadata.DataType == DataType.Integer) {
-                        var newProperty = _clientDevice.CreateClientIntegerProperty(propertyMetadata);
-                        node.Properties.Add(newProperty);
-                    }
+                        case DataType.Float: {
+                            var newProperty = _clientDevice.CreateClientFloatProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
 
-                    if (propertyMetadata.DataType == DataType.Float) {
-                        var newProperty = _clientDevice.CreateClientFloatProperty(propertyMetadata);
-                        node.Properties.Add(newProperty);
-                    }
+                        case DataType.Boolean: {
+                            var newProperty = _clientDevice.CreateClientBooleanProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
 
-                    if (propertyMetadata.DataType == DataType.Boolean) {
-                        var newProperty = _clientDevice.CreateClientBooleanProperty(propertyMetadata);
-                        node.Properties.Add(newProperty);
+#warning Shouldn't these have their own class?
+                        case DataType.Enum:
+                        case DataType.Color:
+                        case DataType.DateTime:
+                        case DataType.String: {
+                            var newProperty = _clientDevice.CreateClientStringProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
                     }
                 }
             }

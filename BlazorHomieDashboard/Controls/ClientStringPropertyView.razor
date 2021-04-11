@@ -1,11 +1,67 @@
 ﻿@implements IDisposable
 
-<h3>ClientStringPropertyView</h3>
+<RadzenCard>
+    @if (Data.Type == PropertyType.State) {
+        <h4>@Data.Name</h4>
+
+        if (Data.DataType == DataType.DateTime) {
+            <h2 class="text-center">@(DateTime.Parse(Data.Value))</h2>
+        } else {
+            <h2 class="text-center">@Data.Value @Data.Unit</h2>
+        }
+    } else if ((Data.Type == PropertyType.Parameter) && (Data.DataType == DataType.Color)) {
+        <div>
+            <h4>@Data.Name</h4>
+            <div style="background-color: rgb(@Data.Value)">
+                <a href="javascript:;" @onclick="EditColor">
+                    <h2 class="text-center" hidden="@_isEditting">@Data.Value</h2>
+                </a>
+            </div>
+        </div>
+
+        <div class="input-group justify-content-center" hidden="@(!_isEditting)">
+            <RadzenColorPicker @bind-Value=@_colorPickerValue ShowHSV=true ShowRGBA=true ShowColors=true ShowButton=true Change="@SetColor"/>
+        </div>
+    } else {
+        <h4>@Data.Name</h4>
+    }
+</RadzenCard>
 
 @code {
 
     [Parameter]
     public ClientStringProperty Data { get; set; }
+
+
+    private bool _isEditting;
+    private string _colorPickerValue;
+
+    private void EditColor() {
+        _colorPickerValue = $"rgb({Data.Value})";
+        _isEditting = !_isEditting;
+        StateHasChanged();
+    }
+
+    private void SetColor() {
+        var targetColor = _colorPickerValue;
+
+        if (targetColor.StartsWith("rgb(")) {
+            targetColor = targetColor.Replace("rgb(", "");
+            targetColor = targetColor.Replace(")", "");
+        } else if (targetColor.StartsWith("rgba(")) {
+            targetColor = targetColor.Replace("rgba(", "");
+            targetColor = targetColor.Replace(")", "");
+
+            var splits = targetColor.Split(",");
+            targetColor = $"{splits[0]},{splits[1]},{splits[2]}";
+        }
+
+        targetColor = targetColor.Replace(" ", "");
+
+        Data.Value = targetColor;
+        _isEditting = false;
+    }
+
 
     protected override void OnInitialized() {
         Data.PropertyChanged += HandleDataPropertyChanged;
