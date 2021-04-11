@@ -30,6 +30,7 @@
     private int _targetValue;
 
     private void Edit() {
+        _targetValue = Data.Value;
         _isEditting = !_isEditting;
         StateHasChanged();
     }
