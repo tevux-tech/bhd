@@ -1,23 +1,23 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DevBot9.Protocols.Homie;
 using TestApp;
 
 namespace BlazorHomieDashboard {
     public class HomieDevice {
-        public List<HomieNode> Nodes { get; } = new List<HomieNode>();
+        public List<HomieNode> Nodes { get; } = new();
 
         public string Name { get; set; }
 
         private ClientDevice _clientDevice;
 
         public void Initialize(HomieTopicTreeParser.Device deviceMetadata, Device.PublishToTopicDelegate publish, Device.SubscribeToTopicDelegate subscribe) {
-            Name = deviceMetadata.Attributes["$name"];
+            Name = (string)deviceMetadata.Attributes["$name"];
 
             _clientDevice = DeviceFactory.CreateClientDevice(deviceMetadata.Id);
 
             foreach (var nodeMetaData in deviceMetadata.Nodes) {
                 var node = new HomieNode();
-                node.Name = nodeMetaData.Attributes["$name"];
+                node.Name = (string)nodeMetaData.Attributes["$name"];
                 Nodes.Add(node);
 
                 foreach (var propertyMetadata in nodeMetaData.Properties) {
