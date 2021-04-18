@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -15,13 +18,14 @@ namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
-        private string _mqttServerUri = "ws://192.168.2.2:9001/";
-
         private List<HomieDevice> _homieDevices = new();
         private readonly Dictionary<string, string> _topicDump = new();
 
         private bool _isLoading = true;
         private string _loadingMessage = "";
+
+        [Inject]
+        public HttpClient HttpClient { get; set; }
 
         private void CreateDashboard() {
             var newHomieDevices = new List<HomieDevice>();
@@ -65,19 +69,28 @@ namespace BlazorHomieDashboard.Pages {
         }
 
         protected override async Task OnInitializedAsync() {
-            _loadingMessage = $"Connecting to {_mqttServerUri}...";
+            var settings = await HttpClient.GetFromJsonAsync<Dictionary<string, string>>("Settings");
+
+            if (settings == null) {
+                _loadingMessage = "Backend server failed.";
+                return;
+            }
+
+            var mqttServerUri = $"ws://{settings["MQTT_SERVER"]}:{settings["MQTT_SERVER_PORT"]}/";
+
+            _loadingMessage = $"Connecting to {mqttServerUri}...";
 
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
             _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
 
-            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = _mqttServerUri } };
+            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = mqttServerUri } };
 
             _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e => {
                 _loadingMessage = "Server connected. Fetching homie topics...";
 
-                await _mqttClient.SubscribeAsync("homie/#");
+                await _mqttClient.SubscribeAsync($"{settings["BASE_TOPIC"]}/#");
 
                 var _ = Task.Run(async () => {
                     for (var i = 0; i < 10; i++) {
@@ -109,7 +122,7 @@ namespace BlazorHomieDashboard.Pages {
             try {
                 await _mqttClient.ConnectAsync(clientOptions, CancellationToken.None);
             } catch (Exception exception) {
-                _loadingMessage = $"Failed connecting to {_mqttServerUri}";
+                _loadingMessage = $"Failed connecting to {mqttServerUri}";
                 Console.WriteLine("### CONNECTING FAILED ###" + Environment.NewLine + exception);
             }
 
