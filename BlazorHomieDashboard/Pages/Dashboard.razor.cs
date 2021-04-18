@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -21,6 +23,9 @@ namespace BlazorHomieDashboard.Pages {
 
         private bool _isLoading = true;
         private string _loadingMessage = "";
+
+        [Inject]
+        public HttpClient HttpClient { get; set; }
 
         private void CreateDashboard() {
             var newHomieDevices = new List<HomieDevice>();
@@ -64,7 +69,7 @@ namespace BlazorHomieDashboard.Pages {
         }
 
         protected override async Task OnInitializedAsync() {
-            var settings = await _httpClient.GetFromJsonAsync<Dictionary<string, string>>("Settings");
+            var settings = await HttpClient.GetFromJsonAsync<Dictionary<string, string>>("Settings");
 
             if (settings == null) {
                 _loadingMessage = "Backend server failed.";
