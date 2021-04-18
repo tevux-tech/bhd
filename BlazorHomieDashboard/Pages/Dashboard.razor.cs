@@ -1,191 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Web;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
+using TestApp;
 
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private IMqttClient _mqttClient;
 
-        private List<MqttTabData> _tabs = new();
-        private readonly MqttObject _rootMqttObject = new();
+        private string _mqttServerUri = "ws://192.168.2.2:9001/";
 
-        private void CreateDashboard(MouseEventArgs obj) {
-            var dashboard = new List<MqttTabData>();
+        private List<HomieDevice> _homieDevices = new();
+        private readonly Dictionary<string, string> _topicDump = new();
 
-            foreach (var mqttObject in _rootMqttObject.Children) {
-                dashboard.Add(CreateTab(mqttObject));
+        private bool _isLoading = true;
+        private string _loadingMessage = "";
+
+        private void CreateDashboard() {
+            var newHomieDevices = new List<HomieDevice>();
+
+            var localDumpList = new List<string>();
+            foreach (var item in _topicDump) {
+                localDumpList.Add(item.Key + ":" + item.Value);
             }
 
-            _tabs = dashboard;
+            var allDevices = HomieTopicTreeParser.Parse(localDumpList.ToArray(), "homie");
+            foreach (var deviceMetadata in allDevices) {
+                var homieDevice = new HomieDevice();
+                homieDevice.Initialize(deviceMetadata, Publish, Subscribe);
+                newHomieDevices.Add(homieDevice);
+            }
+
+            _homieDevices = newHomieDevices;
+
             StateHasChanged();
         }
 
-        private MqttTabData CreateTab(MqttObject mqttObject) {
-            var tab = new MqttTabData();
-            tab.Caption = mqttObject.Name;
+        private void Subscribe(string topic) {
+            Console.WriteLine("Subscribing to " + topic);
 
-            foreach (var nodeName in mqttObject.Nodes) {
-                var subTabMqttObject = mqttObject.Children.First(c => c.NodeName == nodeName);
-                tab.SubTabs.Add(CreateTab(subTabMqttObject));
+            try {
+                _mqttClient.SubscribeAsync(topic);
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
             }
-
-            foreach (var propertyName in mqttObject.Properties) {
-                var propertyObject = mqttObject.Children.First(c => c.NodeName == propertyName);
-
-                if (propertyObject.Settable == false) {
-                    var indicatorData = new MqttIndicatorData();
-                    indicatorData.Caption = propertyObject.Name;
-
-                    if (propertyObject.DataType == "datetime") {
-                        indicatorData.ActualValue = DateTime.Parse(propertyObject.Value).ToString(CultureInfo.InvariantCulture);
-                    } else {
-                        indicatorData.ActualValue = propertyObject.Value;
-                    }
-
-                    indicatorData.Units = propertyObject.Unit;
-
-                    propertyObject.ValueChanged += () => {
-                        if (propertyObject.DataType == "datetime") {
-                            indicatorData.ActualValue = DateTime.Parse(propertyObject.Value).ToString(CultureInfo.InvariantCulture);
-                        } else {
-                            indicatorData.ActualValue = propertyObject.Value;
-                        }
-
-                        StateHasChanged();
-                    };
-
-                    tab.Controls.Add(indicatorData);
-                } else {
-                    if (propertyObject.Retained) {
-                        if (propertyObject.DataType == "float") {
-                            var parameterData = new MqttFloatParameterData();
-                            parameterData.Caption = propertyObject.Name;
-                            parameterData.Units = propertyObject.Unit;
-                            parameterData.ActualValue = double.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
-                            parameterData.TargetValue = parameterData.ActualValue;
-
-                            propertyObject.ValueChanged += () => {
-                                parameterData.ActualValue = double.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
-                                parameterData.TargetValue = parameterData.ActualValue;
-                                StateHasChanged();
-                            };
-
-                            parameterData.SetTargetValue = async () => {
-                                var topicToSet = propertyObject.Topic + "/set";
-                                var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(parameterData.TargetValue.ToString(CultureInfo.InvariantCulture)).Build();
-                                await _mqttClient.PublishAsync(message);
-                            };
-
-                            tab.Controls.Add(parameterData);
-                        } else if (propertyObject.DataType == "integer") {
-                            var parameterData = new MqttIntegerParameterData();
-                            parameterData.Caption = propertyObject.Name;
-                            parameterData.Units = propertyObject.Unit;
-                            parameterData.ActualValue = int.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
-                            parameterData.TargetValue = parameterData.ActualValue;
-
-                            propertyObject.ValueChanged += () => {
-                                parameterData.ActualValue = int.Parse(propertyObject.Value, CultureInfo.InvariantCulture);
-                                parameterData.TargetValue = parameterData.ActualValue;
-                                StateHasChanged();
-                            };
-
-                            parameterData.SetTargetValue = async () => {
-                                var topicToSet = propertyObject.Topic + "/set";
-                                var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(parameterData.TargetValue.ToString(CultureInfo.InvariantCulture)).Build();
-                                await _mqttClient.PublishAsync(message);
-                            };
-
-                            tab.Controls.Add(parameterData);
-                        } else if (propertyObject.DataType == "color") {
-                            var parameterData = new MqttColorParameterData();
-                            parameterData.Caption = propertyObject.Name;
-                            parameterData.ActualValue = propertyObject.Value;
-                            parameterData.TargetValue = parameterData.ActualValue;
-
-                            propertyObject.ValueChanged += () => {
-                                parameterData.ActualValue = propertyObject.Value;
-                                parameterData.TargetValue = propertyObject.Value;
-                                StateHasChanged();
-                            };
-
-                            parameterData.SetTargetValue = async () => {
-                                var topicToSet = propertyObject.Topic + "/set";
-                                var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(parameterData.TargetValue).Build();
-                                await _mqttClient.PublishAsync(message);
-                            };
-
-                            tab.Controls.Add(parameterData);
-                        }
-                    } else {
-                        var commandData = new MqttCommandData();
-
-                        var command1 = "";
-                        var command2 = "";
-
-                        if (propertyObject.DataType == "enum") {
-                            var enumValues = propertyObject.Format.Split(",");
-                            commandData.Button1Caption = enumValues[0];
-                            commandData.Button2Caption = enumValues[1];
-                            command1 = enumValues[0];
-                            command2 = enumValues[1];
-                        } else if (propertyObject.DataType == "boolean") {
-                            commandData.Button1Caption = "True";
-                            commandData.Button2Caption = "False";
-                            command1 = "true";
-                            command2 = "false";
-                        }
-
-                        commandData.ExecuteButton1Action = async () => {
-                            var topicToSet = propertyObject.Topic + "/set";
-                            var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(command1).Build();
-                            await _mqttClient.PublishAsync(message);
-                        };
-
-                        commandData.ExecuteButton2Action = async () => {
-                            var topicToSet = propertyObject.Topic + "/set";
-                            var message = new MqttApplicationMessageBuilder().WithTopic(topicToSet).WithPayload(command2).Build();
-                            await _mqttClient.PublishAsync(message);
-                        };
-
-                        commandData.Caption = propertyObject.Name;
-                        tab.Controls.Add(commandData);
-                    }
-                }
-            }
-
-            return tab;
         }
 
+        private void Publish(string topic, string payload, byte qoslevel, bool isretained) {
+            Console.WriteLine($"Publishing {topic} = {payload}");
+
+            try {
+                var message = new MqttApplicationMessageBuilder().WithTopic(topic).WithPayload(payload).WithQualityOfServiceLevel(qoslevel).WithRetainFlag(isretained).Build();
+                _mqttClient.PublishAsync(message);
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
+            }
+        }
 
         protected override async Task OnInitializedAsync() {
+            _loadingMessage = $"Connecting to {_mqttServerUri}...";
+
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
             _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
 
-            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = "ws://192.168.2.2:9001/" } };
+            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = _mqttServerUri } };
 
             _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e => {
-                Console.WriteLine("### CONNECTED ###");
+                _loadingMessage = "Server connected. Fetching homie topics...";
 
                 await _mqttClient.SubscribeAsync("homie/#");
 
-                Console.WriteLine("### SUBSCRIBED ###");
+                var _ = Task.Run(async () => {
+                    for (var i = 0; i < 10; i++) {
+                        _loadingMessage = $"Server connected. Fetching homie topics {_topicDump.Count}...";
+                        StateHasChanged();
+                        await Task.Delay(100);
+                    }
+
+                    if (_topicDump.Count == 0) {
+                        _loadingMessage = "No topics found.";
+                        StateHasChanged();
+                    } else {
+                        _loadingMessage = "Creating dashboard...";
+                        CreateDashboard();
+                        _isLoading = false;
+                        StateHasChanged();
+                    }
+                });
             });
 
             _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e => {
+                _isLoading = true;
+                _loadingMessage = "Server disconnected";
+                StateHasChanged();
                 Console.WriteLine("### DISCONNECTED ###");
             });
 
@@ -193,6 +109,7 @@ namespace BlazorHomieDashboard.Pages {
             try {
                 await _mqttClient.ConnectAsync(clientOptions, CancellationToken.None);
             } catch (Exception exception) {
+                _loadingMessage = $"Failed connecting to {_mqttServerUri}";
                 Console.WriteLine("### CONNECTING FAILED ###" + Environment.NewLine + exception);
             }
 
@@ -204,80 +121,12 @@ namespace BlazorHomieDashboard.Pages {
             var payload = Encoding.UTF8.GetString(obj.ApplicationMessage.Payload);
             var topic = obj.ApplicationMessage.Topic;
 
-            var topicSplits = topic.Split('/');
+            Console.WriteLine($"Handling {topic}={payload}");
 
-            var objectToUpdate = _rootMqttObject;
+            _topicDump[topic] = payload;
 
-            for (int i = 1; i < topicSplits.Length; i++) {
-                if (topicSplits[i].StartsWith("$")) break;
-
-                var childToUpdate = objectToUpdate.Children.FirstOrDefault(c => c.NodeName == topicSplits[i]);
-
-                if (childToUpdate == null) {
-                    childToUpdate = new MqttObject();
-                    childToUpdate.NodeName = topicSplits[i];
-                    objectToUpdate.Children.Add(childToUpdate);
-                }
-
-                objectToUpdate = childToUpdate;
-            }
-
-            if (topicSplits.Last().StartsWith("$")) {
-                switch (topicSplits.Last()) {
-                    case "$name":
-                        objectToUpdate.Name = payload;
-                        break;
-
-                    case "$format":
-                        objectToUpdate.Format = payload;
-                        break;
-
-                    case "$datatype":
-                        objectToUpdate.DataType = payload;
-                        break;
-
-                    case "$settable":
-                        objectToUpdate.Settable = payload == "true";
-                        break;
-
-                    case "$retained":
-                        objectToUpdate.Retained = payload == "true";
-                        break;
-
-                    case "$unit":
-                        objectToUpdate.Unit = payload;
-                        break;
-
-                    case "$homie":
-                        objectToUpdate.Homie = payload;
-                        break;
-
-                    case "$type":
-                        objectToUpdate.Type = payload;
-                        break;
-
-                    case "$state":
-                        objectToUpdate.State = payload;
-                        break;
-
-                    case "$nodes":
-                        objectToUpdate.Nodes = payload.Split(',').ToList();
-                        break;
-
-                    case "$properties":
-                        objectToUpdate.Properties = payload.Split(',').ToList();
-                        break;
-                }
-            } else {
-                objectToUpdate.Topic = topic;
-                Console.WriteLine($"{topic}={payload}");
-
-                var previousValue = objectToUpdate.Value;
-                objectToUpdate.Value = payload;
-
-                if (previousValue != payload) {
-                    objectToUpdate.ValueChanged();
-                }
+            foreach (var homieDevice in _homieDevices) {
+                homieDevice.HandlePublishReceived(topic, payload);
             }
         }
     }

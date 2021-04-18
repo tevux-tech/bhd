@@ -1,0 +1,16 @@
+﻿<RadzenTabs>
+    <Tabs>
+        @foreach (var node in Data.Nodes) {
+            <RadzenTabsItem Text="@node.Name">
+                <HomieNodeView Data="@node"></HomieNodeView>
+            </RadzenTabsItem>
+        }
+    </Tabs>
+</RadzenTabs>
+
+@code {
+
+    [Parameter]
+    public HomieDevice Data { get; set; }
+
+}

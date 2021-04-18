@@ -5,19 +5,47 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorHomieDashboard", "BlazorHomieDashboard\BlazorHomieDashboard.csproj", "{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommonCode", "..\yet-another-homie-implementation\CommonCode\CommonCode.shproj", "{5D02513A-2022-481F-92BE-4EF5192993F8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "YAHI", "YAHI", "{D0F3524F-389C-428F-8D7A-BE0FDCD6D015}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yahi-bigNET", "..\yet-another-homie-implementation\Yahi-bigNET\Yahi-bigNET.csproj", "{455DBC0B-B611-4071-B3C7-3F87B72F785E}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\yet-another-homie-implementation\CommonCode\CommonCode.projitems*{455dbc0b-b611-4071-b3c7-3f87b72f785e}*SharedItemsImports = 5
+		..\yet-another-homie-implementation\CommonCode\CommonCode.projitems*{5d02513a-2022-481f-92be-4ef5192993f8}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Debug|x86.Build.0 = Debug|Any CPU
 		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Release|x86.ActiveCfg = Release|Any CPU
+		{B775D0EB-3E5D-4D8F-80CB-44AEE4876434}.Release|x86.Build.0 = Release|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Debug|x86.Build.0 = Debug|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Release|x86.ActiveCfg = Release|Any CPU
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5D02513A-2022-481F-92BE-4EF5192993F8} = {D0F3524F-389C-428F-8D7A-BE0FDCD6D015}
+		{455DBC0B-B611-4071-B3C7-3F87B72F785E} = {D0F3524F-389C-428F-8D7A-BE0FDCD6D015}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5273E144-EE15-480A-B105-F38361BC5363}

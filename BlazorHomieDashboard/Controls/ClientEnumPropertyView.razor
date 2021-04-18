@@ -1,0 +1,40 @@
+﻿@implements IDisposable
+
+<RadzenCard>
+    <h4>@Data.Name</h4>
+
+    @if (Data.Type == PropertyType.State) {
+        <h2 class="text-center">@Data.Value</h2>
+    } else if (Data.Type == PropertyType.Command) {
+        <div class="input-group justify-content-center">
+            <RadzenDropDown Data="@Data.Format.Split(",")" @bind-Value=@_selectedItem TValue="string"></RadzenDropDown>
+            <RadzenButton Text="Set" Click="@ExecuteCommand"></RadzenButton>
+        </div>
+    }
+</RadzenCard>
+
+@code {
+
+    [Parameter]
+    public ClientStringProperty Data { get; set; }
+
+    private string _selectedItem;
+
+    protected override void OnInitialized() {
+        Data.PropertyChanged += HandleDataPropertyChanged;
+        base.OnInitialized();
+    }
+
+    private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose() {
+        Data.PropertyChanged -= HandleDataPropertyChanged;
+    }
+
+    private void ExecuteCommand() {
+        if (_selectedItem != null) Data.Value = _selectedItem;
+    }
+
+}

@@ -1,0 +1,56 @@
+﻿@{
+    var index = 0;
+    while (index < Data.Properties.Count) {
+        <div class="row mt-3">
+            @for (int i = 0; i < 3; i++) {
+                @if (index < Data.Properties.Count) {
+                    if (Data.Properties[index] is ClientStringProperty) {
+                        if (Data.Properties[index].DataType == DataType.Color) {
+                            <div class="col">
+                                <ClientColorPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientColorPropertyView>
+                            </div>
+                        } else if (Data.Properties[index].DataType == DataType.DateTime) {
+                            <div class="col">
+                                <ClientDateTimePropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientDateTimePropertyView>
+                            </div>
+                        } else if (Data.Properties[index].DataType == DataType.Enum) {
+                            <div class="col">
+                                <ClientEnumPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientEnumPropertyView>
+                            </div>
+                        } else {
+                            <div class="col">
+                                <ClientStringPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientStringPropertyView>
+                            </div>
+                        }
+                    } else if (Data.Properties[index] is ClientFloatProperty) {
+                        <div class="col">
+                            <ClientFloatPropertyView Data="(ClientFloatProperty)Data.Properties[index]"></ClientFloatPropertyView>
+                        </div>
+                    } else if (Data.Properties[index] is ClientIntegerProperty) {
+                        <div class="col">
+                            <ClientIntegerPropertyView Data="(ClientIntegerProperty)Data.Properties[index]"></ClientIntegerPropertyView>
+                        </div>
+                    } else if (Data.Properties[index] is ClientBooleanProperty) {
+                        <div class="col">
+                            <ClientBooleanPropertyView Data="(ClientBooleanProperty)Data.Properties[index]"></ClientBooleanPropertyView>
+                        </div>
+                    } else {
+                        <div class="col"></div>
+                    }
+                } else {
+                    <div class="col"></div>
+                }
+
+                index++;
+            }
+        </div>
+    }
+}
+
+
+@code {
+
+    [Parameter]
+    public HomieNode Data { get; set; }
+
+}

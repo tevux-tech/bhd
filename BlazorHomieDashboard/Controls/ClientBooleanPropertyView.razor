@@ -1,0 +1,68 @@
+﻿@implements IDisposable
+
+<RadzenCard>
+    <h4>@Data.Name</h4>
+
+    @if (Data.Type == PropertyType.State) {
+        <h2 class="text-center">@Data.Value @Data.Unit</h2>
+    } else if (Data.Type == PropertyType.Parameter) {
+        <div>
+            <a href="javascript:;" @onclick="Edit">
+                <h2 class="text-center" hidden="@_isEditing">@Data.Value @Data.Unit</h2>
+            </a>
+        </div>
+
+        <div class="input-group justify-content-center" hidden="@(!_isEditing)">
+            <div>
+                <RadzenButton Text="True" Click="@SetTrue"></RadzenButton>
+                <RadzenButton Text="False" Click="@SetFalse"></RadzenButton>
+            </div>
+        </div>
+    } else if (Data.Type == PropertyType.Command) {
+        <div class="input-group justify-content-center">
+            <div>
+                <RadzenButton Text="True" Click="@SetTrue"></RadzenButton>
+                <RadzenButton Text="False" Click="@SetFalse"></RadzenButton>
+            </div>
+        </div>
+    }
+</RadzenCard>
+
+@code {
+
+    [Parameter]
+    public ClientBooleanProperty Data { get; set; }
+
+    bool _isEditing = false;
+
+    protected override void OnInitialized() {
+        Data.PropertyChanged += HandleDataPropertyChanged;
+        base.OnInitialized();
+
+        Console.WriteLine($"{Data.Name} initialized");
+    }
+
+    private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose() {
+        Data.PropertyChanged -= HandleDataPropertyChanged;
+
+        Console.WriteLine($"{Data.Name} disposed");
+    }
+
+    private void SetTrue() {
+        Data.Value = true;
+        _isEditing = false;
+    }
+
+    private void SetFalse() {
+        Data.Value = false;
+        _isEditing = false;
+    }
+
+    private void Edit() {
+        _isEditing = true;
+    }
+}
