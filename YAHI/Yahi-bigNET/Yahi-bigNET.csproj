@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net461;net5.0;netstandard2.0</TargetFrameworks>
+    <RootNamespace>DevBot9.Protocols.Homie</RootNamespace>
+    <AssemblyName>DevBot9.Protocols.Homie</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <AssemblyVersion>0.7.0.0</AssemblyVersion>
+    <FileVersion>0.7.0.0</FileVersion>
+    <PackageId>DevBot9.Protocols.Homie</PackageId>
+    <Version>0.7.0</Version>
+    <Authors>devbotas</Authors>
+    <Product>DevBot9.Protocols.Homie</Product>
+    <Description>Another Homie Convention (homieiot.github.io) C# implementation.</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/devbotas/yet-another-homie-implementation</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/devbotas/yet-another-homie-implementation</RepositoryUrl>
+    <PackageTags>homie; iot; c#</PackageTags>
+    <PackageReleaseNotes>## [0.7.0] - 2021-03-16
+
+### Added
+
+- YAHI is now multi-target NuGet, adding support for .NET Standard 2.0 and .NET 5.
+
+- All the classes and properties are now at least somewhat documented.
+
+
+
+### Changed
+
+- A few small non-breaking changes here ant there.</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="lib\Newtonsoft.Json.pdb" />
+    <None Remove="lib\Newtonsoft.Json.xml" />
+    <None Remove="lib\Newtonsoft.Json.dll" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  <Import Project="..\CommonCode\CommonCode.projitems" Label="Shared" />
+</Project>
