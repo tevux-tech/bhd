@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\yet-another-homie-implementation\Yahi-bigNET\Yahi-bigNET.csproj" />
+    <ProjectReference Include="..\YAHI\Yahi-bigNET\Yahi-bigNET.csproj" />
   </ItemGroup>
 
 </Project>
