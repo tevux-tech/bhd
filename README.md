@@ -1,3 +1,5 @@
+[![CI](https://github.com/Girdauskas/BlazorHomieDashboard/actions/workflows/CI.yml/badge.svg?branch=Development)](https://github.com/Girdauskas/BlazorHomieDashboard/actions/workflows/CI.yml)
+
 # BlazorHomieDashboard
 
 ## Running using docker
