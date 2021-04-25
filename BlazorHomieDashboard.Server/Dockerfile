@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim-arm32v7 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim-amd64 AS build
 WORKDIR /src
 COPY ["BlazorHomieDashboard.Server/BlazorHomieDashboard.Server.csproj", "BlazorHomieDashboard.Server/"]
 RUN dotnet restore "BlazorHomieDashboard.Server/BlazorHomieDashboard.Server.csproj"
