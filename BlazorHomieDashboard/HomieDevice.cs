@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DevBot9.Protocols.Homie;
-using TestApp;
 
 namespace BlazorHomieDashboard {
     public class HomieDevice {
@@ -23,33 +22,44 @@ namespace BlazorHomieDashboard {
                 foreach (var propertyMetadata in nodeMetaData.Properties) {
                     switch (propertyMetadata.DataType) {
                         case DataType.Integer: {
-                            var newProperty = _clientDevice.CreateClientIntegerProperty(propertyMetadata);
-                            node.Properties.Add(newProperty);
-                            break;
-                        }
+                                var newProperty = _clientDevice.CreateClientIntegerProperty(propertyMetadata);
+                                node.Properties.Add(newProperty);
+                                break;
+                            }
 
                         case DataType.Float: {
-                            var newProperty = _clientDevice.CreateClientFloatProperty(propertyMetadata);
-                            node.Properties.Add(newProperty);
-                            HistoryService.Instance.StartHistoryMonitoring(newProperty);
-                            break;
-                        }
+                                var newProperty = _clientDevice.CreateClientFloatProperty(propertyMetadata);
+                                node.Properties.Add(newProperty);
+                                HistoryService.Instance.StartHistoryMonitoring(newProperty);
+                                break;
+                            }
 
                         case DataType.Boolean: {
-                            var newProperty = _clientDevice.CreateClientBooleanProperty(propertyMetadata);
-                            node.Properties.Add(newProperty);
-                            break;
-                        }
+                                var newProperty = _clientDevice.CreateClientBooleanProperty(propertyMetadata);
+                                node.Properties.Add(newProperty);
+                                break;
+                            }
 
-#warning Shouldn't these have their own class?
-                        case DataType.Enum:
-                        case DataType.Color:
+                        case DataType.Enum: {
+                                var newProperty = _clientDevice.CreateClientEnumProperty(propertyMetadata);
+                                node.Properties.Add(newProperty);
+                                break;
+                            }
+
+                        case DataType.Color: {
+                                var newProperty = _clientDevice.CreateClientColorProperty(propertyMetadata);
+                                node.Properties.Add(newProperty);
+                                break;
+                            }
                         case DataType.DateTime:
-                        case DataType.String: {
-                            var newProperty = _clientDevice.CreateClientStringProperty(propertyMetadata);
-                            node.Properties.Add(newProperty);
+                            // Now Datetime cannot be just displayed as string property. Data types are checked internally, and an exception is thrown if when trying create a StringProperty with data type DateTime.
                             break;
-                        }
+
+                        case DataType.String: {
+                                var newProperty = _clientDevice.CreateClientStringProperty(propertyMetadata);
+                                node.Properties.Add(newProperty);
+                                break;
+                            }
                     }
                 }
             }

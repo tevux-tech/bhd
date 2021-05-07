@@ -5,7 +5,8 @@
 
     @if (Data.Type == PropertyType.State) {
         <h2 class="text-center">@Data.Value</h2>
-    } else if (Data.Type == PropertyType.Command) {
+    }
+    else if (Data.Type == PropertyType.Command) {
         <div class="input-group justify-content-center">
             <RadzenDropDown Data="@Data.Format.Split(",")" @bind-Value=@_selectedItem TValue="string"></RadzenDropDown>
             <RadzenButton Text="Set" Click="@ExecuteCommand"></RadzenButton>
@@ -14,9 +15,8 @@
 </RadzenCard>
 
 @code {
-
     [Parameter]
-    public ClientStringProperty Data { get; set; }
+    public ClientEnumProperty Data { get; set; }
 
     private string _selectedItem;
 
