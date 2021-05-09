@@ -13,7 +13,7 @@
             <h4>@Data.Name</h4>
             <div style="background-color: rgb(@Data.Value)">
                 <a href="javascript:;" @onclick="EditColor">
-                    <h2 class="text-center" hidden="@_isEditting">@Data.Value</h2>
+                    <h2 class="text-center" hidden="@_isEditting">@Data.Value.ToRgbString()</h2>
                 </a>
             </div>
         </div>
