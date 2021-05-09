@@ -15,7 +15,7 @@ namespace BlazorHomieDashboard.Pages {
         private HubConnection _mqttHubConnection;
 
         protected override async Task OnInitializedAsync() {
-            _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).Build();
+            _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
             _mqttHubConnection.On<string, string>("PublishReceived", HandlePublishReceived);
             _mqttHubConnection.On<List<string>>("CreateDashboard", HandleCreateDashboard);
 

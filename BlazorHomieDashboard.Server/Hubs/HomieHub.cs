@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BlazorHomieDashboard.Server.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,11 @@ namespace BlazorHomieDashboard.Server.Hubs {
             _logger.LogInformation("Client connected.");
             await Clients.Caller.SendAsync("CreateDashboard", _homieMqttService.GetTopicsCache());
             await base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception exception) {
+            _logger.LogInformation(exception, "Client disconnected");
+            return base.OnDisconnectedAsync(exception);
         }
 
         public async Task PublishToTopic(string topic, string payload, byte qosLevel, bool isRetained) {
