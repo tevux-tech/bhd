@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private List<HomieDevice> _homieDevices = new();
-        private readonly Dictionary<string, string> _topicDump = new();
+        private readonly Dictionary<string, string> _mqttTopicsCache = new();
 
         private bool _isLoading = true;
         private string _loadingMessage = "";
@@ -29,12 +29,12 @@ namespace BlazorHomieDashboard.Pages {
 
             var _ = Task.Run(async () => {
                 for (var i = 0; i < 10; i++) {
-                    _loadingMessage = $"Server connected. Fetching homie topics {_topicDump.Count}...";
+                    _loadingMessage = $"Server connected. Fetching homie topics {_mqttTopicsCache.Count}...";
                     StateHasChanged();
                     await Task.Delay(100);
                 }
 
-                if (_topicDump.Count == 0) {
+                if (_mqttTopicsCache.Count == 0) {
                     _loadingMessage = "No topics found.";
                     StateHasChanged();
                 } else {
@@ -54,21 +54,20 @@ namespace BlazorHomieDashboard.Pages {
         }
 
         private void CreateDashboard() {
-            var newHomieDevices = new List<HomieDevice>();
+            _homieDevices = new List<HomieDevice>();
 
-            var localDumpList = new List<string>();
-            foreach (var item in _topicDump) {
-                localDumpList.Add(item.Key + ":" + item.Value);
+            var topicsDump = new List<string>();
+            foreach (var item in _mqttTopicsCache) {
+                topicsDump.Add(item.Key + ":" + item.Value);
             }
 
-            var allDevices = HomieTopicTreeParser.Parse(localDumpList.ToArray(), "homie");
-            foreach (var deviceMetadata in allDevices) {
+            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie");
+
+            foreach (var deviceMetadata in devicesMetadata) {
                 var homieDevice = new HomieDevice();
                 homieDevice.Initialize(deviceMetadata, PublishToTopic, SubscribeToTopic);
-                newHomieDevices.Add(homieDevice);
+                _homieDevices.Add(homieDevice);
             }
-
-            _homieDevices = newHomieDevices;
 
             StateHasChanged();
         }
@@ -84,9 +83,7 @@ namespace BlazorHomieDashboard.Pages {
 
 
         private void HandlePublishReceived(string topic, string payload) {
-            Console.WriteLine($"Handling {topic}={payload}");
-
-            _topicDump[topic] = payload;
+            _mqttTopicsCache[topic] = payload;
 
             foreach (var homieDevice in _homieDevices) {
                 homieDevice.HandlePublishReceived(topic, payload);
