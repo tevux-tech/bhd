@@ -27,6 +27,9 @@ namespace BlazorHomieDashboard.Server {
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             // Making sure pusher gets created.
             app.ApplicationServices.GetService<MessagePusher>();
+
+            // Creating MqttBroker without waiting for first request to arrive so that first request is faster.
+            app.ApplicationServices.GetService<IMqttBroker>();
             
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
