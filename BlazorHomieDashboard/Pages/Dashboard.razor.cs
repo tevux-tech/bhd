@@ -1,23 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.Components;
-using MQTTnet;
-using MQTTnet.Client;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Disconnecting;
-using MQTTnet.Client.Options;
-using MQTTnet.Client.Receiving;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
-        private IMqttClient _mqttClient;
-
         private List<HomieDevice> _homieDevices = new();
         private readonly Dictionary<string, string> _topicDump = new();
 
@@ -38,7 +28,7 @@ namespace BlazorHomieDashboard.Pages {
             var allDevices = HomieTopicTreeParser.Parse(localDumpList.ToArray(), "homie");
             foreach (var deviceMetadata in allDevices) {
                 var homieDevice = new HomieDevice();
-                homieDevice.Initialize(deviceMetadata, Publish, Subscribe);
+                homieDevice.Initialize(deviceMetadata, PublishToTopic, SubscribeToTopic);
                 newHomieDevices.Add(homieDevice);
             }
 
@@ -47,97 +37,58 @@ namespace BlazorHomieDashboard.Pages {
             StateHasChanged();
         }
 
-        private void Subscribe(string topic) {
-            Console.WriteLine("Subscribing to " + topic);
 
-            try {
-                _mqttClient.SubscribeAsync(topic);
-            } catch (Exception ex) {
-                Console.WriteLine(ex);
-            }
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
+        public HubConnection MqttHubConnection;
+
+
+        private void SubscribeToTopic(string topic) {
+            MqttHubConnection.SendAsync("SubscribeToTopic", topic);
         }
 
-        private void Publish(string topic, string payload, byte qoslevel, bool isretained) {
-            Console.WriteLine($"Publishing {topic} = {payload}");
-
-            try {
-                var message = new MqttApplicationMessageBuilder().WithTopic(topic).WithPayload(payload).WithQualityOfServiceLevel(qoslevel).WithRetainFlag(isretained).Build();
-                _mqttClient.PublishAsync(message);
-            } catch (Exception ex) {
-                Console.WriteLine(ex);
-            }
+        private void PublishToTopic(string topic, string payload, byte qosLevel, bool isRetained) {
+            MqttHubConnection.SendAsync("PublishToTopic", topic, payload, qosLevel, isRetained);
         }
 
         protected override async Task OnInitializedAsync() {
-            var settings = await HttpClient.GetFromJsonAsync<Dictionary<string, string>>("Settings");
+            MqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/mqttHub")).Build();
+            MqttHubConnection.On<string, string>("PublishReceived", HandleMessage);
+            await MqttHubConnection.StartAsync();
 
-            if (settings == null) {
-                _loadingMessage = "Backend server failed.";
-                return;
-            }
+            _loadingMessage = "Server connected. Fetching homie topics...";
 
-            var mqttServerUri = $"ws://{settings["MQTT_SERVER"]}:{settings["MQTT_SERVER_PORT"]}/";
+            SubscribeToTopic("homie/#");
 
-            _loadingMessage = $"Connecting to {mqttServerUri}...";
+            var _ = Task.Run(async () => {
+                for (var i = 0; i < 10; i++) {
+                    _loadingMessage = $"Server connected. Fetching homie topics {_topicDump.Count}...";
+                    StateHasChanged();
+                    await Task.Delay(100);
+                }
 
-            var factory = new MqttFactory();
-            _mqttClient = factory.CreateMqttClient();
-
-            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(HandleMessage);
-
-            var clientOptions = new MqttClientOptions { ChannelOptions = new MqttClientWebSocketOptions { Uri = mqttServerUri } };
-
-            _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e => {
-                _loadingMessage = "Server connected. Fetching homie topics...";
-
-                await _mqttClient.SubscribeAsync($"{settings["BASE_TOPIC"]}/#");
-
-                var _ = Task.Run(async () => {
-                    for (var i = 0; i < 10; i++) {
-                        _loadingMessage = $"Server connected. Fetching homie topics {_topicDump.Count}...";
-                        StateHasChanged();
-                        await Task.Delay(100);
+                if (_topicDump.Count == 0) {
+                    _loadingMessage = "No topics found.";
+                    StateHasChanged();
+                } else {
+                    _loadingMessage = "Creating dashboard...";
+                    try {
+                        CreateDashboard();
+                    } catch (Exception ex) {
+                        Console.WriteLine(ex);
                     }
 
-                    if (_topicDump.Count == 0) {
-                        _loadingMessage = "No topics found.";
-                        StateHasChanged();
-                    } else {
-                        _loadingMessage = "Creating dashboard...";
-                        try {
-                            CreateDashboard();
-                        } catch (Exception ex) {
-                            Console.WriteLine(ex);
-                        }
-                        _isLoading = false;
-                        StateHasChanged();
-                    }
-                });
+                    _isLoading = false;
+                    StateHasChanged();
+                }
             });
-
-            _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e => {
-                _isLoading = true;
-                _loadingMessage = "Server disconnected";
-                StateHasChanged();
-                Console.WriteLine("### DISCONNECTED ###");
-            });
-
-
-            try {
-                await _mqttClient.ConnectAsync(clientOptions, CancellationToken.None);
-            } catch (Exception exception) {
-                _loadingMessage = $"Failed connecting to {mqttServerUri}";
-                Console.WriteLine("### CONNECTING FAILED ###" + Environment.NewLine + exception);
-            }
 
             await base.OnInitializedAsync();
         }
 
 
-        private void HandleMessage(MqttApplicationMessageReceivedEventArgs obj) {
-            var payload = Encoding.UTF8.GetString(obj.ApplicationMessage.Payload);
-            var topic = obj.ApplicationMessage.Topic;
-
+        private void HandleMessage(string topic, string payload) {
             Console.WriteLine($"Handling {topic}={payload}");
 
             _topicDump[topic] = payload;

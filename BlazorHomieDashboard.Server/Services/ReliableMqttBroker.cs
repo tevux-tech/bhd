@@ -7,45 +7,39 @@ using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using NLog;
 
-namespace BlazorHomieDashboard.Server {
-    class ReliableBroker {
-        public delegate void PublishReceivedDelegate(string topic, string payload);
-
-        public event PublishReceivedDelegate PublishReceived;
+namespace BlazorHomieDashboard.Server.Services {
+    class ReliableMqttBroker : IMqttBroker, IDisposable {
+        public event IMqttBroker.PublishReceivedDelegate PublishReceived;
         public bool IsConnected { get; private set; }
-        public bool IsInitialized { get; private set; }
 
-        public void Initialize(string mqttBrokerIpAddress) {
-            if (IsInitialized) { return; }
+        public ReliableMqttBroker() {
+            _cancellationTokenSource = new CancellationTokenSource();
 
-            _globalCancellationTokenSource = new CancellationTokenSource();
-
-            _mqttBrokerIp = mqttBrokerIpAddress;
+            _mqttBrokerIp = Environment.GetEnvironmentVariable("MQTT_SERVER") ?? "127.0.0.1";
+            _mqttBrokerPort = int.Parse(Environment.GetEnvironmentVariable("MQTT_SERVER_PORT") ?? "1883");
 
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
-            _mqttClient.UseApplicationMessageReceivedHandler(e => HandlePublishReceived(e));
+            _mqttClient.UseApplicationMessageReceivedHandler(HandlePublishReceived);
             _mqttClient.UseDisconnectedHandler(h => {
                 _log.Error("MQTTNet library reports a ConnectionClosed event.");
                 IsConnected = false;
             });
 
-            var options = new MqttClientOptionsBuilder().WithClientId(_mqttClientGuid).WithTcpServer(_mqttBrokerIp, 1883).Build();
+            var options = new MqttClientOptionsBuilder().WithClientId(_mqttClientGuid).WithTcpServer(_mqttBrokerIp, _mqttBrokerPort).Build();
             _mqttClient.ConnectAsync(options, CancellationToken.None).Wait();
             IsConnected = true;
 
-            Task.Run(async () => await MonitorMqttConnectionContinuously(_globalCancellationTokenSource.Token));
-
-            IsInitialized = true;
+            Task.Run(async () => await MonitorMqttConnectionContinuously(_cancellationTokenSource.Token));
         }
 
         public async Task MonitorMqttConnectionContinuously(CancellationToken cancellationToken) {
             while (cancellationToken.IsCancellationRequested == false) {
                 if (IsConnected == false) {
                     try {
-                        var options = new MqttClientOptionsBuilder().WithClientId(_mqttClientGuid).WithTcpServer(_mqttBrokerIp, 1883).Build();
-                        _mqttClient.ConnectAsync(options, CancellationToken.None).Wait(cancellationToken);
+                        var options = new MqttClientOptionsBuilder().WithClientId(_mqttClientGuid).WithTcpServer(_mqttBrokerIp, _mqttBrokerPort).Build();
+                        await _mqttClient.ConnectAsync(options, cancellationToken);
 
                         IsConnected = true;
                     } catch (Exception ex) {
@@ -82,14 +76,25 @@ namespace BlazorHomieDashboard.Server {
             _mqttClient.SubscribeAsync(topic, (MQTTnet.Protocol.MqttQualityOfServiceLevel)2);
         }
 
-        private CancellationTokenSource _globalCancellationTokenSource;
+        private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
-        private IMqttClient _mqttClient;
-        private string _mqttBrokerIp = "localhost";
+        private readonly IMqttClient _mqttClient;
+        private readonly string _mqttBrokerIp;
+        private readonly int _mqttBrokerPort;
         private readonly string _mqttClientGuid = Guid.NewGuid().ToString();
 
         private void HandlePublishReceived(MqttApplicationMessageReceivedEventArgs e) {
-            PublishReceived?.Invoke(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
+            if (e.ApplicationMessage.Payload != null) {
+                PublishReceived?.Invoke(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
+            } else {
+                _log.Error($"Topic {e.ApplicationMessage.Topic} payload is null.");
+            }
+        }
+
+        public void Dispose() {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
+            _mqttClient?.Dispose();
         }
     }
 }
