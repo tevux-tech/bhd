@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BlazorHomieDashboard.Server.Services {
     internal interface IHomieMqttService {
-        Dictionary<string, string> HomieTopicsCache { get; }
+        List<string> GetTopicsCache();
         Task PublishToTopicAsync(string topic, string payload, byte qosLevel, bool isRetained);
     }
 }

@@ -32,6 +32,7 @@ namespace BlazorHomieDashboard.Pages {
             _isLoading = true;
 
             var newHomieDevices = new List<HomieDevice>();
+
             var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie");
             foreach (var deviceMetadata in devicesMetadata) {
                 var homieDevice = new HomieDevice();
@@ -41,6 +42,14 @@ namespace BlazorHomieDashboard.Pages {
                 }));
 
                 newHomieDevices.Add(homieDevice);
+            }
+
+            foreach (var dumpValue in topicsDump) {
+                var splits = dumpValue.Split(":");
+
+                foreach (var newHomieDevice in newHomieDevices) {
+                    newHomieDevice.HandlePublishReceived(splits[0], splits[1]);
+                }
             }
 
             _homieDevices = newHomieDevices;
@@ -53,6 +62,11 @@ namespace BlazorHomieDashboard.Pages {
             }
 
             StateHasChanged();
+
+            Task.Run(async () => {
+                await Task.Delay(1000);
+                StateHasChanged();
+            });
         }
 
 
