@@ -27,10 +27,6 @@ namespace BlazorHomieDashboard.Server.Services {
                 IsConnected = false;
             });
 
-            var options = new MqttClientOptionsBuilder().WithClientId(_mqttClientGuid).WithTcpServer(_mqttBrokerIp, _mqttBrokerPort).Build();
-            _mqttClient.ConnectAsync(options, CancellationToken.None).Wait();
-            IsConnected = true;
-
             Task.Run(async () => await MonitorMqttConnectionContinuously(_cancellationTokenSource.Token));
         }
 
