@@ -2,7 +2,6 @@ using BlazorHomieDashboard.Server.Hubs;
 using BlazorHomieDashboard.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -14,22 +13,13 @@ namespace BlazorHomieDashboard.Server {
             services.AddSignalR();
             services.AddControllersWithViews();
             services.AddRazorPages();
-            services.AddSingleton<IMqttBroker, ReliableMqttBroker>();
-            services.AddSingleton(provider => {
-                var broker = provider.GetService<IMqttBroker>();
-                var hub = provider.GetService<IHubContext<MqttHub>>();
-                var messagePusher = new MessagePusher(broker, hub);
-                return messagePusher;
-            });
+            services.AddSingleton<IHomieMqttService, HomieMqttService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-            // Making sure pusher gets created.
-            app.ApplicationServices.GetService<MessagePusher>();
-
             // Creating MqttBroker without waiting for first request to arrive so that first request is faster.
-            app.ApplicationServices.GetService<IMqttBroker>();
+            app.ApplicationServices.GetService<IHomieMqttService>();
             
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
@@ -46,7 +36,7 @@ namespace BlazorHomieDashboard.Server {
             app.UseEndpoints(endpoints => {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapHub<MqttHub>("/mqttHub");
+                endpoints.MapHub<HomieHub>("/HomieHub");
                 endpoints.MapFallbackToFile("index.html");
             });
         }
