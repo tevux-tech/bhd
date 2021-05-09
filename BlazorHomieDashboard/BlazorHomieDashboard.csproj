@@ -9,6 +9,7 @@
     <PackageReference Include="DevBot9.Protocols.Homie" Version="0.9.0-preview.28" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.5" />
     <PackageReference Include="MQTTnet" Version="3.0.15" />
     <PackageReference Include="Radzen.Blazor" Version="3.2.2" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />

@@ -11,7 +11,7 @@
     } else if (Data.Type == PropertyType.Parameter) {
         <div>
             <h4>@Data.Name</h4>
-            <div style="background-color: rgb(@Data.Value)">
+            <div style="background-color: rgb(@Data.Value.ToRgbString())">
                 <a href="javascript:;" @onclick="EditColor">
                     <h2 class="text-center" hidden="@_isEditting">@Data.Value.ToRgbString()</h2>
                 </a>

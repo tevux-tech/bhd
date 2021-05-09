@@ -38,8 +38,6 @@
     protected override void OnInitialized() {
         Data.PropertyChanged += HandleDataPropertyChanged;
         base.OnInitialized();
-
-        Console.WriteLine($"{Data.Name} initialized");
     }
 
     private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
@@ -48,8 +46,6 @@
 
     void IDisposable.Dispose() {
         Data.PropertyChanged -= HandleDataPropertyChanged;
-
-        Console.WriteLine($"{Data.Name} disposed");
     }
 
     private void SetTrue() {
