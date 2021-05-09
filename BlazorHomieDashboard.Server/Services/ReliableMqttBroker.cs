@@ -2,17 +2,26 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
-using NLog;
 
 namespace BlazorHomieDashboard.Server.Services {
     class ReliableMqttBroker : IMqttBroker, IDisposable {
+        private readonly ILogger<ReliableMqttBroker> _logger;
+        private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly IMqttClient _mqttClient;
+        private readonly string _mqttBrokerIp;
+        private readonly int _mqttBrokerPort;
+        private readonly string _mqttClientGuid = Guid.NewGuid().ToString();
+
         public event IMqttBroker.PublishReceivedDelegate PublishReceived;
         public bool IsConnected { get; private set; }
 
-        public ReliableMqttBroker() {
+        public ReliableMqttBroker(ILogger<ReliableMqttBroker> logger) {
+            _logger = logger;
+
             _cancellationTokenSource = new CancellationTokenSource();
 
             _mqttBrokerIp = Environment.GetEnvironmentVariable("MQTT_SERVER") ?? "127.0.0.1";
@@ -23,7 +32,7 @@ namespace BlazorHomieDashboard.Server.Services {
 
             _mqttClient.UseApplicationMessageReceivedHandler(HandlePublishReceived);
             _mqttClient.UseDisconnectedHandler(h => {
-                _log.Error("MQTTNet library reports a ConnectionClosed event.");
+                _logger.LogError("MQTTNet library reports a ConnectionClosed event.");
                 IsConnected = false;
             });
 
@@ -34,12 +43,16 @@ namespace BlazorHomieDashboard.Server.Services {
             while (cancellationToken.IsCancellationRequested == false) {
                 if (IsConnected == false) {
                     try {
+                        _logger.LogInformation($"Connecting to {_mqttBrokerIp}:{_mqttBrokerPort}");
+
                         var options = new MqttClientOptionsBuilder().WithClientId(_mqttClientGuid).WithTcpServer(_mqttBrokerIp, _mqttBrokerPort).Build();
-                        await _mqttClient.ConnectAsync(options, cancellationToken);
+                        var result = await _mqttClient.ConnectAsync(options, cancellationToken);
+
+                        _logger.LogInformation("Broker connected");
 
                         IsConnected = true;
                     } catch (Exception ex) {
-                        _log.Error(ex, $"{nameof(MonitorMqttConnectionContinuously)} tried to connect to broker, but that did not work.");
+                        _logger.LogError(ex, $"{nameof(MonitorMqttConnectionContinuously)} tried to connect to broker, but that did not work.");
                     }
                 }
 
@@ -47,43 +60,41 @@ namespace BlazorHomieDashboard.Server.Services {
             }
         }
 
-        public void PublishToTopic(string topic, string payload, byte qosLevel, bool isRetained) {
+        public async Task PublishToTopicAsync(string topic, string payload, byte qosLevel, bool isRetained) {
             if (IsConnected == false) { return; }
 
             var retryCount = 0;
             var isPublishSuccessful = false;
             while ((retryCount < 3) && (isPublishSuccessful == false)) {
                 try {
-                    _mqttClient.PublishAsync(new MqttApplicationMessage { Topic = topic, Payload = Encoding.UTF8.GetBytes(payload), QualityOfServiceLevel = (MQTTnet.Protocol.MqttQualityOfServiceLevel)qosLevel, Retain = isRetained }).Wait();
+                    await _mqttClient.PublishAsync(new MqttApplicationMessage { Topic = topic, Payload = Encoding.UTF8.GetBytes(payload), QualityOfServiceLevel = (MQTTnet.Protocol.MqttQualityOfServiceLevel)qosLevel, Retain = isRetained });
                     isPublishSuccessful = true;
                 } catch (Exception ex) {
                     retryCount++;
-                    _log.Error(ex, $"Could not publish topic {topic} to broker {_mqttBrokerIp}, attempt {retryCount}");
+                    _logger.LogError(ex, $"Could not publish topic {topic} to broker {_mqttBrokerIp}, attempt {retryCount}");
                 }
             }
 
             if (isPublishSuccessful == false) {
-                _log.Error($"Too many fails at publishing, going to disconnected state.");
+                _logger.LogError("Too many fails at publishing, going to disconnected state.");
                 IsConnected = false;
             }
         }
 
-        public void SubscribeToTopic(string topic) {
-            _mqttClient.SubscribeAsync(topic, (MQTTnet.Protocol.MqttQualityOfServiceLevel)2);
+        public async Task SubscribeToTopicAsync(string topic) {
+            try {
+                await _mqttClient.SubscribeAsync(topic, (MQTTnet.Protocol.MqttQualityOfServiceLevel)2);
+            } catch (Exception ex) {
+                IsConnected = false;
+                _logger.LogError(ex, $"Failed subscribing to \"{topic}\"");
+            }
         }
-
-        private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
-        private readonly IMqttClient _mqttClient;
-        private readonly string _mqttBrokerIp;
-        private readonly int _mqttBrokerPort;
-        private readonly string _mqttClientGuid = Guid.NewGuid().ToString();
 
         private void HandlePublishReceived(MqttApplicationMessageReceivedEventArgs e) {
             if (e.ApplicationMessage.Payload != null) {
                 PublishReceived?.Invoke(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
             } else {
-                _log.Error($"Topic {e.ApplicationMessage.Topic} payload is null.");
+                _logger.LogWarning($"Skipping null payload in topic {e.ApplicationMessage.Topic}");
             }
         }
 
