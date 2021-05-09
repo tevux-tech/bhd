@@ -18,15 +18,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-    <PackageReference Include="NLog" Version="4.7.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorHomieDashboard\BlazorHomieDashboard.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>
