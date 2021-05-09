@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
-        private List<HomieDevice> _homieDevices = new();
-        private bool _isLoading = true;
+        private readonly List<HomieDevice> _homieDevices = new();
         private string _loadingMessage = "Waiting for server...";
 
         [Inject]
@@ -29,9 +28,9 @@ namespace BlazorHomieDashboard.Pages {
         }
 
         private void HandleCreateDashboard(List<string> topicsDump) {
-            _isLoading = true;
-
-            var newHomieDevices = new List<HomieDevice>();
+            _homieDevices.Clear();
+            _loadingMessage = "Rebuilding...";
+            StateHasChanged();
 
             var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie");
             foreach (var deviceMetadata in devicesMetadata) {
@@ -41,32 +40,22 @@ namespace BlazorHomieDashboard.Pages {
                     // No need to subscribe to anything since back-end subscribes all homie topics.
                 }));
 
-                newHomieDevices.Add(homieDevice);
+                _homieDevices.Add(homieDevice);
             }
 
             foreach (var dumpValue in topicsDump) {
                 var splits = dumpValue.Split(":");
 
-                foreach (var newHomieDevice in newHomieDevices) {
-                    newHomieDevice.HandlePublishReceived(splits[0], splits[1]);
+                foreach (var homieDevice in _homieDevices) {
+                    homieDevice.HandlePublishReceived(splits[0], splits[1]);
                 }
             }
 
-            _homieDevices = newHomieDevices;
-
-            if (_homieDevices.Count > 0) {
-                _isLoading = false;
-            } else {
-                _isLoading = true;
-                _loadingMessage = "No devices found.";
+            if (_homieDevices.Count == 0) {
+                _loadingMessage = "No devices found. Waiting...";
             }
 
             StateHasChanged();
-
-            Task.Run(async () => {
-                await Task.Delay(1000);
-                StateHasChanged();
-            });
         }
 
 

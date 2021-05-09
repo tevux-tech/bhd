@@ -82,7 +82,7 @@ namespace BlazorHomieDashboard.Server.Services {
                     }
                 }
 
-                await Task.Delay(1000, cancellationToken);
+                await Task.Delay(5000, cancellationToken);
             }
         }
 
@@ -100,14 +100,16 @@ namespace BlazorHomieDashboard.Server.Services {
         }
 
         private async Task HandlePublishReceivedAsync(MqttApplicationMessageReceivedEventArgs e) {
+            var topic = e.ApplicationMessage.Topic;
+            string payload = null;
+
             if (e.ApplicationMessage.Payload != null) {
-                try {
-                    var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                    _topicsCache[e.ApplicationMessage.Topic] = payload;
-                    await _homieHubContext.Clients.All.SendAsync("PublishReceived", e.ApplicationMessage.Topic, payload);
-                } catch (Exception ex) {
-                    _logger.LogError(ex, $"Failed processing \"{e.ApplicationMessage.Topic}\"");
-                }
+                payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            }
+
+            if (payload != null) {
+                _topicsCache[e.ApplicationMessage.Topic] = payload;
+                await _homieHubContext.Clients.All.SendAsync("PublishReceived", e.ApplicationMessage.Topic, payload);
             } else {
                 var isRemoved = _topicsCache.Remove(e.ApplicationMessage.Topic);
                 if (isRemoved) {
@@ -115,8 +117,13 @@ namespace BlazorHomieDashboard.Server.Services {
                 }
             }
 
-            if (e.ApplicationMessage.Topic.EndsWith("$homie")) {
-                _logger.LogInformation($"Device changed. Recreating dashboards");
+            if (topic.EndsWith("$state") && payload == "ready") {
+                _logger.LogInformation($"{topic} is ready. Recreating dashboards");
+                await _homieHubContext.Clients.All.SendAsync("CreateDashboard", GetTopicsCache());
+            }
+
+            if (topic.EndsWith("$state") && payload == null) {
+                _logger.LogInformation($"{topic} is removed. Recreating dashboards");
                 await _homieHubContext.Clients.All.SendAsync("CreateDashboard", GetTopicsCache());
             }
         }

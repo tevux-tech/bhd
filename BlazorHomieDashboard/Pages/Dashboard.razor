@@ -2,7 +2,7 @@
 
 <div class="container-fluid">
 
-    @if (_isLoading) {
+    @if (_homieDevices.Count == 0) {
         <h2>@_loadingMessage</h2>
     } else {
         @foreach (var homieDevice in _homieDevices) {
