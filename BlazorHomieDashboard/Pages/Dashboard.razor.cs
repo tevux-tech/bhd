@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.Components;
 using MQTTnet;
 using MQTTnet.Client;
@@ -12,7 +13,6 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
-using TestApp;
 
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
@@ -104,7 +104,11 @@ namespace BlazorHomieDashboard.Pages {
                         StateHasChanged();
                     } else {
                         _loadingMessage = "Creating dashboard...";
-                        CreateDashboard();
+                        try {
+                            CreateDashboard();
+                        } catch (Exception ex) {
+                            Console.WriteLine(ex);
+                        }
                         _isLoading = false;
                         StateHasChanged();
                     }
