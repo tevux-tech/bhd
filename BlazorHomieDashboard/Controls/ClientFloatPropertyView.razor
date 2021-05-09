@@ -4,25 +4,6 @@
     @if (Data.Type == PropertyType.State) {
         <h4>@Data.Name</h4>
         <h2 class="text-center">@Data.Value.ToString("F2") @Data.Unit</h2>
-        <a class="text-center" href="javascript:;" @onclick="ToggleHistory" hidden="@(!_isHistoryVisible)">Hide history</a>
-        <a class="text-center" href="javascript:;" @onclick="ToggleHistory" hidden="@_isHistoryVisible">Show history</a>
-
-
-        <RadzenChart hidden="@(!_isHistoryVisible)">
-            <RadzenLineSeries Data="@_history" CategoryProperty="Date" ValueProperty="Value" Title="Value">
-                <RadzenMarkers MarkerType="MarkerType.Circle"/>
-            </RadzenLineSeries>
-            <RadzenValueAxis FormatString="{0:F2}"/>
-            <RadzenCategoryAxis FormatString="{0:HH:mm:ss}"/>
-        </RadzenChart>
-        <div class="input-group justify-content-center" hidden="@(!_isHistoryVisible)">
-            <RadzenButton Text="1min" Click="() => SetHistory(1 * 60)"/>
-            <RadzenButton Text="5min" Click="() => SetHistory(5 * 60)"/>
-            <RadzenButton Text="30min" Click="() => SetHistory(30 * 60)"/>
-            <RadzenButton Text="1h" Click="() => SetHistory(1 * 60 * 60)"/>
-            <RadzenButton Text="24h" Click="() => SetHistory(24 * 60 * 60)"/>
-            <RadzenButton Text="Clear" Click="ClearHistory"/>
-        </div>
     } else {
         <div>
             <h4>@Data.Name</h4>
@@ -48,17 +29,6 @@
 
     private float _targetValue;
 
-    private bool _isHistoryVisible;
-
-    private int _historySeconds = 36000;
-
-
-    private List<HistoryService.FloatHistoryItem> _history = new();
-
-    private void ToggleHistory() {
-        _isHistoryVisible = !_isHistoryVisible;
-    }
-
     private void Edit() {
         _targetValue = Data.Value;
         _isEditing = !_isEditing;
@@ -66,14 +36,12 @@
     }
 
     protected override void OnInitialized() {
-        _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
         Data.PropertyChanged += HandleDataPropertyChanged;
         base.OnInitialized();
     }
 
     private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
         if (e.PropertyName == nameof(ClientFloatProperty.Value)) {
-            _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
             StateHasChanged();
         }
     }
@@ -88,15 +56,5 @@
         StateHasChanged();
     }
 
-    private void ClearHistory() {
-        HistoryService.Instance.ClearHistory(Data);
-        _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
-    }
-
-    private void SetHistory(int seconds) {
-        _historySeconds = seconds;
-        _history = HistoryService.Instance.GetFloatHistory(Data, DateTime.Now - TimeSpan.FromSeconds(_historySeconds));
-        StateHasChanged();
-    }
 
 }
