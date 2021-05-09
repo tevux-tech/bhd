@@ -27,7 +27,7 @@ namespace BlazorHomieDashboard.Server.Services {
 
             var brokerIp = Environment.GetEnvironmentVariable("MQTT_SERVER") ?? "127.0.0.1";
             var brokerPort = int.Parse(Environment.GetEnvironmentVariable("MQTT_SERVER_PORT") ?? "1883");
-            _mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer(brokerIp, brokerPort).Build();
+            _mqttClientOptions = new MqttClientOptionsBuilder().WithClientId("bhd").WithTcpServer(brokerIp, brokerPort).WithCleanSession().Build();
 
             Task.Run(async () => {
                 try {
