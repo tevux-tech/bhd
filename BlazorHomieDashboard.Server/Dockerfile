@@ -19,5 +19,4 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "BlazorHomieDashboard.Server.dll"]
 
 ENV MQTT_SERVER 127.0.0.1
-ENV MQTT_SERVER_PORT 9001
-ENV BASE_TOPIC homie
+ENV MQTT_SERVER_PORT 1883
