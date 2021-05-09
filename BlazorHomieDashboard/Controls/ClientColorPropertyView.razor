@@ -8,8 +8,7 @@
                 <h2 class="text-center">@Data.Value</h2>
             </div>
         </div>
-    }
-    else if (Data.Type == PropertyType.Parameter) {
+    } else if (Data.Type == PropertyType.Parameter) {
         <div>
             <h4>@Data.Name</h4>
             <div style="background-color: rgb(@Data.Value)">
@@ -20,15 +19,15 @@
         </div>
 
         <div class="input-group justify-content-center" hidden="@(!_isEditting)">
-            <RadzenColorPicker @bind-Value=@_colorPickerValue ShowHSV=true ShowRGBA=true ShowColors=true ShowButton=true Change="@SetColor" />
+            <RadzenColorPicker @bind-Value=@_colorPickerValue ShowHSV=true ShowRGBA=true ShowColors=true ShowButton=true Change="@SetColor"/>
         </div>
-    }
-    else {
+    } else {
         <h4>@Data.Name</h4>
     }
 </RadzenCard>
 
 @code {
+
     [Parameter]
     public ClientColorProperty Data { get; set; }
 
@@ -48,8 +47,7 @@
         if (targetColor.StartsWith("rgb(")) {
             targetColor = targetColor.Replace("rgb(", "");
             targetColor = targetColor.Replace(")", "");
-        }
-        else if (targetColor.StartsWith("rgba(")) {
+        } else if (targetColor.StartsWith("rgba(")) {
             targetColor = targetColor.Replace("rgba(", "");
             targetColor = targetColor.Replace(")", "");
 
@@ -76,4 +74,5 @@
     void IDisposable.Dispose() {
         Data.PropertyChanged -= HandleDataPropertyChanged;
     }
+
 }

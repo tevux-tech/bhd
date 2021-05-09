@@ -9,48 +9,39 @@
                             <div class="col">
                                 <ClientDateTimePropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientDateTimePropertyView>
                             </div>
-                        }
-                        else {
+                        } else {
                             <div class="col">
                                 <ClientStringPropertyView Data="(ClientStringProperty)Data.Properties[index]"></ClientStringPropertyView>
                             </div>
                         }
-                    }
-                    else if (Data.Properties[index] is ClientFloatProperty) {
+                    } else if (Data.Properties[index] is ClientFloatProperty) {
                         <div class="col">
                             <ClientFloatPropertyView Data="(ClientFloatProperty)Data.Properties[index]"></ClientFloatPropertyView>
                         </div>
-                    }
-                    else if (Data.Properties[index] is ClientIntegerProperty) {
+                    } else if (Data.Properties[index] is ClientIntegerProperty) {
                         <div class="col">
                             <ClientIntegerPropertyView Data="(ClientIntegerProperty)Data.Properties[index]"></ClientIntegerPropertyView>
                         </div>
-                    }
-                    else if (Data.Properties[index] is ClientBooleanProperty) {
+                    } else if (Data.Properties[index] is ClientBooleanProperty) {
                         <div class="col">
                             <ClientBooleanPropertyView Data="(ClientBooleanProperty)Data.Properties[index]"></ClientBooleanPropertyView>
                         </div>
-                    }
-                    else if (Data.Properties[index] is ClientBooleanProperty) {
+                    } else if (Data.Properties[index] is ClientBooleanProperty) {
                         <div class="col">
                             <ClientBooleanPropertyView Data="(ClientBooleanProperty)Data.Properties[index]"></ClientBooleanPropertyView>
                         </div>
-                    }
-                    else if (Data.Properties[index] is ClientEnumProperty) {
+                    } else if (Data.Properties[index] is ClientEnumProperty) {
                         <div class="col">
                             <ClientEnumPropertyView Data="(ClientEnumProperty)Data.Properties[index]"></ClientEnumPropertyView>
                         </div>
-                    }
-                    else if (Data.Properties[index].DataType == DataType.Color) {
+                    } else if (Data.Properties[index].DataType == DataType.Color) {
                         <div class="col">
                             <ClientColorPropertyView Data="(ClientColorProperty)Data.Properties[index]"></ClientColorPropertyView>
                         </div>
-                    }
-                    else {
+                    } else {
                         <div class="col"></div>
                     }
-                }
-                else {
+                } else {
                     <div class="col"></div>
                 }
                 index++;
@@ -61,6 +52,8 @@
 
 
 @code {
+
     [Parameter]
     public HomieNode Data { get; set; }
+
 }
