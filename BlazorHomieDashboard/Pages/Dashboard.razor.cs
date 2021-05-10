@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.Components;
@@ -15,6 +15,11 @@ namespace BlazorHomieDashboard.Pages {
         private HubConnection _mqttHubConnection;
 
         protected override async Task OnInitializedAsync() {
+#if DEBUG
+            // This delay is officially recommended by MS.Otherwise breakpoints may not hit.
+            await Task.Delay(10000);
+#endif
+
             _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
             _mqttHubConnection.On<string, string>("PublishReceived", HandlePublishReceived);
             _mqttHubConnection.On<List<string>>("CreateDashboard", HandleCreateDashboard);
