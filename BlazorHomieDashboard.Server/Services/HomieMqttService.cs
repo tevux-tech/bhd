@@ -101,6 +101,8 @@ namespace BlazorHomieDashboard.Server.Services {
         }
 
         private async Task HandlePublishReceivedAsync(MqttApplicationMessageReceivedEventArgs e) {
+            var previousCacheSize = _topicsCache.Count;
+
             var topic = e.ApplicationMessage.Topic;
             string payload = null;
 
@@ -126,6 +128,10 @@ namespace BlazorHomieDashboard.Server.Services {
             if (topic.EndsWith("$state") && payload == null) {
                 _logger.LogInformation($"{topic} is removed. Recreating dashboards");
                 await _homieHubContext.Clients.All.SendAsync("CreateDashboard", GetTopicsCache());
+            }
+
+            if (_topicsCache.Count != previousCacheSize) {
+                _logger.LogInformation($"Cache size changed to {_topicsCache.Count}");
             }
         }
 
