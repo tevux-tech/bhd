@@ -78,8 +78,6 @@ namespace BlazorHomieDashboard.Server.Services {
                     if (_mqttClient.IsConnected) {
                         _topicsCache.Clear();
                         await SubscribeToTopicAsync("homie/#");
-                        await Task.Delay(2000, cancellationToken);
-                        await _homieHubContext.Clients.All.SendAsync("CreateDashboard", GetTopicsCache(), cancellationToken: cancellationToken);
                     }
                 }
 
