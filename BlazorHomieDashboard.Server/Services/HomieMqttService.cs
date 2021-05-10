@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace BlazorHomieDashboard.Server.Services {
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private readonly IMqttClient _mqttClient;
         private readonly IMqttClientOptions _mqttClientOptions;
-        private Dictionary<string, string> _topicsCache = new();
+        private ConcurrentDictionary<string, string> _topicsCache = new();
 
         public HomieMqttService(ILogger<HomieMqttService> logger, IHubContext<HomieHub> homieHubContext) {
             _logger = logger;
@@ -75,7 +76,7 @@ namespace BlazorHomieDashboard.Server.Services {
                     }
 
                     if (_mqttClient.IsConnected) {
-                        _topicsCache = new Dictionary<string, string>();
+                        _topicsCache.Clear();
                         await SubscribeToTopicAsync("homie/#");
                         await Task.Delay(2000, cancellationToken);
                         await _homieHubContext.Clients.All.SendAsync("CreateDashboard", GetTopicsCache(), cancellationToken: cancellationToken);
@@ -111,7 +112,7 @@ namespace BlazorHomieDashboard.Server.Services {
                 _topicsCache[e.ApplicationMessage.Topic] = payload;
                 await _homieHubContext.Clients.All.SendAsync("PublishReceived", e.ApplicationMessage.Topic, payload);
             } else {
-                var isRemoved = _topicsCache.Remove(e.ApplicationMessage.Topic);
+                var isRemoved = _topicsCache.Remove(e.ApplicationMessage.Topic, out _);
                 if (isRemoved) {
                     _logger.LogInformation($"Removed \"{e.ApplicationMessage.Topic}\" from cache");
                 }
