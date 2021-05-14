@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevBot9.Protocols.Homie;
@@ -17,7 +18,7 @@ namespace BlazorHomieDashboard.Pages {
         protected override async Task OnInitializedAsync() {
 #if DEBUG
             // This delay is officially recommended by MS.Otherwise breakpoints may not hit.
-            await Task.Delay(10000);
+            await Task.Delay(5000);
 #endif
 
             _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
@@ -37,7 +38,23 @@ namespace BlazorHomieDashboard.Pages {
             _loadingMessage = "Rebuilding...";
             StateHasChanged();
 
-            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie");
+            var devicesMetadata = new HomieTopicTreeParser.Device[0];
+            try {
+                devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie", out var problemList);
+
+                // Spitting into console, would you Master G. add some logging facilities to BHD?
+                Console.WriteLine("Parsed Home dump. If there are any problems, I will print them now:");
+                foreach (var problem in problemList) {
+                    Console.WriteLine(problem);
+                }
+                Console.WriteLine("Done.");
+
+            } catch (Exception ex) {
+                // Something's wrong with the topic dump.
+                // I think this should be logged somewhere?..
+                var pzdc = 1;
+            }
+
             foreach (var deviceMetadata in devicesMetadata) {
                 var homieDevice = new HomieDevice();
 
