@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevBot9.Protocols.Homie;
@@ -49,9 +49,15 @@ namespace BlazorHomieDashboard.Pages {
         private void HandleCreateDashboard(List<string> topicsDump) {
             _homieDevices.Clear();
             _loadingMessage = "Rebuilding...";
+
             StateHasChanged();
 
-            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie");
+            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie", out var parsingErrors);
+
+            foreach (var parsingError in parsingErrors) {
+                Logger.LogError(parsingError);
+            }
+
             foreach (var deviceMetadata in devicesMetadata) {
                 var homieDevice = new HomieDevice();
 
@@ -76,7 +82,6 @@ namespace BlazorHomieDashboard.Pages {
 
             StateHasChanged();
         }
-
 
         private void HandlePublishReceived(string topic, string payload) {
             foreach (var homieDevice in _homieDevices) {
