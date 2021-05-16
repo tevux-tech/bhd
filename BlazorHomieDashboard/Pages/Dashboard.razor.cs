@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
@@ -12,12 +14,29 @@ namespace BlazorHomieDashboard.Pages {
         [Inject]
         private NavigationManager NavigationManager { get; set; }
 
+        [Inject]
+        private ILogger<Dashboard> Logger { get; set; }
+
         private HubConnection _mqttHubConnection;
 
         protected override async Task OnInitializedAsync() {
             _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
-            _mqttHubConnection.On<string, string>("PublishReceived", HandlePublishReceived);
-            _mqttHubConnection.On<List<string>>("CreateDashboard", HandleCreateDashboard);
+
+            _mqttHubConnection.On<string, string>("PublishReceived", (topic, payload) => {
+                try {
+                    HandlePublishReceived(topic, payload);
+                } catch (Exception ex) {
+                    Logger.LogError(ex, $"Processing {topic}={payload} failed.");
+                }
+            });
+
+            _mqttHubConnection.On<List<string>>("CreateDashboard", (topicDump) => {
+                try {
+                    HandleCreateDashboard(topicDump);
+                } catch (Exception ex) {
+                    Logger.LogError(ex, "Creating dashboard failed.");
+                }
+            });
 
             await _mqttHubConnection.StartAsync();
             await base.OnInitializedAsync();
