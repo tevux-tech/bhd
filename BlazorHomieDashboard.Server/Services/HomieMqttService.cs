@@ -28,7 +28,11 @@ namespace BlazorHomieDashboard.Server.Services {
 
             var brokerIp = Environment.GetEnvironmentVariable("MQTT_SERVER") ?? "127.0.0.1";
             var brokerPort = int.Parse(Environment.GetEnvironmentVariable("MQTT_SERVER_PORT") ?? "1883");
-            _mqttClientOptions = new MqttClientOptionsBuilder().WithClientId("bhd").WithTcpServer(brokerIp, brokerPort).WithCleanSession().Build();
+
+            // If two clients with same id connects to mosquitto broker, previous connection gets closed by the broker. Therefore I generate random ID here.
+            var uniqueClientId = "BHD-" + Guid.NewGuid().ToString().Substring(0, 8);
+
+            _mqttClientOptions = new MqttClientOptionsBuilder().WithClientId(uniqueClientId).WithTcpServer(brokerIp, brokerPort).WithCleanSession().Build();
 
             Task.Run(async () => {
                 try {
