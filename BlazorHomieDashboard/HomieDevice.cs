@@ -9,6 +9,12 @@ namespace BlazorHomieDashboard {
 
         private ClientDevice _clientDevice;
 
+        public string State {
+            get {
+                return _clientDevice == null ? "" : _clientDevice.State.ToString();
+            }
+        }
+
         public void Initialize(HomieTopicTreeParser.Device deviceMetadata, Device.PublishToTopicDelegate publish, Device.SubscribeToTopicDelegate subscribe) {
             Name = (string)deviceMetadata.Attributes["$name"];
 
