@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -9,6 +9,12 @@ using Microsoft.Extensions.Logging;
 
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
+        private class DashboardReconnectPolicy : IRetryPolicy {
+            public TimeSpan? NextRetryDelay(RetryContext retryContext) {
+                return new TimeSpan(0, 0, 5);
+            }
+        }
+
         private readonly List<HomieDevice> _homieDevices = new();
 
         [Inject]
@@ -29,7 +35,7 @@ namespace BlazorHomieDashboard.Pages {
         private string _sourceCodeUrl;
 
         protected override async Task OnInitializedAsync() {
-            _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
+            _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect(new DashboardReconnectPolicy()).Build();
 
             _mqttHubConnection.Closed += (exception) => {
                 Logger.LogError(exception, "SignalR connection closed.");
