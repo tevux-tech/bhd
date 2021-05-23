@@ -22,43 +22,44 @@ namespace BlazorHomieDashboard {
                 foreach (var propertyMetadata in nodeMetaData.Properties) {
                     switch (propertyMetadata.DataType) {
                         case DataType.Integer: {
-                                var newProperty = _clientDevice.CreateClientIntegerProperty(propertyMetadata);
-                                node.Properties.Add(newProperty);
-                                break;
-                            }
+                            var newProperty = _clientDevice.CreateClientIntegerProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
 
                         case DataType.Float: {
-                                var newProperty = _clientDevice.CreateClientFloatProperty(propertyMetadata);
-                                node.Properties.Add(newProperty);
-                                break;
-                            }
+                            var newProperty = _clientDevice.CreateClientFloatProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
 
                         case DataType.Boolean: {
-                                var newProperty = _clientDevice.CreateClientBooleanProperty(propertyMetadata);
-                                node.Properties.Add(newProperty);
-                                break;
-                            }
+                            var newProperty = _clientDevice.CreateClientBooleanProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
 
                         case DataType.Enum: {
-                                var newProperty = _clientDevice.CreateClientEnumProperty(propertyMetadata);
-                                node.Properties.Add(newProperty);
-                                break;
-                            }
+                            var newProperty = _clientDevice.CreateClientEnumProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
 
                         case DataType.Color: {
-                                var newProperty = _clientDevice.CreateClientColorProperty(propertyMetadata);
-                                node.Properties.Add(newProperty);
-                                break;
-                            }
+                            var newProperty = _clientDevice.CreateClientColorProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
+
                         case DataType.DateTime:
                             // Now Datetime cannot be just displayed as string property. Data types are checked internally, and an exception is thrown if when trying create a StringProperty with data type DateTime.
                             break;
 
                         case DataType.String: {
-                                var newProperty = _clientDevice.CreateClientStringProperty(propertyMetadata);
-                                node.Properties.Add(newProperty);
-                                break;
-                            }
+                            var newProperty = _clientDevice.CreateClientStringProperty(propertyMetadata);
+                            node.Properties.Add(newProperty);
+                            break;
+                        }
                     }
                 }
             }
