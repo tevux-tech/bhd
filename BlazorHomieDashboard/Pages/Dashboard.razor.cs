@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
-using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.Logging;
 namespace BlazorHomieDashboard.Pages {
     partial class Dashboard {
         private readonly List<HomieDevice> _homieDevices = new();
-        private string _loadingMessage = "Waiting for server...";
 
         [Inject]
         private NavigationManager NavigationManager { get; set; }
@@ -17,10 +17,32 @@ namespace BlazorHomieDashboard.Pages {
         [Inject]
         private ILogger<Dashboard> Logger { get; set; }
 
+        [Inject]
+        private HttpClient HttpClient { get; set; }
+
         private HubConnection _mqttHubConnection;
+
+        private int _topicsCount = 0;
+
+        private string _version;
 
         protected override async Task OnInitializedAsync() {
             _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
+
+            _mqttHubConnection.Closed += async (exception) => {
+                Logger.LogError(exception, "SignalR connection closed.");
+                StateHasChanged();
+            };
+
+            _mqttHubConnection.Reconnecting += async (exception) => {
+                Logger.LogWarning(exception, "SignalR reconnecting");
+                StateHasChanged();
+            };
+
+            _mqttHubConnection.Reconnected += async (connectionId) => {
+                Logger.LogInformation($"Reconnected {connectionId}");
+                StateHasChanged();
+            };
 
             _mqttHubConnection.On<string, string>("PublishReceived", (topic, payload) => {
                 try {
@@ -38,6 +60,12 @@ namespace BlazorHomieDashboard.Pages {
                 }
             });
 
+            try {
+                _version = await HttpClient.GetFromJsonAsync<string>("Version");
+            } catch (Exception ex) {
+                Logger.LogError(ex, "Unable to read version.");
+            }
+
             await _mqttHubConnection.StartAsync();
             await base.OnInitializedAsync();
         }
@@ -48,9 +76,7 @@ namespace BlazorHomieDashboard.Pages {
 
         private void HandleCreateDashboard(List<string> topicsDump) {
             _homieDevices.Clear();
-            _loadingMessage = "Rebuilding...";
-
-            StateHasChanged();
+            _topicsCount = topicsDump.Count;
 
             var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie", out var parsingErrors);
 
@@ -74,10 +100,6 @@ namespace BlazorHomieDashboard.Pages {
                 foreach (var homieDevice in _homieDevices) {
                     homieDevice.HandlePublishReceived(splits[0], splits[1]);
                 }
-            }
-
-            if (_homieDevices.Count == 0) {
-                _loadingMessage = "No devices found. Waiting...";
             }
 
             StateHasChanged();

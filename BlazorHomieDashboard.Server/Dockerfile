@@ -8,10 +8,18 @@ COPY ["BlazorHomieDashboard.Server/BlazorHomieDashboard.Server.csproj", "BlazorH
 RUN dotnet restore "BlazorHomieDashboard.Server/BlazorHomieDashboard.Server.csproj"
 COPY . .
 WORKDIR "/src/BlazorHomieDashboard.Server"
+
 RUN dotnet build "BlazorHomieDashboard.Server.csproj" -c Release -o /app/build
 
+ARG VERSION_SUFFIX
 FROM build AS publish
-RUN dotnet publish "BlazorHomieDashboard.Server.csproj" -c Release -o /app/publish
+
+RUN if [ -z "$VERSION_SUFFIX" ] ;\
+    then \
+        dotnet publish "BlazorHomieDashboard.Server.csproj" -c Release -o /app/publish ;\
+    else \
+        dotnet publish "BlazorHomieDashboard.Server.csproj" -c Release -o /app/publish --version-suffix $VERSION_SUFFIX ;\
+    fi
 
 FROM base AS final
 WORKDIR /app

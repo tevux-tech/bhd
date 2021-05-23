@@ -1,15 +1,19 @@
 ﻿@page "/"
 
 <div class="container-fluid">
-
-    @if (_homieDevices.Count == 0) {
-        <h2>@_loadingMessage</h2>
-    } else {
-        @foreach (var homieDevice in _homieDevices) {
-            <h2>@homieDevice.Name</h2>
-            <div>
-                <HomieDeviceView Data="@homieDevice"/>
-            </div>
-        }
+    @foreach (var homieDevice in _homieDevices) {
+        <h2>@homieDevice.Name</h2>
+        <div>
+            <HomieDeviceView Data="@homieDevice"/>
+        </div>
     }
 </div>
+
+
+<nav class="navbar fixed-bottom navbar-expand-sm navbar-light bg-light">
+    <div>
+        <span class="badge badge-info">SignalR: @_mqttHubConnection.State.ToString()</span>
+        <span class="badge badge-info">Topics: @_topicsCount</span>
+        <span class="badge badge-info">Version: @_version</span>
+    </div>
+</nav>
