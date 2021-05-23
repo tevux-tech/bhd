@@ -26,6 +26,8 @@ namespace BlazorHomieDashboard.Pages {
 
         private string _version;
 
+        private string _sourceCodeUrl;
+
         protected override async Task OnInitializedAsync() {
             _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
 
@@ -64,6 +66,12 @@ namespace BlazorHomieDashboard.Pages {
                 _version = await HttpClient.GetFromJsonAsync<string>("Version");
             } catch (Exception ex) {
                 Logger.LogError(ex, "Unable to read version.");
+            }
+
+            try {
+                _sourceCodeUrl = await HttpClient.GetFromJsonAsync<string>("Version/SourceCodeUrl");
+            } catch (Exception ex) {
+                Logger.LogError(ex, "Unable to read source code url.");
             }
 
             await _mqttHubConnection.StartAsync();
