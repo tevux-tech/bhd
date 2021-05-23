@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -31,19 +31,22 @@ namespace BlazorHomieDashboard.Pages {
         protected override async Task OnInitializedAsync() {
             _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect().Build();
 
-            _mqttHubConnection.Closed += async (exception) => {
+            _mqttHubConnection.Closed += (exception) => {
                 Logger.LogError(exception, "SignalR connection closed.");
                 StateHasChanged();
+                return Task.FromResult(0);
             };
 
-            _mqttHubConnection.Reconnecting += async (exception) => {
+            _mqttHubConnection.Reconnecting += (exception) => {
                 Logger.LogWarning(exception, "SignalR reconnecting");
                 StateHasChanged();
+                return Task.FromResult(0);
             };
 
-            _mqttHubConnection.Reconnected += async (connectionId) => {
+            _mqttHubConnection.Reconnected += (connectionId) => {
                 Logger.LogInformation($"Reconnected {connectionId}");
                 StateHasChanged();
+                return Task.FromResult(0);
             };
 
             _mqttHubConnection.On<string, string>("PublishReceived", (topic, payload) => {
