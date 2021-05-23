@@ -159,7 +159,9 @@ namespace BlazorHomieDashboard {
                 }
 
                 // Should be at least one valid node. If not - problem.
-                if (goodNodes.Count == 0) isParseSuccessful = false;
+                if (goodNodes.Count == 0) {
+                    isParseSuccessful = false;
+                }
 
                 // Converting local temporary lists to final arrays and returning.
                 Nodes = new Node[goodNodes.Count];
