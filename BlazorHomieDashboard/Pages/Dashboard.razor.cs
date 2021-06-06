@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ namespace BlazorHomieDashboard.Pages {
             }
         }
 
-        private readonly List<HomieDevice> _homieDevices = new();
+        private readonly List<ClientDevice> _homieDevices = new();
 
         [Inject]
         private NavigationManager NavigationManager { get; set; }
@@ -102,9 +103,9 @@ namespace BlazorHomieDashboard.Pages {
             }
 
             foreach (var deviceMetadata in devicesMetadata) {
-                var homieDevice = new HomieDevice();
+                var homieDevice = DeviceFactory.CreateClientDevice(deviceMetadata);
 
-                homieDevice.Initialize(deviceMetadata, PublishToTopic, (topic => {
+                homieDevice.Initialize(PublishToTopic, (topic => {
                     // No need to subscribe to anything since back-end subscribes all homie topics.
                 }));
 
