@@ -93,6 +93,10 @@ namespace BlazorHomieDashboard.Pages {
         }
 
         private void HandleCreateDashboard(List<string> topicsDump) {
+            foreach (var homieDevice in _homieDevices) {
+                homieDevice.PropertyChanged -= HandleHomieDevicePropertyChanged;
+            }
+
             _homieDevices.Clear();
             _topicsCount = topicsDump.Count;
 
@@ -120,6 +124,14 @@ namespace BlazorHomieDashboard.Pages {
                 }
             }
 
+            foreach (var homieDevice in _homieDevices) {
+                homieDevice.PropertyChanged += HandleHomieDevicePropertyChanged;
+            }
+
+            StateHasChanged();
+        }
+
+        private void HandleHomieDevicePropertyChanged(object sender, PropertyChangedEventArgs e) {
             StateHasChanged();
         }
 
