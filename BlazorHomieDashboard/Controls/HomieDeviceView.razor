@@ -1,6 +1,11 @@
 ﻿@implements IDisposable
+@inject HttpClient _httpClient
 
-<h2>@Data.Name [@Data.State]</h2>
+@if (Data.State == HomieState.Lost) {
+    <h2>@Data.Name [@Data.State] <button @onclick="HandleRemoveButtonClick" type="button" class="btn btn-danger">Remove</button></h2>
+} else {
+    <h2>@Data.Name [@Data.State]</h2>
+}
 <div>
     @if (Data.State == HomieState.Ready) {
         <RadzenTabs>
@@ -34,4 +39,9 @@
     void IDisposable.Dispose() {
         Data.PropertyChanged -= HandleDataPropertyChanged;
     }
+
+    private async Task HandleRemoveButtonClick() {
+        await _httpClient.PostAsJsonAsync("Device/Remove", Data.DeviceId);
+    }
+
 }

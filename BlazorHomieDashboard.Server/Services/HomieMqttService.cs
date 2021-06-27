@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,13 +61,28 @@ namespace BlazorHomieDashboard.Server.Services {
                 return;
             }
 
-            _logger.LogInformation($"Publishing \"{topic}\" to \"{payload}\" [Q{qosLevel}{(isRetained ? ", R" : "")}]");
-
             try {
-                await _mqttClient.PublishAsync(new MqttApplicationMessage { Topic = topic, Payload = Encoding.UTF8.GetBytes(payload), QualityOfServiceLevel = (MQTTnet.Protocol.MqttQualityOfServiceLevel)qosLevel, Retain = isRetained });
-                _topicsCache[topic] = payload;
+                if (payload != null) {
+                    _logger.LogInformation($"Publishing \"{topic}\" to \"{payload}\" [Q{qosLevel}{(isRetained ? ", R" : "")}]");
+                    await _mqttClient.PublishAsync(new MqttApplicationMessage { Topic = topic, Payload = Encoding.UTF8.GetBytes(payload), QualityOfServiceLevel = (MQTTnet.Protocol.MqttQualityOfServiceLevel)qosLevel, Retain = isRetained });
+                    _topicsCache[topic] = payload;
+                } else {
+                    // Null payload means that some topic needs to be removed from mqtt broker retention.
+                    _logger.LogInformation($"Removing \"{topic}\" [Q{qosLevel}{(isRetained ? ", R" : "")}]");
+                    await _mqttClient.PublishAsync(new MqttApplicationMessage { Topic = topic, Payload = new byte[0], QualityOfServiceLevel = (MQTTnet.Protocol.MqttQualityOfServiceLevel)qosLevel, Retain = isRetained });
+                    _topicsCache.TryRemove(topic, out _);
+                }
             } catch (Exception ex) {
                 _logger.LogError(ex, $"Failed publishing topic \"{topic}\"");
+            }
+        }
+
+        public async Task RemoveDeviceTopics(string deviceId) {
+            var topicsToRemove = _topicsCache.Keys.Where(k => k.StartsWith($"homie/{deviceId}/")).ToList();
+            topicsToRemove.Add($"homie/{deviceId}");
+
+            foreach (var topicToRemove in topicsToRemove) {
+                await PublishToTopicAsync(topicToRemove, null, 1, true);
             }
         }
 
