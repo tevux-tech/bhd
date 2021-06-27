@@ -1,16 +1,37 @@
-﻿<RadzenTabs>
-    <Tabs>
-        @foreach (var node in Data.Nodes) {
-            <RadzenTabsItem Text="@node.Name">
-                <HomieNodeView Data="@node"></HomieNodeView>
-            </RadzenTabsItem>
-        }
-    </Tabs>
-</RadzenTabs>
+﻿@implements IDisposable
+
+<h2>@Data.Name [@Data.State]</h2>
+<div>
+    @if (Data.State == HomieState.Ready) {
+        <RadzenTabs>
+            <Tabs>
+                @foreach (var node in Data.Nodes) {
+                    <RadzenTabsItem Text="@node.Name">
+                        <HomieNodeView Data="@node"></HomieNodeView>
+                    </RadzenTabsItem>
+                }
+            </Tabs>
+        </RadzenTabs>
+    }
+</div>
 
 @code {
 
     [Parameter]
     public ClientDevice Data { get; set; }
 
+    protected override void OnInitialized() {
+        Data.PropertyChanged += HandleDataPropertyChanged;
+        base.OnInitialized();
+    }
+
+    private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
+        if (e.PropertyName == nameof(ClientDevice.State)) {
+            StateHasChanged();
+        }
+    }
+
+    void IDisposable.Dispose() {
+        Data.PropertyChanged -= HandleDataPropertyChanged;
+    }
 }

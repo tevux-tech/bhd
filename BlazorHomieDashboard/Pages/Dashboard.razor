@@ -2,11 +2,11 @@
 @using Microsoft.AspNetCore.SignalR.Client
 
 <div class="container-fluid">
-    @foreach (var homieDevice in _homieDevices) {
-        <h2>@homieDevice.Name [@homieDevice.State]</h2>
-        <div>
-            <HomieDeviceView Data="@homieDevice"/>
-        </div>
+    @foreach (var homieDevice in _homieDevices.Where(d => d.State == HomieState.Ready)) {
+        <HomieDeviceView Data="@homieDevice"/>
+    }
+    @foreach (var homieDevice in _homieDevices.Where(d => d.State != HomieState.Ready)) {
+        <HomieDeviceView Data="@homieDevice"/>
     }
 </div>
 
@@ -21,6 +21,8 @@
 
 @code {
 
+    
+
     string GetSignalRBadgeClass() {
         if (_mqttHubConnection.State == HubConnectionState.Connected) {
             return "badge badge-info";
@@ -28,7 +30,5 @@
             return "badge badge-danger";
         }
     }
-
-
 
 }
