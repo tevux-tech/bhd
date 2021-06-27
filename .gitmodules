@@ -1,0 +1,3 @@
+[submodule "Yahi"]
+	path = Yahi
+	url = git@github.com:Girdauskas/yet-another-homie-implementation.git

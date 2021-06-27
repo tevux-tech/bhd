@@ -7,7 +7,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorHomieDashboard", "Bla
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorHomieDashboard.Server", "BlazorHomieDashboard.Server\BlazorHomieDashboard.Server.csproj", "{63C36DA6-AF76-47EB-A4BC-0AD1ECBA81B7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yahi-bigNET", "Yahi\Yahi-bigNET\Yahi-bigNET.csproj", "{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Yahi", "Yahi", "{BCC75431-F3EB-48C6-9195-6CF9151EB2F8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yahi.Utilities-bigNET", "Yahi\Yahi.Utilities-bigNET\Yahi.Utilities-bigNET.csproj", "{D6511F2A-2987-4B35-860B-FB29A597FA4F}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Yahi.CommonCode", "Yahi\Yahi.CommonCode\Yahi.CommonCode.shproj", "{5D02513A-2022-481F-92BE-4EF5192993F8}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Yahi\Yahi.CommonCode\Yahi.CommonCode.projitems*{2f0b03a3-091e-4c17-86be-fe11f3ccbd57}*SharedItemsImports = 5
+		Yahi\Yahi.CommonCode\Yahi.CommonCode.projitems*{5d02513a-2022-481f-92be-4ef5192993f8}*SharedItemsImports = 13
+		Yahi\Yahi.Utilities.CommonCode\Yahi.Utilities.CommonCode.projitems*{d6511f2a-2987-4b35-860b-fb29a597fa4f}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -31,9 +44,30 @@ Global
 		{63C36DA6-AF76-47EB-A4BC-0AD1ECBA81B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{63C36DA6-AF76-47EB-A4BC-0AD1ECBA81B7}.Release|x86.ActiveCfg = Release|Any CPU
 		{63C36DA6-AF76-47EB-A4BC-0AD1ECBA81B7}.Release|x86.Build.0 = Release|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|x86.Build.0 = Debug|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|x86.ActiveCfg = Release|Any CPU
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|x86.Build.0 = Release|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|x86.Build.0 = Debug|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57} = {BCC75431-F3EB-48C6-9195-6CF9151EB2F8}
+		{D6511F2A-2987-4B35-860B-FB29A597FA4F} = {BCC75431-F3EB-48C6-9195-6CF9151EB2F8}
+		{5D02513A-2022-481F-92BE-4EF5192993F8} = {BCC75431-F3EB-48C6-9195-6CF9151EB2F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5273E144-EE15-480A-B105-F38361BC5363}
