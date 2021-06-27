@@ -13,17 +13,13 @@
         </div>
 
         <div class="input-group justify-content-center" hidden="@(!_isEditing)">
-            <div>
-                <RadzenButton Text="True" Click="@SetTrue"></RadzenButton>
-                <RadzenButton Text="False" Click="@SetFalse"></RadzenButton>
-            </div>
+            <RadzenButton class="enum-buttons" Text="True" Click="@SetTrue"></RadzenButton>
+            <RadzenButton class="enum-buttons" Text="False" Click="@SetFalse"></RadzenButton>
         </div>
     } else if (Data.Type == PropertyType.Command) {
         <div class="input-group justify-content-center">
-            <div>
-                <RadzenButton Text="True" Click="@SetTrue"></RadzenButton>
-                <RadzenButton Text="False" Click="@SetFalse"></RadzenButton>
-            </div>
+            <RadzenButton class="enum-buttons" Text="True" Click="@SetTrue"></RadzenButton>
+            <RadzenButton class="enum-buttons" Text="False" Click="@SetFalse"></RadzenButton>
         </div>
     }
 </RadzenCard>

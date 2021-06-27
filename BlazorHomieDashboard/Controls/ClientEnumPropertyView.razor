@@ -7,8 +7,9 @@
         <h2 class="text-center">@Data.Value</h2>
     } else if (Data.Type == PropertyType.Command) {
         <div class="input-group justify-content-center">
-            <RadzenDropDown Data="@Data.Format.Split(",")" @bind-Value=@_selectedItem TValue="string"></RadzenDropDown>
-            <RadzenButton Text="Set" Click="@ExecuteCommand"></RadzenButton>
+            @foreach (var option in Data.Format.Split(",")) {
+                <RadzenButton class="enum-buttons" Text="@option" Click="() => SetDataValue(option)"></RadzenButton>
+            }
         </div>
     }
 </RadzenCard>
@@ -33,8 +34,9 @@
         Data.PropertyChanged -= HandleDataPropertyChanged;
     }
 
-    private void ExecuteCommand() {
-        if (_selectedItem != null) Data.Value = _selectedItem;
+    private void SetDataValue(string newValue) {
+        Data.Value = newValue;
     }
 
 }
+
