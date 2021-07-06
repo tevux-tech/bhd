@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+﻿@using System.ComponentModel
+@implements IDisposable
 
 <RadzenCard>
     <h4>@Data.Name</h4>
@@ -17,9 +18,7 @@
 @code {
 
     [Parameter]
-    public ClientEnumProperty Data { get; set; }
-
-    private string _selectedItem;
+    public ClientChoiceProperty Data { get; set; }
 
     protected override void OnInitialized() {
         Data.PropertyChanged += HandleDataPropertyChanged;
