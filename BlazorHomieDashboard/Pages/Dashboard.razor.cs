@@ -27,7 +27,7 @@ namespace BlazorHomieDashboard.Pages {
         [Inject]
         private HttpClient HttpClient { get; set; }
 
-        private HubConnection _mqttHubConnection;
+        private MqttHubBroker _mqttHubBroker;
 
         private int _topicsCount = 0;
 
@@ -36,35 +36,27 @@ namespace BlazorHomieDashboard.Pages {
         private string _sourceCodeUrl;
 
         protected override async Task OnInitializedAsync() {
-            _mqttHubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/HomieHub")).WithAutomaticReconnect(new DashboardReconnectPolicy()).Build();
+            _mqttHubBroker = new MqttHubBroker(NavigationManager.ToAbsoluteUri("/HomieHub"));
 
-            _mqttHubConnection.Closed += (exception) => {
+            _mqttHubBroker.Connection.Closed += (exception) => {
                 Logger.LogError(exception, "SignalR connection closed.");
                 StateHasChanged();
                 return Task.FromResult(0);
             };
 
-            _mqttHubConnection.Reconnecting += (exception) => {
+            _mqttHubBroker.Connection.Reconnecting += (exception) => {
                 Logger.LogWarning(exception, "SignalR reconnecting");
                 StateHasChanged();
                 return Task.FromResult(0);
             };
 
-            _mqttHubConnection.Reconnected += (connectionId) => {
+            _mqttHubBroker.Connection.Reconnected += (connectionId) => {
                 Logger.LogInformation($"Reconnected {connectionId}");
                 StateHasChanged();
                 return Task.FromResult(0);
             };
 
-            _mqttHubConnection.On<string, string>("PublishReceived", (topic, payload) => {
-                try {
-                    HandlePublishReceived(topic, payload);
-                } catch (Exception ex) {
-                    Logger.LogError(ex, $"Processing {topic}={payload} failed.");
-                }
-            });
-
-            _mqttHubConnection.On<List<string>>("CreateDashboard", (topicDump) => {
+            _mqttHubBroker.Connection.On<List<string>>("CreateDashboard", (topicDump) => {
                 try {
                     HandleCreateDashboard(topicDump);
                 } catch (Exception ex) {
@@ -84,19 +76,15 @@ namespace BlazorHomieDashboard.Pages {
                 Logger.LogError(ex, "Unable to read source code url.");
             }
 
-            await _mqttHubConnection.StartAsync();
+            await _mqttHubBroker.Connection.StartAsync();
             await base.OnInitializedAsync();
-        }
-
-        private void PublishToTopic(string topic, string payload, byte qosLevel, bool isRetained) {
-            _mqttHubConnection.SendAsync("PublishToTopic", topic, payload, qosLevel, isRetained);
         }
 
         private void HandleCreateDashboard(List<string> topicsDump) {
             _homieDevices.Clear();
             StateHasChanged();
 
-             _topicsCount = topicsDump.Count;
+            _topicsCount = topicsDump.Count;
 
             var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie", out var parsingErrors);
 
@@ -106,29 +94,16 @@ namespace BlazorHomieDashboard.Pages {
 
             foreach (var deviceMetadata in devicesMetadata) {
                 var homieDevice = DeviceFactory.CreateClientDevice(deviceMetadata);
-
-                homieDevice.Initialize(PublishToTopic, (topic => {
-                    // No need to subscribe to anything since back-end subscribes all homie topics.
-                }));
-
+                homieDevice.Initialize(_mqttHubBroker);
                 _homieDevices.Add(homieDevice);
             }
 
             foreach (var dumpValue in topicsDump) {
                 var splits = dumpValue.Split(":");
-
-                foreach (var homieDevice in _homieDevices) {
-                    homieDevice.HandlePublishReceived(splits[0], splits[1]);
-                }
+                _mqttHubBroker.OnPublishReceived(new PublishReceivedEventArgs(splits[0], splits[1]));
             }
 
             StateHasChanged();
-        }
-
-        private void HandlePublishReceived(string topic, string payload) {
-            foreach (var homieDevice in _homieDevices) {
-                homieDevice.HandlePublishReceived(topic, payload);
-            }
         }
     }
 }
