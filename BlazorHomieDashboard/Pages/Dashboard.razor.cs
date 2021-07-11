@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace BlazorHomieDashboard.Pages {
                 return Task.FromResult(0);
             };
 
-            _mqttHubBroker.Connection.On<List<string>>("CreateDashboard", (topicDump) => {
+            _mqttHubBroker.Connection.On<List<KeyValuePair<string, string>>>("CreateDashboard", (topicDump) => {
                 try {
                     HandleCreateDashboard(topicDump);
                 } catch (Exception ex) {
@@ -80,13 +81,13 @@ namespace BlazorHomieDashboard.Pages {
             await base.OnInitializedAsync();
         }
 
-        private void HandleCreateDashboard(List<string> topicsDump) {
+        private void HandleCreateDashboard(List<KeyValuePair<string, string>> topicsDump) {
             _homieDevices.Clear();
             StateHasChanged();
 
             _topicsCount = topicsDump.Count;
 
-            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.ToArray(), "homie", out var parsingErrors);
+            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.Select(d => d.Key + ":" + d.Value).ToArray(), "homie", out var parsingErrors);
 
             foreach (var parsingError in parsingErrors) {
                 Logger.LogError(parsingError);
@@ -99,8 +100,7 @@ namespace BlazorHomieDashboard.Pages {
             }
 
             foreach (var dumpValue in topicsDump) {
-                var splits = dumpValue.Split(":");
-                _mqttHubBroker.OnPublishReceived(new PublishReceivedEventArgs(splits[0], splits[1]));
+                _mqttHubBroker.OnPublishReceived(new PublishReceivedEventArgs(dumpValue.Key, dumpValue.Value));
             }
 
             StateHasChanged();

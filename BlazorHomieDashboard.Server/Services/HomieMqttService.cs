@@ -46,13 +46,8 @@ namespace BlazorHomieDashboard.Server.Services {
             });
         }
 
-        public List<string> GetTopicsCache() {
-            var topicsCache = new List<string>();
-            foreach (var item in _topicsCache) {
-                topicsCache.Add(item.Key + ":" + item.Value);
-            }
-
-            return topicsCache;
+        public List<KeyValuePair<string, string>> GetTopicsCache() {
+            return _topicsCache.ToList();
         }
 
         public async Task PublishToTopicAsync(string topic, string payload, byte qosLevel, bool isRetained) {
