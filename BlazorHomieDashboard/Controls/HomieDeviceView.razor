@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel
+@using System.ComponentModel
 @implements IDisposable
 @inject HttpClient _httpClient
 
@@ -8,7 +8,7 @@
     <h2>@Data.Name [@Data.State]</h2>
 }
 <div>
-    @if (Data.State == HomieState.Ready) {
+    @if (Data.State == HomieState.Ready | Data.State == HomieState.Alert) {
         <RadzenTabs>
             <Tabs>
                 @foreach (var node in Data.Nodes) {
