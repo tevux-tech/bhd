@@ -1,11 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 
 namespace BlazorHomieDashboard {
-    public class MqttHubBroker : IMqttBroker {
+    public class MqttHubBroker : IClientDeviceConnection {
         private class HubReconnectPolicy : IRetryPolicy {
             public TimeSpan? NextRetryDelay(RetryContext retryContext) {
                 return new TimeSpan(0, 0, 5);
@@ -30,17 +31,8 @@ namespace BlazorHomieDashboard {
             });
         }
 
-        public void Initialize(string ipAddress) {
-            throw new NotImplementedException();
-        }
 
-        public bool TryConnect(string lwtTopic, string lwtPayload) {
-            throw new NotImplementedException();
-        }
-
-        public void Disconnect() {
-            throw new NotImplementedException();
-        }
+        public bool IsConnected { get; } = true;
 
         public bool TryPublish(string topic, string payload, byte qosLevel, bool isRetained) {
             Connection.SendAsync("PublishToTopic", topic, payload, qosLevel, isRetained);
@@ -56,5 +48,7 @@ namespace BlazorHomieDashboard {
         public virtual void OnPublishReceived(PublishReceivedEventArgs e) {
             PublishReceived?.Invoke(this, e);
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
