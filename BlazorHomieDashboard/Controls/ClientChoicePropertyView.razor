@@ -4,9 +4,11 @@
 <RadzenCard>
     <h4>@Data.Name</h4>
 
-    @if (Data.Type == PropertyType.State) {
+    @if (Data.Type == PropertyType.State | Data.Type == PropertyType.Parameter) {
         <h2 class="text-center">@Data.Value</h2>
-    } else if (Data.Type == PropertyType.Command) {
+    }
+
+    @if (Data.Type == PropertyType.Command | Data.Type == PropertyType.Parameter) {
         <div class="input-group justify-content-center">
             @foreach (var option in Data.Format.Split(",")) {
                 <RadzenButton class="enum-buttons" Text="@option" Click="() => SetDataValue(option)"></RadzenButton>
@@ -38,4 +40,3 @@
     }
 
 }
-
