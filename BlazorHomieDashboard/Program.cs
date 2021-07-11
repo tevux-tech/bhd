@@ -10,7 +10,7 @@ namespace BlazorHomieDashboard {
         public static async Task Main(string[] args) {
 #if DEBUG
             // Add some delay so that debugger has some time to attach. Otherwise some breakpoints may not be hit which is known issue for Blazor.
-            await Task.Delay(5000);
+            await Task.Delay(2000);
 #endif
 
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
