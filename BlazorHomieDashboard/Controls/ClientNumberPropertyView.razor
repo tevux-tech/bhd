@@ -4,12 +4,12 @@
 <RadzenCard>
     @if (Data.Type == PropertyType.State) {
         <h4>@Data.Name</h4>
-        <h2 class="text-center">@Data.Value.ToString("F2") @Data.Unit</h2>
+        <h2 class="text-center">@Helpers.FloatToString(Data.Value, Data.Format) @Data.Unit</h2>
     } else {
         <div>
             <h4>@Data.Name</h4>
             <a href="javascript:;" @onclick="Edit">
-                <h2 class="text-center" hidden="@_isEditing">@Data.Value.ToString("F2") @Data.Unit</h2>
+                <h2 class="text-center" hidden="@_isEditing">@Helpers.FloatToString(Data.Value, Data.Format) @Data.Unit</h2>
             </a>
         </div>
 
