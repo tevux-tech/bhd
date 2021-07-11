@@ -2,10 +2,10 @@
 @using Microsoft.AspNetCore.SignalR.Client
 
 <div class="container-fluid">
-    @foreach (var homieDevice in _homieDevices.Where(d => d.State == HomieState.Ready)) {
+    @foreach (var homieDevice in _homieDevices.Where(d => d.State == HomieState.Init | d.State == HomieState.Ready | d.State == HomieState.Alert | d.State == HomieState.Sleeping).OrderBy(d => d.DeviceId)) {
         <HomieDeviceView Data="@homieDevice"/>
     }
-    @foreach (var homieDevice in _homieDevices.Where(d => d.State != HomieState.Ready)) {
+    @foreach (var homieDevice in _homieDevices.Where(d => d.State == HomieState.Disconnected | d.State == HomieState.Lost).OrderBy(d => d.DeviceId)) {
         <HomieDeviceView Data="@homieDevice"/>
     }
 </div>
