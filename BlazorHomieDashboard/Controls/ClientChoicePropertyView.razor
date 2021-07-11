@@ -4,20 +4,44 @@
 <RadzenCard>
     <h4>@Data.Name</h4>
 
-    @if (Data.Type == PropertyType.State | Data.Type == PropertyType.Parameter) {
+    @if (Data.Type == PropertyType.State) {
         <h2 class="text-center">@Data.Value</h2>
     }
 
-    @if (Data.Type == PropertyType.Command | Data.Type == PropertyType.Parameter) {
+    @if (Data.Type == PropertyType.Command) {
         <div class="input-group justify-content-center">
             @foreach (var option in Data.Format.Split(",")) {
                 <RadzenButton class="enum-buttons" Text="@option" Click="() => SetDataValue(option)"></RadzenButton>
             }
         </div>
     }
+
+    @if (Data.Type == PropertyType.Parameter) {
+        <div>
+            <a href="javascript:;" @onclick="Edit">
+                <h2 class="text-center" hidden="@_isEditing">@Data.Value</h2>
+            </a>
+        </div>
+
+        <div class="input-group justify-content-center" hidden="@(!_isEditing)">
+            @foreach (var option in Data.Format.Split(",")) {
+                <RadzenButton class="enum-buttons" Text="@option" Click="() => SetDataValue(option)"></RadzenButton>
+            }
+        </div>
+    }
+
+
 </RadzenCard>
 
 @code {
+
+    private bool _isEditing;
+
+    private void Edit() {
+        _isEditing = !_isEditing;
+        StateHasChanged();
+    }
+
 
     [Parameter]
     public ClientChoiceProperty Data { get; set; }
@@ -37,6 +61,7 @@
 
     private void SetDataValue(string newValue) {
         Data.Value = newValue;
+        _isEditing = false;
     }
 
 }
