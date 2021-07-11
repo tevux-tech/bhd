@@ -14,7 +14,7 @@
         </div>
 
         <div class="input-group justify-content-center" hidden="@(!_isEditing)">
-            <RadzenNumeric ShowUpDown="true" TValue="float" @bind-Value=@_targetValue Placeholder="" Format="F2"/>
+            <RadzenNumeric ShowUpDown="true" TValue="float" @bind-Value=@_targetValue Placeholder="" Format="@Data.Format"/>
             <RadzenButton Text="SET" Click="SetTargetValue"></RadzenButton>
         </div>
     }
