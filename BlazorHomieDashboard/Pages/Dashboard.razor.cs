@@ -82,6 +82,10 @@ namespace BlazorHomieDashboard.Pages {
         }
 
         private void HandleCreateDashboard(List<KeyValuePair<string, string>> topicsDump) {
+            foreach (var homieDevice in _homieDevices) {
+                homieDevice.Dispose();
+            }
+
             _homieDevices.Clear();
             StateHasChanged();
 
