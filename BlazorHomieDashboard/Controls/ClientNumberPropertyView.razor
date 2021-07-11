@@ -1,19 +1,20 @@
-﻿@implements IDisposable
+﻿@using System.ComponentModel
+@implements IDisposable
 
 <RadzenCard>
     @if (Data.Type == PropertyType.State) {
         <h4>@Data.Name</h4>
-        <h2 class="text-center">@Data.Value @Data.Unit</h2>
-    } else if (Data.Type == PropertyType.Parameter) {
+        <h2 class="text-center">@Data.Value.ToString("F2") @Data.Unit</h2>
+    } else {
         <div>
             <h4>@Data.Name</h4>
             <a href="javascript:;" @onclick="Edit">
-                <h2 class="text-center" hidden="@_isEditting">@Data.Value @Data.Unit</h2>
+                <h2 class="text-center" hidden="@_isEditing">@Data.Value.ToString("F2") @Data.Unit</h2>
             </a>
         </div>
 
-        <div class="input-group justify-content-center" hidden="@(!_isEditting)">
-            <RadzenNumeric ShowUpDown="true" TValue="int" @bind-Value=@_targetValue Placeholder=""/>
+        <div class="input-group justify-content-center" hidden="@(!_isEditing)">
+            <RadzenNumeric ShowUpDown="true" TValue="float" @bind-Value=@_targetValue Placeholder="" Format="F2"/>
             <RadzenButton Text="SET" Click="SetTargetValue"></RadzenButton>
         </div>
     }
@@ -23,15 +24,15 @@
 @code {
 
     [Parameter]
-    public ClientIntegerProperty Data { get; set; }
+    public ClientNumberProperty Data { get; set; }
 
-    private bool _isEditting;
+    private bool _isEditing;
 
-    private int _targetValue;
+    private float _targetValue;
 
     private void Edit() {
         _targetValue = Data.Value;
-        _isEditting = !_isEditting;
+        _isEditing = !_isEditing;
         StateHasChanged();
     }
 
@@ -40,8 +41,11 @@
         base.OnInitialized();
     }
 
+
     private void HandleDataPropertyChanged(object sender, PropertyChangedEventArgs e) {
-        StateHasChanged();
+        if (e.PropertyName == nameof(ClientNumberProperty.Value)) {
+            StateHasChanged();
+        }
     }
 
     void IDisposable.Dispose() {
@@ -50,8 +54,9 @@
 
     private void SetTargetValue() {
         Data.Value = _targetValue;
-        _isEditting = false;
+        _isEditing = false;
         StateHasChanged();
     }
+
 
 }

@@ -13,7 +13,7 @@
 
 <nav class="navbar fixed-bottom navbar-expand-sm navbar-light bg-light">
     <div>
-        <span class="@GetSignalRBadgeClass()">SignalR: @_mqttHubConnection.State.ToString()</span>
+        <span class="@GetSignalRBadgeClass()">SignalR: @_mqttHubBroker.Connection.State.ToString()</span>
         <span class="badge badge-info">Topics: @_topicsCount</span>
         <a href="@_sourceCodeUrl" class="badge badge-info ml-1">Version: @_version</a>
     </div>
@@ -22,7 +22,7 @@
 @code {
 
     string GetSignalRBadgeClass() {
-        if (_mqttHubConnection.State == HubConnectionState.Connected) {
+        if (_mqttHubBroker.Connection.State == HubConnectionState.Connected) {
             return "badge badge-info";
         } else {
             return "badge badge-danger";
