@@ -91,10 +91,14 @@ namespace BlazorHomieDashboard.Pages {
 
             _topicsCount = topicsDump.Count;
 
-            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.Select(d => d.Key + ":" + d.Value).ToArray(), "homie", out var parsingErrors);
+            var devicesMetadata = HomieTopicTreeParser.Parse(topicsDump.Select(d => d.Key + ":" + d.Value).ToArray(), "homie", out var parsingErrors, out var parsingWarnings);
 
             foreach (var parsingError in parsingErrors) {
                 Logger.LogError(parsingError);
+            }
+
+            foreach (var parsingWarning in parsingWarnings) {
+                Logger.LogWarning(parsingWarning);
             }
 
             foreach (var deviceMetadata in devicesMetadata) {
