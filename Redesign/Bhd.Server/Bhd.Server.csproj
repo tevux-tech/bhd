@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevBot9.Protocols.Homie" Version="0.10.0-preview.44" />
-    <PackageReference Include="DevBot9.Protocols.Homie.Utilities" Version="0.10.0-preview.30" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.8" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Yahi\Yahi-bigNET\Yahi-bigNET.csproj" />
+    <ProjectReference Include="..\..\Yahi\Yahi.Utilities-bigNET\Yahi.Utilities-bigNET.csproj" />
     <ProjectReference Include="..\Bhd.Client\Bhd.Client.csproj" />
     <ProjectReference Include="..\Bhd.Shared\Bhd.Shared.csproj" />
   </ItemGroup>
