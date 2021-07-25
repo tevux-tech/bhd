@@ -12,7 +12,7 @@
         <MudCardActions>
             <MudGrid Class="mx-1 mb-1 d-flex">
                 @foreach (var option in Property.Choices) {
-                    <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default">@option</MudButton>
+                    <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default" OnClick="() => SetTextValue(option)">@option</MudButton>
                 }
             </MudGrid>
         </MudCardActions>
@@ -64,6 +64,10 @@
     public void Dispose() {
         Console.WriteLine("Disposing " + Property.Path);
         NotificationsHub.DevicePropertyChanged -= HandleDevicePropertyChanged;
+    }
+
+    private async Task SetTextValue(string valueToSet) {
+        await HttpClient.PutAsJsonAsync($"api/{Property.Path}/TextValue", valueToSet);
     }
 
 }

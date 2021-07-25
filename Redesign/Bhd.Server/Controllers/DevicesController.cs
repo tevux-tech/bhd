@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,6 +143,29 @@ namespace Bhd.Server.Controllers {
         public Property GetProperty(string deviceId, string nodeId, string propertyId) {
             var properties = GetProperties(deviceId, nodeId);
             return properties.First(p => p.Id == propertyId);
+        }
+
+        [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/TextValue")]
+        public void SetTextValue(string deviceId, string nodeId, string propertyId, [FromBody]string textValue) {
+            var property = GetPropertyBase(deviceId, nodeId, propertyId);
+
+            switch (property) {
+                case ClientChoiceProperty choiceProperty:
+                    choiceProperty.Value = textValue;
+                    break;
+
+                case ClientTextProperty textProperty:
+                    textProperty.Value = textValue;
+                    break;
+            }
+        }
+
+        private ClientPropertyBase GetPropertyBase(string deviceId, string nodeId, string propertyId) {
+            propertyId = $"{nodeId}/{propertyId}";
+            var device = _homieService.DynamicConsumers.First(d => d.ClientDevice.DeviceId == deviceId);
+            var node = device.ClientDevice.Nodes.First(n => n.NodeId == nodeId);
+            var property = node.Properties.First(p => p.PropertyId == propertyId);
+            return property;
         }
     }
 }
