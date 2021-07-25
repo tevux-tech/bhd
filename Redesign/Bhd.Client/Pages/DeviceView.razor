@@ -1,5 +1,4 @@
 ﻿@page "/devices/{DeviceId}"
-@using Microsoft.AspNetCore.SignalR.Client
 @using System.Globalization
 
 @*<MudText Typo="Typo.h5">@_device.Name</MudText>*@
@@ -14,11 +13,14 @@
     <MudGrid Class="my-1 d-flex">
         @foreach (var property in node.Properties) {
             <MudItem Class="pa-1 flex-grow-1">
-                @if (property.Type == PropertyType.Choice) {
+
+                <PropertyView Property="@property"></PropertyView>
+
+                @*@if (property.Type == PropertyType.Choice) {
                     <ChoicePropertyView Header="@property.Name" Options="@property.Choices"/>
                 } else {
                     <TextPropertyView Header="@(property.Name + property.Bybis)" Value="@property.Value.ToString(CultureInfo.InvariantCulture)"/>
-                }
+                }*@
             </MudItem>
         }
     </MudGrid>
@@ -49,19 +51,13 @@
     }
 
     protected override async Task OnInitializedAsync() {
-        NotificationsHub.OnDeviceStateChanged( async devicePath => {
-            if (devicePath == $"devices/{DeviceId}") {
+        NotificationsHub.DeviceStateChanged += async deviceId => {
+            if (deviceId == DeviceId) {
                 await LoadDeviceInfo();
-                StateHasChanged();
-            }
-        });
-
-        NotificationsHub.OnDevicePropertyChanged(async propertyPath => {
-            if (propertyPath.StartsWith($"devices/{DeviceId}/")) {
                 await LoadDeviceNodes();
                 StateHasChanged();
             }
-        });
+        };
 
         await base.OnInitializedAsync();
     }

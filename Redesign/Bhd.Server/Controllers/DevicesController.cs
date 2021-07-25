@@ -75,6 +75,7 @@ namespace Bhd.Server.Controllers {
                 foreach (var clientPropertyBase in clientDeviceNode.Properties) {
                     var property = new Property();
                     property.Id = clientPropertyBase.PropertyId.Replace($"{node.NodeId}/", "");
+                    property.Path = $"devices/{deviceId}/nodes/{node.NodeId}/properties/{property.Id}";
                     property.Name = clientPropertyBase.Name;
                     property.Bybis = clientPropertyBase.GetType().ToString();
 

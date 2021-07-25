@@ -34,7 +34,7 @@ namespace Bhd.Server.Services {
                 var deviceId = consumer.ClientDevice.DeviceId;
 
                 consumer.ClientDevice.PropertyChanged += async (sender, args) => {
-                    await _notificationsHub.Clients.All.SendAsync("DeviceStateChanged", $"devices/{deviceId}");
+                    await _notificationsHub.Clients.All.SendAsync("DeviceStateChanged", $"{deviceId}");
                 };
 
                 foreach (var clientDeviceNode in consumer.ClientDevice.Nodes) {
@@ -42,7 +42,7 @@ namespace Bhd.Server.Services {
                         var propertyId = clientPropertyBase.PropertyId.Replace($"{clientDeviceNode.NodeId}/", "");
 
                         clientPropertyBase.PropertyChanged += async (sender, args) => {
-                            await _notificationsHub.Clients.All.SendAsync("DevicePropertyChanged", $"devices/{deviceId}/{clientDeviceNode.NodeId}/properties/{propertyId}");
+                            await _notificationsHub.Clients.All.SendAsync("DevicePropertyChanged", $"devices/{deviceId}/nodes/{clientDeviceNode.NodeId}/properties/{propertyId}");
                         };
                     }
 

@@ -1,0 +1,62 @@
+﻿@implements IDisposable
+
+<MudCard Elevation="2">
+    <MudCardHeader Class="pa-2">
+        <CardHeaderContent>
+            <MudText Align="Align.Center">@Property.Name</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    @*<MudCardContent>
+            <MudText>Story of the day</MudText>
+            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+        </MudCardContent>*@
+
+    <MudCardContent Class="pt-0 pb-5">
+        <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@Property.Value</MudText>
+    </MudCardContent>
+
+    <MudCardActions>
+        <MudGrid Class="mx-1 mb-1 d-flex">
+            @*@foreach (var option in Options) {
+                <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default">@option</MudButton>
+            }*@
+        </MudGrid>
+    </MudCardActions>
+</MudCard>
+
+@code {
+
+    [Parameter]
+    public Property Property { get; set; }
+
+    [Inject]
+    public NotificationsHub NotificationsHub { get; set; }
+
+    [Inject]
+    public HttpClient HttpClient { get; set; }
+
+    protected override Task OnInitializedAsync() {
+        NotificationsHub.DevicePropertyChanged += HandleDevicePropertyChanged;
+        return base.OnInitializedAsync();
+    }
+
+    private void HandleDevicePropertyChanged(string propertyPath) {
+        if (propertyPath == Property.Path) {
+            Task.Run(async () => {
+                await Refresh();
+                StateHasChanged();
+            });
+        }
+    }
+
+
+    private async Task Refresh() {
+        Property = await HttpClient.GetFromJsonAsync<Property>($"api/{Property.Path}");
+    }
+
+    public void Dispose() {
+        Console.WriteLine("Disposing " + Property.Path);
+        NotificationsHub.DevicePropertyChanged -= HandleDevicePropertyChanged;
+    }
+
+}
