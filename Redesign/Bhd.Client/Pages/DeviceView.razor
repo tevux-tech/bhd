@@ -49,14 +49,14 @@
     }
 
     protected override async Task OnInitializedAsync() {
-        NotificationsHub.Connection.On("DeviceStateChanged", async (string devicePath) => {
+        NotificationsHub.OnDeviceStateChanged( async devicePath => {
             if (devicePath == $"devices/{DeviceId}") {
                 await LoadDeviceInfo();
                 StateHasChanged();
             }
         });
 
-        NotificationsHub.Connection.On("DevicePropertyChanged", async (string propertyPath) => {
+        NotificationsHub.OnDevicePropertyChanged(async propertyPath => {
             if (propertyPath.StartsWith($"devices/{DeviceId}/")) {
                 await LoadDeviceNodes();
                 StateHasChanged();

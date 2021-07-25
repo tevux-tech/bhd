@@ -39,7 +39,7 @@
     private NotificationsHub NotificationsHub { get; set; }
 
     protected override async Task OnInitializedAsync() {
-        NotificationsHub.Connection.On("DeviceStateChanged", async (string devicePath) => {
+        NotificationsHub.OnDeviceStateChanged(async _ => {
             await LoadDevices();
             StateHasChanged();
         });
