@@ -3,7 +3,7 @@ using System.Diagnostics;
 using DevBot9.Protocols.Homie;
 using DevBot9.Protocols.Homie.Utilities;
 
-namespace Server.Services {
+namespace Bhd.Server.Services {
     public class DynamicConsumer {
         private PahoClientDeviceConnection _broker = new PahoClientDeviceConnection();
 

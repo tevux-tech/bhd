@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Bhd.Shared.csproj" />
+    <ProjectReference Include="..\Bhd.Shared\Bhd.Shared.csproj" />
   </ItemGroup>
 
 </Project>

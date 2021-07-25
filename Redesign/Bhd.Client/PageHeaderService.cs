@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MudBlazorWasm1 {
+namespace Bhd.Client {
     public class PageHeaderService : INotifyPropertyChanged {
         private string _currentPageTitle;
         public string CurrentPageTitle {

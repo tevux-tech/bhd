@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MudBlazorWasm1\MudBlazorWasm1.csproj" />
-    <ProjectReference Include="..\Shared\Bhd.Shared.csproj" />
+    <ProjectReference Include="..\Bhd.Client\Bhd.Client.csproj" />
+    <ProjectReference Include="..\Bhd.Shared\Bhd.Shared.csproj" />
   </ItemGroup>
 
 </Project>

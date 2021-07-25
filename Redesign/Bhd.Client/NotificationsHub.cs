@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace MudBlazorWasm1 {
+namespace Bhd.Client {
     public class NotificationsHub {
         public HubConnection Connection { get; }
 

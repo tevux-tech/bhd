@@ -2,13 +2,13 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using Bhd.Server.Services;
 using Bhd.Shared;
 using DevBot9.Protocols.Homie;
-using Server.Services;
 using Device = Bhd.Shared.Device;
 using PropertyType = Bhd.Shared.PropertyType;
 
-namespace Server.Controllers {
+namespace Bhd.Server.Controllers {
     [ApiController]
     [Route("api/[controller]")]
     public class DevicesController : ControllerBase {

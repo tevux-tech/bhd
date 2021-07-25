@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bhd.Server.Hubs;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Server.Hubs;
 
-namespace Server.Services {
+namespace Bhd.Server.Services {
     public class HomieService {
         private readonly ILogger<HomieService> _logger;
 

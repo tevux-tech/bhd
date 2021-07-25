@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Server.Hubs {
+namespace Bhd.Server.Hubs {
     public class NotificationsHub : Hub {}
 }

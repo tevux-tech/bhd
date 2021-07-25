@@ -5,7 +5,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace MudBlazorWasm1 {
+namespace Bhd.Client {
     public class Program {
         public static async Task Main(string[] args) {
 #if DEBUG

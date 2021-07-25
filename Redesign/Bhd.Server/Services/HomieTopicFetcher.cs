@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using uPLibrary.Networking.M2Mqtt;
 
-namespace Server.Services {
+namespace Bhd.Server.Services {
     public class HomieTopicFetcher {
         private MqttClient _mqttClient;
         private readonly string _mqttClientGuid = Guid.NewGuid().ToString();
