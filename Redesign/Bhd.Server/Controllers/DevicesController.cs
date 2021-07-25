@@ -57,6 +57,11 @@ namespace Bhd.Server.Controllers {
             return devices;
         }
 
+        [HttpPost("Rescan")]
+        public void Rescan() {
+            _homieService.Rescan();
+        }
+
         [HttpGet("{deviceId}")]
         public Device GetDevice(string deviceId) {
             return Get().First(d => d.DeviceId == deviceId);

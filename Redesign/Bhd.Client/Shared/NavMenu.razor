@@ -1,28 +1,36 @@
-﻿@using Microsoft.AspNetCore.SignalR.Client
-<MudNavMenu>
-    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Ready Devices</MudText>
+﻿<MudNavMenu>
 
-    @foreach (var device in _devices.Where(d => d.State == DeviceState.Ready).OrderBy(d => d.DeviceId)) {
-        <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
-            @device.Name
-        </MudNavLink>
-    }
+    <div hidden="@(!_isScanning)">
+        <MudAlert Square="true" Severity="Severity.Info" Variant="Variant.Filled">Scanning...</MudAlert>
+    </div>
 
-    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Alerts</MudText>
+    <div hidden="@(_isScanning)">
+        <MudButton OnClick="HandleRescanButtonClick" StartIcon="@Icons.Filled.Search" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Rescan</MudButton>
+    </div>
 
-    @foreach (var device in _devices.Where(d => d.State == DeviceState.Alert).OrderBy(d => d.DeviceId)) {
-        <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
-            @device.Name
-        </MudNavLink>
-    }
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Ready Devices" Expanded="true">
+        @foreach (var device in _devices.Where(d => d.State == DeviceState.Ready).OrderBy(d => d.DeviceId)) {
+            <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
+                @device.Name
+            </MudNavLink>
+        }
+    </MudNavGroup>
 
-    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Lost devices</MudText>
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Alerts" Expanded="true">
+        @foreach (var device in _devices.Where(d => d.State == DeviceState.Alert).OrderBy(d => d.DeviceId)) {
+            <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
+                @device.Name
+            </MudNavLink>
+        }
+    </MudNavGroup>
 
-    @foreach (var device in _devices.Where(d => d.State == DeviceState.Lost).OrderBy(d => d.DeviceId)) {
-        <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
-            @device.Name
-        </MudNavLink>
-    }
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Lost Devices" Expanded="true">
+        @foreach (var device in _devices.Where(d => d.State == DeviceState.Lost).OrderBy(d => d.DeviceId)) {
+            <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
+                @device.Name
+            </MudNavLink>
+        }
+    </MudNavGroup>
 
 </MudNavMenu>
 
@@ -38,6 +46,8 @@
     [Inject]
     private NotificationsHub NotificationsHub { get; set; }
 
+    private bool _isScanning = false;
+
     protected override async Task OnInitializedAsync() {
         NotificationsHub.DeviceStateChanged += async _ => {
             await LoadDevices();
@@ -50,6 +60,12 @@
 
     private async Task LoadDevices() {
         _devices = await HttpClient.GetFromJsonAsync<List<Device>>("api/devices");
+    }
+
+    private async Task HandleRescanButtonClick(MouseEventArgs obj) {
+        _isScanning = true;
+        await HttpClient.PostAsync("api/devices/rescan", new StringContent(""));
+        _isScanning = false;
     }
 
 }

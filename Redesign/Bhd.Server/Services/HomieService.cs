@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Bhd.Server.Hubs;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.SignalR;
@@ -14,22 +13,33 @@ namespace Bhd.Server.Services {
         private HomieTopicFetcher _fetcher;
         private readonly IHubContext<NotificationsHub> _notificationsHub;
 
+        private string _brokerIp = "192.168.2.2";
+        private string _baseTopic = "homie";
+
         public HomieService(ILogger<HomieService> logger, IHubContext<NotificationsHub> notificationsHub) {
             _logger = logger;
             _notificationsHub = notificationsHub;
-
-            var brokerIp = "192.168.2.2";
-            DeviceFactory.Initialize("homie");
-
+            DeviceFactory.Initialize(_baseTopic);
             _fetcher = new HomieTopicFetcher();
-            _fetcher.Initialize(brokerIp);
+            _fetcher.Initialize(_brokerIp);
+
+            Rescan();
+        }
+
+        public void Rescan() {
+            foreach (var dynamicConsumer in DynamicConsumers) {
+                dynamicConsumer.Dispose();
+            }
+
             _fetcher.FetchTopics(DeviceFactory.BaseTopic + "/#", out var topicDump);
 
             var homieTree = HomieTopicTreeParser.Parse(topicDump, DeviceFactory.BaseTopic, out var _, out var _);
 
+            var dynamicConsumers = new List<DynamicConsumer>();
+
             foreach (var clientDeviceMetadata in homieTree) {
                 var consumer = new DynamicConsumer();
-                consumer.Initialize(brokerIp, clientDeviceMetadata);
+                consumer.Initialize(_brokerIp, clientDeviceMetadata);
 
                 var deviceId = consumer.ClientDevice.DeviceId;
 
@@ -45,11 +55,12 @@ namespace Bhd.Server.Services {
                             await _notificationsHub.Clients.All.SendAsync("DevicePropertyChanged", $"devices/{deviceId}/nodes/{clientDeviceNode.NodeId}/properties/{propertyId}");
                         };
                     }
-
                 }
 
-                DynamicConsumers.Add(consumer);
+                dynamicConsumers.Add(consumer);
             }
+
+            DynamicConsumers = dynamicConsumers;
         }
     }
 }
