@@ -5,9 +5,12 @@ namespace Bhd.Shared {
         public string Id { get; set; }
         public string Path { get; set; }
         public string Name { get; set; }
-        public string Bybis { get; set; }
         public PropertyType Type { get; set; }
-        public float Value { get; set; }
-        public List<string> Choices { get; set; }
+        public Direction Direction { get; set; }
+        public float NumericValue { get; set; }
+        public string TextValue { get; set; }
+        public string Format { get; set; }
+        public string Unit { get; set; }
+        public List<string> Choices { get; set; } = new List<string>();
     }
 }

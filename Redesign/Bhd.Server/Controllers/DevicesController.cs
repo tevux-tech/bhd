@@ -77,28 +77,40 @@ namespace Bhd.Server.Controllers {
                     property.Id = clientPropertyBase.PropertyId.Replace($"{node.NodeId}/", "");
                     property.Path = $"devices/{deviceId}/nodes/{node.NodeId}/properties/{property.Id}";
                     property.Name = clientPropertyBase.Name;
-                    property.Bybis = clientPropertyBase.GetType().ToString();
+                    property.Format = clientPropertyBase.Format;
+                    property.Unit = clientPropertyBase.Unit;
+
+                    switch (clientPropertyBase.Type) {
+                        case DevBot9.Protocols.Homie.PropertyType.State:
+                            property.Direction = Direction.Read;
+                            break;
+
+                        case DevBot9.Protocols.Homie.PropertyType.Command:
+                            property.Direction = Direction.Write;
+                            break;
+
+                        case DevBot9.Protocols.Homie.PropertyType.Parameter:
+                            property.Direction = Direction.ReadWrite;
+                            break;
+                    }
 
                     switch (clientPropertyBase) {
                         case ClientNumberProperty numberProperty:
                             property.Type = PropertyType.Number;
-                            property.Value = numberProperty.Value;
+                            property.NumericValue = numberProperty.Value;
                             node.Properties.Add(property);
                             break;
 
                         case ClientChoiceProperty choiceProperty:
-                            if (choiceProperty.Type == DevBot9.Protocols.Homie.PropertyType.Command) {
-                                property.Type = PropertyType.Choice;
-                                property.Choices = choiceProperty.Format.Split(",").ToList();
-                                node.Properties.Add(property);
-                            } else {
-                                property.Type = PropertyType.Text;
-                                node.Properties.Add(property);
-                            }
+                            property.TextValue = choiceProperty.Value;
+                            property.Type = PropertyType.Choice;
+                            property.Choices = choiceProperty.Format.Split(",").ToList();
+                            node.Properties.Add(property);
                             break;
 
                         case ClientTextProperty textProperty:
                             property.Type = PropertyType.Text;
+                            property.TextValue = textProperty.Value;
                             node.Properties.Add(property);
                             break;
 

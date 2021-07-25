@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+﻿@using Direction = Bhd.Shared.Direction
+@implements IDisposable
 
 <MudCard Elevation="2">
     <MudCardHeader Class="pa-2">
@@ -6,22 +7,28 @@
             <MudText Align="Align.Center">@Property.Name</MudText>
         </CardHeaderContent>
     </MudCardHeader>
-    @*<MudCardContent>
-            <MudText>Story of the day</MudText>
-            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
-        </MudCardContent>*@
 
-    <MudCardContent Class="pt-0 pb-5">
-        <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@Property.Value</MudText>
-    </MudCardContent>
+    @if (Property.Type == PropertyType.Choice && Property.Direction == Direction.Write) {
+        <MudCardActions>
+            <MudGrid Class="mx-1 mb-1 d-flex">
+                @foreach (var option in Property.Choices) {
+                    <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default">@option</MudButton>
+                }
+            </MudGrid>
+        </MudCardActions>
+    } else {
+        <MudCardContent Class="pt-0 pb-5">
+            @if (Property.Type == PropertyType.Number) {
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue.ToString(Property.Format) + " " + Property.Unit)</MudText>
+            } else if (Property.Type is PropertyType.Text or PropertyType.Choice) {
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@Property.TextValue</MudText>
+            } else {
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">Bybis</MudText>
+            }
+        </MudCardContent>
+    }
 
-    <MudCardActions>
-        <MudGrid Class="mx-1 mb-1 d-flex">
-            @*@foreach (var option in Options) {
-                <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default">@option</MudButton>
-            }*@
-        </MudGrid>
-    </MudCardActions>
+
 </MudCard>
 
 @code {
