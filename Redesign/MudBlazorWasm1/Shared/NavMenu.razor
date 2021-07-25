@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+<MudNavMenu>
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Ready Devices</MudText>
+
+    @foreach (var device in _devices.Where(d => d.State == DeviceState.Ready).OrderBy(d => d.DeviceId)) {
+        <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
+            @device.Name
+        </MudNavLink>
+    }
+
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Alerts</MudText>
+
+    @foreach (var device in _devices.Where(d => d.State == DeviceState.Alert).OrderBy(d => d.DeviceId)) {
+        <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
+            @device.Name
+        </MudNavLink>
+    }
+
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Lost devices</MudText>
+
+    @foreach (var device in _devices.Where(d => d.State == DeviceState.Lost).OrderBy(d => d.DeviceId)) {
+        <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
+            @device.Name
+        </MudNavLink>
+    }
+
+</MudNavMenu>
+
+@code {
+    private List<Device> _devices = new();
+
+    [Inject]
+    private HttpClient HttpClient { get; set; }
+
+    [Inject]
+    private ILogger<NavMenu> Logger { get; set; }
+
+    [Inject]
+    private NotificationsHub NotificationsHub { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        NotificationsHub.Connection.On("DeviceStateChanged", async (string devicePath) => {
+            await LoadDevices();
+            StateHasChanged();
+        });
+
+        await LoadDevices();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadDevices() {
+        _devices = await HttpClient.GetFromJsonAsync<List<Device>>("api/devices");
+    }
+
+}

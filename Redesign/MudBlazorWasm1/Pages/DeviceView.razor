@@ -1,0 +1,77 @@
+﻿@page "/devices/{DeviceId}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Globalization
+
+@*<MudText Typo="Typo.h5">@_device.Name</MudText>*@
+
+@if (_device.State == DeviceState.Lost) {
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Device is lost!</MudAlert>
+}
+
+@foreach (var node in _nodes) {
+    <MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
+
+    <MudGrid Class="my-1 d-flex">
+        @foreach (var property in node.Properties) {
+            <MudItem Class="pa-1 flex-grow-1">
+                @if (property.Type == PropertyType.Choice) {
+                    <ChoicePropertyView Header="@property.Name" Options="@property.Choices"/>
+                } else {
+                    <TextPropertyView Header="@(property.Name + property.Bybis)" Value="@property.Value.ToString(CultureInfo.InvariantCulture)"/>
+                }
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public string DeviceId { get; set; }
+
+    [Inject]
+    private HttpClient HttpClient { get; set; }
+
+    [Inject]
+    private NotificationsHub NotificationsHub { get; set; }
+
+    [Inject]
+    private PageHeaderService PageHeaderService { get; set; }
+
+    private List<Node> _nodes = new();
+    private Device _device = new();
+
+    protected override async Task OnParametersSetAsync() {
+        await LoadDeviceInfo();
+        await LoadDeviceNodes();
+        PageHeaderService.CurrentPageTitle = $"/ Devices / {_device.Name}";
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnInitializedAsync() {
+        NotificationsHub.Connection.On("DeviceStateChanged", async (string devicePath) => {
+            if (devicePath == $"devices/{DeviceId}") {
+                await LoadDeviceInfo();
+                StateHasChanged();
+            }
+        });
+
+        NotificationsHub.Connection.On("DevicePropertyChanged", async (string propertyPath) => {
+            if (propertyPath.StartsWith($"devices/{DeviceId}/")) {
+                await LoadDeviceNodes();
+                StateHasChanged();
+            }
+        });
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadDeviceInfo() {
+        _device = await HttpClient.GetFromJsonAsync<Device>($"api/devices/{DeviceId}");
+    }
+
+    private async Task LoadDeviceNodes() {
+        _nodes = await HttpClient.GetFromJsonAsync<List<Node>>($"api/devices/{DeviceId}/nodes");
+    }
+
+}

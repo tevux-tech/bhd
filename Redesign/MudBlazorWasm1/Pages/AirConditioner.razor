@@ -1,0 +1,83 @@
+﻿@page "/air-conditioner"
+
+<MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">General information and properties</MudText>
+
+<MudGrid Class="my-1 d-flex">
+    <MudItem Class="pa-1 flex-grow-1">
+        <TextPropertyView @ref="Bybis1" Header="Actual measured air temperature" Value="@Level"/>
+    </MudItem>
+
+    <MudItem Class="pa-1 flex-grow-1">
+        <TextPropertyView Header="Target air temperature" Value="24.00 °C"/>
+    </MudItem>
+
+    <MudItem Class="pa-1 flex-grow-1">
+        <TextPropertyView Header="Actual power state" Value="ON"/>
+    </MudItem>
+
+    <MudItem Class="pa-1 flex-grow-1">
+        <ChoicePropertyView Header="Turn device on or off" Options="@OnOffChoices()"/>
+    </MudItem>
+</MudGrid>
+
+<MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">Ventilation information and properties</MudText>
+
+<MudGrid Class="my-1 d-flex">
+    <MudItem Class="pa-1 flex-grow-1">
+        <TextPropertyView Header="Level of ventilation" Value="50.23 %"/>
+    </MudItem>
+</MudGrid>
+
+<MudText Class="my-2" Typo="Typo.h6" Color="Color.Primary">Service related properties</MudText>
+
+<MudGrid Class="my-1 d-flex">
+    <MudItem Class="pa-1 flex-grow-1">
+        <TextPropertyView Header="Date of the last service" Value="2021-10-11T20:26:32.779"/>
+    </MudItem>
+
+    <MudItem Class="pa-1 flex-grow-1">
+        <TextPropertyView Header="Date for the next service" Value="2021-07-11T20:26:32.788"/>
+    </MudItem>
+
+    <MudItem Class="pa-1 flex-grow-1">
+        <ChoicePropertyView Header="Perform service" Options="@StartStopChoices()"/>
+    </MudItem>
+
+    <MudItem Class="pa-1 flex-grow-1">
+        <TextPropertyView Header="Uptime " Value="4.183 h"/>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    public string Level { get; set; } = "Bybis 1";
+
+    private TextPropertyView Bybis1;
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        //await Task.Run(async () => {
+        //    var i = 0;
+        //    while (true) {
+        //        Level = $"Bybis {i}";
+        //        i++;
+
+        //        //Bybis1.Refresh();
+        //        StateHasChanged();
+        //        Console.WriteLine(Level);
+        //        await Task.Delay(100);
+        //    }
+        //});
+    }
+
+
+    private List<string> OnOffChoices() {
+        return new List<string>() { "ON", "OFF" };
+    }
+
+    private List<string> StartStopChoices() {
+        return new List<string>() { "Start", "Stop", "Bybis1", "Bybis2", "Bybis3" };
+    }
+
+}

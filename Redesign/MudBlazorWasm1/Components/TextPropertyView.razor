@@ -1,0 +1,68 @@
+﻿<MudCard Elevation="2">
+    <MudCardHeader Class="pa-2">
+        <CardHeaderContent>
+            <MudText Align="Align.Center">@Header</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+
+    <MudCardContent Class="pt-0 pb-5" hidden="@_isEditing">
+        <a href="javascript:;" @onclick="Edit">
+            <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@Value</MudText>
+        </a>
+    </MudCardContent>
+
+    <MudCardContent Class="pt-0 pb-3" hidden="@(!_isEditing)">
+        <div>
+            <MudGrid Class="d-flex" Justify="Justify.Center">
+                <MudItem Class="px-0">
+                    <MudNumericField style="width: 100px;" OnKeyPress="HandleKeyPress" HideSpinButtons="true" Class="ma-0" Margin="Margin.Dense" Label="New value" @bind-Value="_targetValue" Variant="Variant.Outlined"></MudNumericField>
+                </MudItem>
+
+                <MudItem Class="align-self-center px-0">
+                    <MudButton OnClick="Set" Class="ml-1" Variant="Variant.Filled" Color="Color.Primary">SET</MudButton>
+                </MudItem>
+
+            </MudGrid>
+
+        </div>
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    private bool _isEditing = false;
+    private double _targetValue = 50.3;
+
+    [Parameter]
+    public string Header { get; set; } = "Header1";
+
+    [Parameter]
+    public string Value { get; set; } = "Value1";
+
+    [Parameter]
+    public bool IsEditable { get; set; } = false;
+
+    private void Edit() {
+        _isEditing = true;
+        Console.WriteLine("Edit");
+    }
+
+    private void Set(MouseEventArgs obj) {
+        _isEditing = false;
+    }
+
+    public void Refresh() {
+        StateHasChanged();
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs obj) {
+        if (obj.Key == "Enter") {
+            _isEditing = false;
+        }
+    }
+
+    protected override Task OnParametersSetAsync() {
+        return base.OnParametersSetAsync();
+    }
+
+}
