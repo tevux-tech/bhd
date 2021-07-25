@@ -38,13 +38,11 @@ namespace Bhd.Server.Services {
                 };
 
                 foreach (var clientDeviceNode in consumer.ClientDevice.Nodes) {
-                    var nodeId = clientDeviceNode.Name.Replace(" ", "-").ToLower();
-
                     foreach (var clientPropertyBase in clientDeviceNode.Properties) {
-                        var propertyId = clientPropertyBase.PropertyId;
+                        var propertyId = clientPropertyBase.PropertyId.Replace($"{clientDeviceNode.NodeId}/", "");
 
                         clientPropertyBase.PropertyChanged += async (sender, args) => {
-                            await _notificationsHub.Clients.All.SendAsync("DevicePropertyChanged", $"devices/{deviceId}/{nodeId}/properties/{propertyId}");
+                            await _notificationsHub.Clients.All.SendAsync("DevicePropertyChanged", $"devices/{deviceId}/{clientDeviceNode.NodeId}/properties/{propertyId}");
                         };
                     }
 

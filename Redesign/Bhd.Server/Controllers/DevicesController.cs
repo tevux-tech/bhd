@@ -68,13 +68,13 @@ namespace Bhd.Server.Controllers {
             foreach (var clientDeviceNode in dynamicConsumer.ClientDevice.Nodes) {
                 var node = new Node();
                 node.Name = clientDeviceNode.Name;
-                node.NodeId = clientDeviceNode.Name.Replace(" ", "-").ToLower();
+                node.NodeId = clientDeviceNode.NodeId;
 
                 node.Properties = new List<Property>();
 
                 foreach (var clientPropertyBase in clientDeviceNode.Properties) {
                     var property = new Property();
-                    property.Id = clientPropertyBase.PropertyId;
+                    property.Id = clientPropertyBase.PropertyId.Replace($"{node.NodeId}/", "");
                     property.Name = clientPropertyBase.Name;
                     property.Bybis = clientPropertyBase.GetType().ToString();
 
@@ -123,6 +123,12 @@ namespace Bhd.Server.Controllers {
         public IEnumerable<Property> GetProperties(string deviceId, string nodeId) {
             var node = GetNode(deviceId, nodeId);
             return node.Properties;
+        }
+
+        [HttpGet("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}")]
+        public Property GetProperty(string deviceId, string nodeId, string propertyId) {
+            var properties = GetProperties(deviceId, nodeId);
+            return properties.First(p => p.Id == propertyId);
         }
     }
 }
