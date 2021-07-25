@@ -16,7 +16,7 @@
                 }
             </MudGrid>
         </MudCardActions>
-    } else {
+    } else if ((Property.Type == PropertyType.Text | Property.Type == PropertyType.Number | Property.Type == PropertyType.Choice) && Property.Direction == Direction.Read) {
         <MudCardContent Class="pt-0 pb-5">
             @if (Property.Type == PropertyType.Number) {
                 <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue.ToString(Property.Format) + " " + Property.Unit)</MudText>
@@ -26,6 +26,31 @@
                 <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">Bybis</MudText>
             }
         </MudCardContent>
+    } else if (Property.Type == PropertyType.Number && Property.Direction == Direction.ReadWrite) {
+
+
+        <MudCardContent Class="pt-0 pb-5" hidden="@_isEditing">
+            <a href="javascript:;" @onclick="Edit">
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue.ToString(Property.Format) + " " + Property.Unit)</MudText>
+            </a>
+        </MudCardContent>
+
+        <MudCardContent Class="pt-0 pb-3" hidden="@(!_isEditing)">
+            <div>
+                <MudGrid Class="d-flex" Justify="Justify.Center">
+                    <MudItem Class="px-0">
+                        <MudNumericField style="width: 100px;" OnKeyPress="HandleNudKeyPress" HideSpinButtons="true" Class="ma-0" Margin="Margin.Dense" Immediate="true" Label="New value" @bind-Value="_targetValue" Variant="Variant.Outlined"></MudNumericField>
+                    </MudItem>
+
+                    <MudItem Class="align-self-center px-0">
+                        <MudButton OnClick="HandleSetButtonClick" Class="ml-1" Variant="Variant.Filled" Color="Color.Primary">SET</MudButton>
+                    </MudItem>
+
+                </MudGrid>
+
+            </div>
+        </MudCardContent>
+
     }
 
 
@@ -41,6 +66,9 @@
 
     [Inject]
     public HttpClient HttpClient { get; set; }
+
+    private bool _isEditing = false;
+    private float _targetValue = 0f;
 
     protected override Task OnInitializedAsync() {
         NotificationsHub.DevicePropertyChanged += HandleDevicePropertyChanged;
@@ -68,6 +96,29 @@
 
     private async Task SetTextValue(string valueToSet) {
         await HttpClient.PutAsJsonAsync($"api/{Property.Path}/TextValue", valueToSet);
+    }
+
+    private async Task SetNumericValue(float valueToSet) {
+        await HttpClient.PutAsJsonAsync($"api/{Property.Path}/NumericValue", valueToSet);
+    }
+
+
+    private void Edit() {
+        _targetValue = Property.NumericValue;
+        _isEditing = true;
+        Console.WriteLine("Edit");
+    }
+
+    private async Task HandleSetButtonClick(MouseEventArgs obj) {
+        await SetNumericValue(_targetValue);
+        _isEditing = false;
+    }
+
+    private async Task HandleNudKeyPress(KeyboardEventArgs obj) {
+        if (obj.Key == "Enter") {
+            await SetNumericValue(_targetValue);
+            _isEditing = false;
+        }
     }
 
 }

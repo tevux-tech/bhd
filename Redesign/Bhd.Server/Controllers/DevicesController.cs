@@ -160,6 +160,17 @@ namespace Bhd.Server.Controllers {
             }
         }
 
+        [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/NumericValue")]
+        public void SetNumericValue(string deviceId, string nodeId, string propertyId, [FromBody] float numericValue) {
+            var property = GetPropertyBase(deviceId, nodeId, propertyId);
+
+            switch (property) {
+                case ClientNumberProperty numberProperty:
+                    numberProperty.Value = numericValue;
+                    break;
+            }
+        }
+
         private ClientPropertyBase GetPropertyBase(string deviceId, string nodeId, string propertyId) {
             propertyId = $"{nodeId}/{propertyId}";
             var device = _homieService.DynamicConsumers.First(d => d.ClientDevice.DeviceId == deviceId);
