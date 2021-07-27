@@ -27,7 +27,7 @@
     } else if ((Property.Type == PropertyType.Text | Property.Type == PropertyType.Number | Property.Type == PropertyType.Choice) && Property.Direction == Direction.Read) {
         <MudCardContent Class="pt-0 pb-5">
             @if (Property.Type == PropertyType.Number) {
-                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue.ToString(Property.Format) + " " + Property.Unit)</MudText>
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue + " " + Property.Unit)</MudText>
             } else if (Property.Type is PropertyType.Text or PropertyType.Choice) {
                 <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@Property.TextValue</MudText>
             } else {
@@ -37,7 +37,7 @@
     } else if (Property.Type == PropertyType.Number && Property.Direction == Direction.ReadWrite) {
         <MudCardContent Class="pt-0 pb-5" hidden="@_isEditing">
             <a href="javascript:;" @onclick="Edit">
-                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue.ToString(Property.Format) + " " + Property.Unit)</MudText>
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue + " " + Property.Unit)</MudText>
             </a>
         </MudCardContent>
 
