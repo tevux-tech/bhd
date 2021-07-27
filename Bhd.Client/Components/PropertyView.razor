@@ -95,7 +95,6 @@
     }
 
     public void Dispose() {
-        Console.WriteLine("Disposing " + Property.Path);
         NotificationsHub.DevicePropertyChanged -= HandleDevicePropertyChanged;
     }
 
@@ -111,7 +110,6 @@
     private void Edit() {
         _targetValue = Property.NumericValue;
         _isEditing = true;
-        Console.WriteLine("Edit");
     }
 
     private async Task HandleSetButtonClick(MouseEventArgs obj) {
