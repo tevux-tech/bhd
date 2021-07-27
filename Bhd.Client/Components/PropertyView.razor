@@ -1,4 +1,4 @@
-﻿@using Direction = Bhd.Shared.Direction
+@using Direction = Bhd.Shared.Direction
 @implements IDisposable
 
 <MudCard Elevation="2">
@@ -16,6 +16,14 @@
                 }
             </MudGrid>
         </MudCardActions>
+    } else if (Property.Type == PropertyType.Choice && Property.Direction == Direction.ReadWrite) {
+        <MudCardActions >
+            <MudGrid Class="mx-1 mb-1 d-flex">
+                @foreach (var option in Property.Choices) {
+                    <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" StartIcon="@(Property.TextValue == option ? Icons.Filled.Check : null)" Color="@(Property.TextValue == option ? Color.Primary : Color.Default)" OnClick="() => SetTextValue(option)">@option</MudButton>
+                }
+            </MudGrid>
+        </MudCardActions>
     } else if ((Property.Type == PropertyType.Text | Property.Type == PropertyType.Number | Property.Type == PropertyType.Choice) && Property.Direction == Direction.Read) {
         <MudCardContent Class="pt-0 pb-5">
             @if (Property.Type == PropertyType.Number) {
@@ -27,8 +35,6 @@
             }
         </MudCardContent>
     } else if (Property.Type == PropertyType.Number && Property.Direction == Direction.ReadWrite) {
-
-
         <MudCardContent Class="pt-0 pb-5" hidden="@_isEditing">
             <a href="javascript:;" @onclick="Edit">
                 <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue.ToString(Property.Format) + " " + Property.Unit)</MudText>
@@ -50,7 +56,6 @@
 
             </div>
         </MudCardContent>
-
     }
 
 
