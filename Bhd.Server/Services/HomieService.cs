@@ -27,17 +27,29 @@ namespace Bhd.Server.Services {
         }
 
         public void Rescan() {
+            _logger.LogInformation("Rescanning...");
+
             foreach (var dynamicConsumer in DynamicConsumers) {
                 dynamicConsumer.Dispose();
             }
 
             _fetcher.FetchTopics(DeviceFactory.BaseTopic + "/#", out var topicDump);
 
-            var homieTree = HomieTopicTreeParser.Parse(topicDump, DeviceFactory.BaseTopic, out var _, out var _);
+            var parsedDeviceMetadata = HomieTopicTreeParser.Parse(topicDump, DeviceFactory.BaseTopic, out var errorList, out var warningsList);
+
+            foreach (var warning in warningsList) {
+                _logger.LogWarning(warning);
+            }
+
+            foreach (var error in errorList) {
+                _logger.LogError(error);
+            }
 
             var dynamicConsumers = new List<DynamicConsumer>();
 
-            foreach (var clientDeviceMetadata in homieTree) {
+            foreach (var clientDeviceMetadata in parsedDeviceMetadata) {
+                _logger.LogInformation($"Creating device \"{clientDeviceMetadata.Id}\"");
+
                 var consumer = new DynamicConsumer();
                 consumer.Initialize(_brokerIp, clientDeviceMetadata);
 
@@ -48,6 +60,8 @@ namespace Bhd.Server.Services {
                 };
 
                 foreach (var clientDeviceNode in consumer.ClientDevice.Nodes) {
+                    _logger.LogInformation($"Device \"{clientDeviceMetadata.Id}\" has {clientDeviceNode.Properties.Length} properties in node \"{clientDeviceNode.NodeId}\"");
+
                     foreach (var clientPropertyBase in clientDeviceNode.Properties) {
                         var propertyId = clientPropertyBase.PropertyId.Replace($"{clientDeviceNode.NodeId}/", "");
 
@@ -61,6 +75,8 @@ namespace Bhd.Server.Services {
             }
 
             DynamicConsumers = dynamicConsumers;
+
+            _logger.LogInformation("Rescanning done.");
         }
     }
 }

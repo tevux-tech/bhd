@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +46,6 @@ namespace Bhd.Server.Controllers {
                         break;
 
                     default:
-                        _logger.LogInformation($"{homieServiceDynamicConsumer.ClientDevice.DeviceId} unsupported state {homieServiceDynamicConsumer.ClientDevice.State}");
                         // Unsupported state, skipping.
                         break;
                 }
