@@ -21,7 +21,7 @@ jobs:
       - name: build the image
         run: |
           docker buildx build --push \
-            -f "BlazorHomieDashboard.Server/Dockerfile" \
+            -f "Bhd.Server/Dockerfile" \
             --build-arg VERSION_SUFFIX=${GITHUB_SHA::8} \
             --tag girdauskas/bhd:${GITHUB_SHA::8} \
             --tag girdauskas/bhd:latest \

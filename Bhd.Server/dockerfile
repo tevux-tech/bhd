@@ -1,0 +1,30 @@
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim-amd64 AS build
+WORKDIR /src
+COPY ["Bhd.Server/Bhd.Server.csproj", "Bhd.Server/"]
+RUN dotnet restore "Bhd.Server/Bhd.Server.csproj"
+COPY . .
+WORKDIR "/src/Bhd.Server"
+
+RUN dotnet build "Bhd.Server.csproj" -c Release -o /app/build
+
+ARG VERSION_SUFFIX
+FROM build AS publish
+
+RUN if [ -z "$VERSION_SUFFIX" ] ;\
+    then \
+        dotnet publish "Bhd.Server.csproj" -c Release -o /app/publish ;\
+    else \
+        dotnet publish "Bhd.Server.csproj" -c Release -o /app/publish --version-suffix $VERSION_SUFFIX ;\
+    fi
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Bhd.Server.dll"]
+
+ENV MQTT_SERVER 127.0.0.1
+ENV BASE_TOPIC homie
