@@ -8,6 +8,7 @@ Self-hosted web app for basic MQTT [homie](https://homieiot.github.io/)-based de
 
 ## Running using docker
 ```
-docker run --rm -p 80:80 -e MQTT_SERVER=192.168.2.2 girdauskas/bhd:latest
+docker pull girdauskas/bhd:latest
+docker run --rm -it -p 80:80 -e MQTT_SERVER=192.168.2.2 girdauskas/bhd:latest
 ```
 
