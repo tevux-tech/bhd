@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Bhd.Server.Hubs;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.SignalR;
@@ -13,12 +14,19 @@ namespace Bhd.Server.Services {
         private HomieTopicFetcher _fetcher;
         private readonly IHubContext<NotificationsHub> _notificationsHub;
 
-        private string _brokerIp = "192.168.2.2";
-        private string _baseTopic = "homie";
+        private readonly string _brokerIp;
+        private readonly string _baseTopic;
 
         public HomieService(ILogger<HomieService> logger, IHubContext<NotificationsHub> notificationsHub) {
             _logger = logger;
             _notificationsHub = notificationsHub;
+
+            _brokerIp = Environment.GetEnvironmentVariable("MQTT_SERVER") ?? "127.0.0.1";
+            _baseTopic = Environment.GetEnvironmentVariable("BASE_TOPIC") ?? "homie";
+
+            _logger.LogInformation($"MQTT_SERVER is \"{_brokerIp}\"");
+            _logger.LogInformation($"BASE_TOPIC is \"{_baseTopic}\"");
+
             DeviceFactory.Initialize(_baseTopic);
             _fetcher = new HomieTopicFetcher();
             _fetcher.Initialize(_brokerIp);
