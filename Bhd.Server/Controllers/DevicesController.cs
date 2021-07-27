@@ -164,7 +164,7 @@ namespace Bhd.Server.Controllers {
         }
 
         [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/NumericValue")]
-        public void SetNumericValue(string deviceId, string nodeId, string propertyId, [FromBody] float numericValue) {
+        public void SetNumericValue(string deviceId, string nodeId, string propertyId, [FromBody] double numericValue) {
             var property = GetPropertyBase(deviceId, nodeId, propertyId);
 
             switch (property) {
