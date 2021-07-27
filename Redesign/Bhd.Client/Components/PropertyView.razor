@@ -68,7 +68,7 @@
     public HttpClient HttpClient { get; set; }
 
     private bool _isEditing = false;
-    private float _targetValue = 0f;
+    private double _targetValue = 0f;
 
     protected override Task OnInitializedAsync() {
         NotificationsHub.DevicePropertyChanged += HandleDevicePropertyChanged;
@@ -98,7 +98,7 @@
         await HttpClient.PutAsJsonAsync($"api/{Property.Path}/TextValue", valueToSet);
     }
 
-    private async Task SetNumericValue(float valueToSet) {
+    private async Task SetNumericValue(double valueToSet) {
         await HttpClient.PutAsJsonAsync($"api/{Property.Path}/NumericValue", valueToSet);
     }
 

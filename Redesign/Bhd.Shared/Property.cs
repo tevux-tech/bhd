@@ -7,7 +7,7 @@ namespace Bhd.Shared {
         public string Name { get; set; }
         public PropertyType Type { get; set; }
         public Direction Direction { get; set; }
-        public float NumericValue { get; set; }
+        public double NumericValue { get; set; }
         public string TextValue { get; set; }
         public string Format { get; set; }
         public string Unit { get; set; }
