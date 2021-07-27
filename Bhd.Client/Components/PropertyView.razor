@@ -36,9 +36,9 @@
         </MudCardContent>
     } else if (Property.Type == PropertyType.Number && Property.Direction == Direction.ReadWrite) {
         <MudCardContent Class="pt-0 pb-5" hidden="@_isEditing">
-            <a href="javascript:;" @onclick="Edit">
-                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue + " " + Property.Unit)</MudText>
-            </a>
+            <MudText Align="Align.Center" @onclick="Edit">
+                <MudLink style="min-width: 144px;" Typo="Typo.h6" Href="javascript:;"> @(Property.NumericValue + " " + Property.Unit)</MudLink>
+            </MudText>
         </MudCardContent>
 
         <MudCardContent Class="pt-0 pb-3" hidden="@(!_isEditing)">
