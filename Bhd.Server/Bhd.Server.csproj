@@ -9,9 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Yahi\Yahi-bigNET\Yahi-bigNET.csproj" />
-    <ProjectReference Include="..\..\Yahi\Yahi.Utilities-bigNET\Yahi.Utilities-bigNET.csproj" />
+    <ProjectReference Include="..\Bhd.Client\Bhd.Client.csproj" />
     <ProjectReference Include="..\Bhd.Shared\Bhd.Shared.csproj" />
+    <ProjectReference Include="..\Yahi\Yahi-bigNET\Yahi-bigNET.csproj" />
+    <ProjectReference Include="..\Yahi\Yahi.Utilities-bigNET\Yahi.Utilities-bigNET.csproj" />
   </ItemGroup>
 
 </Project>
