@@ -4,7 +4,7 @@
 <MudCard Elevation="2">
     <MudCardHeader Class="pa-2">
         <CardHeaderContent>
-            <MudText Align="Align.Center">@Property.Name</MudText>
+            <MudText @onclick="CancelEdit" Align="Align.Center">@Property.Name</MudText>
         </CardHeaderContent>
     </MudCardHeader>
 
@@ -108,6 +108,9 @@
         await HttpClient.PutAsJsonAsync($"api/{Property.Path}/NumericValue", valueToSet);
     }
 
+    private void CancelEdit() {
+        _isEditing = false;
+    }
 
     private void Edit() {
         _targetValue = Property.NumericValue;
