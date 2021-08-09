@@ -59,7 +59,10 @@ namespace Bhd.Server.Controllers {
                 nodes.Add(node);
 
                 foreach (var propertyConfig in nodeConfig.Properties) {
-                    node.Properties[propertyConfig.PropertyName] = propertyConfig.PropertyPath;
+                    var dashboardProperty = new DashboardProperty();
+                    dashboardProperty.AlternativeName = propertyConfig.PropertyName;
+                    dashboardProperty.ActualPropertyPath = propertyConfig.PropertyPath;
+                    node.Properties.Add(dashboardProperty);
                 }
             }
 
