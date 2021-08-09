@@ -6,7 +6,6 @@ using Bhd.Server.Services;
 using Bhd.Shared;
 using DevBot9.Protocols.Homie;
 using Device = Bhd.Shared.Device;
-using PropertyType = Bhd.Shared.PropertyType;
 
 namespace Bhd.Server.Controllers {
     [ApiController]
@@ -26,8 +25,9 @@ namespace Bhd.Server.Controllers {
 
             foreach (var homieServiceDynamicConsumer in _homieService.DynamicConsumers) {
                 var device = new Device();
-                device.DeviceId = homieServiceDynamicConsumer.ClientDevice.DeviceId;
+                device.Id = homieServiceDynamicConsumer.ClientDevice.DeviceId;
                 device.Name = homieServiceDynamicConsumer.ClientDevice.Name;
+                device.Nodes = $"/api/devices/{device.Id}/nodes";
 
                 switch (homieServiceDynamicConsumer.ClientDevice.State) {
                     case HomieState.Ready:
@@ -62,7 +62,7 @@ namespace Bhd.Server.Controllers {
 
         [HttpGet("{deviceId}")]
         public Device GetDevice(string deviceId) {
-            return Get().First(d => d.DeviceId == deviceId);
+            return Get().First(d => d.Id == deviceId);
         }
 
         [HttpGet("{deviceId}/Nodes")]
@@ -72,10 +72,10 @@ namespace Bhd.Server.Controllers {
             foreach (var clientDeviceNode in dynamicConsumer.ClientDevice.Nodes) {
                 var node = new Node();
                 node.Name = clientDeviceNode.Name;
-                node.NodeId = clientDeviceNode.NodeId;
+                node.Id = clientDeviceNode.NodeId;
 
                 foreach (var clientPropertyBase in clientDeviceNode.Properties) {
-                    node.Properties.Add(PropertyFactory.Create(clientPropertyBase, deviceId, node.NodeId));
+                    node.Properties.Add($"/api/devices/{deviceId}/nodes/{node.Id}/properties/{clientPropertyBase.PropertyId.Replace($"{node.Id}/", "")}");
                 }
 
                 nodes.Add(node);
@@ -87,19 +87,20 @@ namespace Bhd.Server.Controllers {
         [HttpGet("{deviceId}/Nodes/{nodeId}")]
         public Node GetNode(string deviceId, string nodeId) {
             var nodes = GetNodes(deviceId);
-            return nodes.First(n => n.NodeId == nodeId);
+            return nodes.First(n => n.Id == nodeId);
         }
 
         [HttpGet("{deviceId}/Nodes/{nodeId}/Properties")]
-        public IEnumerable<Property> GetProperties(string deviceId, string nodeId) {
+        public IEnumerable<string> GetProperties(string deviceId, string nodeId) {
             var node = GetNode(deviceId, nodeId);
             return node.Properties;
         }
 
         [HttpGet("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}")]
         public Property GetProperty(string deviceId, string nodeId, string propertyId) {
-            var properties = GetProperties(deviceId, nodeId);
-            return properties.First(p => p.Id == propertyId);
+            var propertyBase = GetPropertyBase(deviceId, nodeId, propertyId);
+            var property = PropertyFactory.Create(propertyBase);
+            return property;
         }
 
         [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/TextValue")]

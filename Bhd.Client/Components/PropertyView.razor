@@ -4,40 +4,40 @@
 <MudCard Elevation="2">
     <MudCardHeader Class="pa-2">
         <CardHeaderContent>
-            <MudText @onclick="CancelEdit" Align="Align.Center">@Property.Name</MudText>
+            <MudText @onclick="CancelEdit" Align="Align.Center">@_property.Name</MudText>
         </CardHeaderContent>
     </MudCardHeader>
 
-    @if (Property.Type == PropertyType.Choice && Property.Direction == Direction.Write) {
+    @if (_property.Type == PropertyType.Choice && _property.Direction == Direction.Write) {
         <MudCardActions>
             <MudGrid Class="mx-1 mb-1 d-flex">
-                @foreach (var option in Property.Choices) {
+                @foreach (var option in _property.Choices) {
                     <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default" OnClick="() => SetTextValue(option)">@option</MudButton>
                 }
             </MudGrid>
         </MudCardActions>
-    } else if (Property.Type == PropertyType.Choice && Property.Direction == Direction.ReadWrite) {
+    } else if (_property.Type == PropertyType.Choice && _property.Direction == Direction.ReadWrite) {
         <MudCardActions >
             <MudGrid Class="mx-1 mb-1 d-flex">
-                @foreach (var option in Property.Choices) {
-                    <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" StartIcon="@(Property.TextValue == option ? Icons.Filled.Check : null)" Color="@(Property.TextValue == option ? Color.Primary : Color.Default)" OnClick="() => SetTextValue(option)">@option</MudButton>
+                @foreach (var option in _property.Choices) {
+                    <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" StartIcon="@(_property.TextValue == option ? Icons.Filled.Check : null)" Color="@(_property.TextValue == option ? Color.Primary : Color.Default)" OnClick="() => SetTextValue(option)">@option</MudButton>
                 }
             </MudGrid>
         </MudCardActions>
-    } else if ((Property.Type == PropertyType.Text | Property.Type == PropertyType.Number | Property.Type == PropertyType.Choice) && Property.Direction == Direction.Read) {
+    } else if ((_property.Type == PropertyType.Text | _property.Type == PropertyType.Number | _property.Type == PropertyType.Choice) && _property.Direction == Direction.Read) {
         <MudCardContent Class="pt-0 pb-5">
-            @if (Property.Type == PropertyType.Number) {
-                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(Property.NumericValue + " " + Property.Unit)</MudText>
-            } else if (Property.Type is PropertyType.Text or PropertyType.Choice) {
-                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@Property.TextValue</MudText>
+            @if (_property.Type == PropertyType.Number) {
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@(_property.NumericValue + " " + _property.Unit)</MudText>
+            } else if (_property.Type is PropertyType.Text or PropertyType.Choice) {
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@_property.TextValue</MudText>
             } else {
                 <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">Bybis</MudText>
             }
         </MudCardContent>
-    } else if (Property.Type == PropertyType.Number && Property.Direction == Direction.ReadWrite) {
+    } else if (_property.Type == PropertyType.Number && _property.Direction == Direction.ReadWrite) {
         <MudCardContent Class="pt-0 pb-5" hidden="@_isEditing">
             <MudText Align="Align.Center" @onclick="Edit">
-                <MudLink style="min-width: 144px;" Typo="Typo.h6" Href="javascript:;"> @(Property.NumericValue + " " + Property.Unit)</MudLink>
+                <MudLink style="min-width: 144px;" Typo="Typo.h6" Href="javascript:;"> @(_property.NumericValue + " " + _property.Unit)</MudLink>
             </MudText>
         </MudCardContent>
 
@@ -64,7 +64,7 @@
 @code {
 
     [Parameter]
-    public Property Property { get; set; }
+    public string PropertyPath { get; set; }
 
     [Inject]
     public NotificationsHub NotificationsHub { get; set; }
@@ -77,13 +77,15 @@
     private bool _isEditing = false;
     private double _targetValue = 0f;
 
+    private Property _property = new Property();
+
     protected override Task OnInitializedAsync() {
         NotificationsHub.DevicePropertyChanged += HandleDevicePropertyChanged;
         return base.OnInitializedAsync();
     }
 
     private void HandleDevicePropertyChanged(string propertyPath) {
-        if (propertyPath == Property.Path) {
+        if (propertyPath == PropertyPath) {
             Task.Run(async () => {
                 await Refresh();
                 StateHasChanged();
@@ -91,9 +93,13 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync() {
+        await Refresh();
+    }
+
 
     private async Task Refresh() {
-        Property = await HttpClient.GetFromJsonAsync<Property>($"api/{Property.Path}");
+        _property = await HttpClient.GetFromJsonAsync<Property>(PropertyPath);
     }
 
     public void Dispose() {
@@ -101,11 +107,11 @@
     }
 
     private async Task SetTextValue(string valueToSet) {
-        await HttpClient.PutAsJsonAsync($"api/{Property.Path}/TextValue", valueToSet);
+        await HttpClient.PutAsJsonAsync($"{PropertyPath}/TextValue", valueToSet);
     }
 
     private async Task SetNumericValue(double valueToSet) {
-        await HttpClient.PutAsJsonAsync($"api/{Property.Path}/NumericValue", valueToSet);
+        await HttpClient.PutAsJsonAsync($"{PropertyPath}/NumericValue", valueToSet);
     }
 
     private void CancelEdit() {
@@ -113,7 +119,7 @@
     }
 
     private void Edit() {
-        _targetValue = Property.NumericValue;
+        _targetValue = _property.NumericValue;
         _isEditing = true;
 
         // Selecting text in the control after some time. Doesn't work if control is not yet visible ant it takes some time for visibilities to update.

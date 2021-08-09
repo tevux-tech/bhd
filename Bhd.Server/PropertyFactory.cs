@@ -4,10 +4,8 @@ using DevBot9.Protocols.Homie;
 
 namespace Bhd.Server {
     public static class PropertyFactory {
-        public static Property Create(ClientPropertyBase clientPropertyBase, string deviceId, string nodeId) {
+        public static Property Create(ClientPropertyBase clientPropertyBase) {
             var property = new Property();
-            property.Id = clientPropertyBase.PropertyId.Replace($"{nodeId}/", "");
-            property.Path = $"devices/{deviceId}/nodes/{nodeId}/properties/{property.Id}";
             property.Name = clientPropertyBase.Name;
             property.Format = clientPropertyBase.Format;
             property.Unit = clientPropertyBase.Unit;

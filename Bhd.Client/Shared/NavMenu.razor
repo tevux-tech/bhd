@@ -10,24 +10,24 @@
     </div>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Ready Devices" Expanded="true">
-        @foreach (var device in _devices.Where(d => d.State == DeviceState.Ready).OrderBy(d => d.DeviceId)) {
-            <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
+        @foreach (var device in _devices.Where(d => d.State == DeviceState.Ready).OrderBy(d => d.Id)) {
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
                 @device.Name
             </MudNavLink>
         }
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Alerts" Expanded="true">
-        @foreach (var device in _devices.Where(d => d.State == DeviceState.Alert).OrderBy(d => d.DeviceId)) {
-            <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
+        @foreach (var device in _devices.Where(d => d.State == DeviceState.Alert).OrderBy(d => d.Id)) {
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
                 @device.Name
             </MudNavLink>
         }
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Lost Devices" Expanded="false">
-        @foreach (var device in _devices.Where(d => d.State == DeviceState.Lost).OrderBy(d => d.DeviceId)) {
-            <MudNavLink Href="@("devices/" + device.DeviceId)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
+        @foreach (var device in _devices.Where(d => d.State == DeviceState.Lost).OrderBy(d => d.Id)) {
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
                 @device.Name
             </MudNavLink>
         }

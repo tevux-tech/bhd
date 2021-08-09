@@ -10,7 +10,7 @@
     <MudGrid Class="my-1 d-flex">
         @foreach (var property in node.Properties) {
             <MudItem Class="pa-1 flex-grow-1">
-                <PropertyView Property="@property"></PropertyView>
+                <PropertyView PropertyPath="@property"></PropertyView>
             </MudItem>
         }
     </MudGrid>

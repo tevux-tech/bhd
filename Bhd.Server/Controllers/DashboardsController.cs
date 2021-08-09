@@ -65,7 +65,7 @@ namespace Bhd.Server.Controllers {
             foreach (var nodeConfig in dashboardConfig.Nodes) {
                 var node = new Node();
                 node.Name = nodeConfig.NodeName;
-                node.NodeId = nodeConfig.NodeId;
+                node.Id = nodeConfig.NodeId;
                 nodes.Add(node);
             }
 
