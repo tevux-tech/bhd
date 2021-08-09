@@ -39,7 +39,7 @@ namespace Bhd.Server.Controllers {
 
         [HttpPut("configuration")]
         public void SetConfiguration([FromBody] List<DashboardConfig> newConfiguration) {
-            _storage.Dashboards = newConfiguration;
+            _storage.UpdateDashboards(newConfiguration);
         }
 
         [HttpGet("{dashboardId}")]
