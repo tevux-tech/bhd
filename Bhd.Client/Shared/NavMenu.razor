@@ -33,7 +33,13 @@
         }
     </MudNavGroup>
 
-    <MudNavGroup Icon="@Icons.Filled.Dashboard" Title="Dashboards" Expanded="true">
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Dashboards" Expanded="true">
+        @foreach (var dashboard in _dashboards) {
+            <MudNavLink Href="@("dashboards/" + dashboard.DashboardId)" Icon="@Icons.Filled.Dashboard">
+                @dashboard.Name
+            </MudNavLink>
+        }
+
         <MudButton OnClick="HandleCreateDashboardClick" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Create new</MudButton>
     </MudNavGroup>
 
@@ -41,6 +47,7 @@
 
 @code {
     private List<Device> _devices = new();
+    private List<Dashboard> _dashboards = new();
 
     [Inject]
     private HttpClient HttpClient { get; set; }
@@ -63,11 +70,16 @@
         };
 
         await LoadDevices();
+        await LoadDashboards();
         await base.OnInitializedAsync();
     }
 
     private async Task LoadDevices() {
         _devices = await HttpClient.GetFromJsonAsync<List<Device>>("api/devices");
+    }
+
+    private async Task LoadDashboards() {
+        _dashboards = await HttpClient.GetFromJsonAsync<List<Dashboard>>("api/dashboards");
     }
 
     private async Task HandleCreateDashboardClick(MouseEventArgs args) {

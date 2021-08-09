@@ -11,7 +11,7 @@ namespace Bhd.Server.Services {
 
         public List<DynamicConsumer> DynamicConsumers = new();
 
-        private HomieTopicFetcher _fetcher;
+        private readonly HomieTopicFetcher _fetcher;
         private readonly IHubContext<NotificationsHub> _notificationsHub;
 
         private readonly string _brokerIp;

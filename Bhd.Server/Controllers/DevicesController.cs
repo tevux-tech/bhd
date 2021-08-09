@@ -74,54 +74,8 @@ namespace Bhd.Server.Controllers {
                 node.Name = clientDeviceNode.Name;
                 node.NodeId = clientDeviceNode.NodeId;
 
-                node.Properties = new List<Property>();
-
                 foreach (var clientPropertyBase in clientDeviceNode.Properties) {
-                    var property = new Property();
-                    property.Id = clientPropertyBase.PropertyId.Replace($"{node.NodeId}/", "");
-                    property.Path = $"devices/{deviceId}/nodes/{node.NodeId}/properties/{property.Id}";
-                    property.Name = clientPropertyBase.Name;
-                    property.Format = clientPropertyBase.Format;
-                    property.Unit = clientPropertyBase.Unit;
-
-                    switch (clientPropertyBase.Type) {
-                        case DevBot9.Protocols.Homie.PropertyType.State:
-                            property.Direction = Direction.Read;
-                            break;
-
-                        case DevBot9.Protocols.Homie.PropertyType.Command:
-                            property.Direction = Direction.Write;
-                            break;
-
-                        case DevBot9.Protocols.Homie.PropertyType.Parameter:
-                            property.Direction = Direction.ReadWrite;
-                            break;
-                    }
-
-                    switch (clientPropertyBase) {
-                        case ClientNumberProperty numberProperty:
-                            property.Type = PropertyType.Number;
-                            property.NumericValue = numberProperty.Value;
-                            node.Properties.Add(property);
-                            break;
-
-                        case ClientChoiceProperty choiceProperty:
-                            property.TextValue = choiceProperty.Value;
-                            property.Type = PropertyType.Choice;
-                            property.Choices = choiceProperty.Format.Split(",").ToList();
-                            node.Properties.Add(property);
-                            break;
-
-                        case ClientTextProperty textProperty:
-                            property.Type = PropertyType.Text;
-                            property.TextValue = textProperty.Value;
-                            node.Properties.Add(property);
-                            break;
-
-                        default:
-                            node.Properties.Add(property);
-                            break;
-                    }
+                    node.Properties.Add(PropertyFactory.Create(clientPropertyBase, deviceId, node.NodeId));
                 }
 
                 nodes.Add(node);

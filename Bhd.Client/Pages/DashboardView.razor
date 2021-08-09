@@ -1,0 +1,44 @@
+﻿@page "/dashboards/{DashboardId}"
+
+@foreach (var node in _nodes) {
+    <MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
+
+    <MudGrid Class="my-1 d-flex">
+        @foreach (var property in node.Properties) {
+            <MudItem Class="pa-1 flex-grow-1">
+                <PropertyView Property="@property"></PropertyView>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public string DashboardId { get; set; }
+
+    [Inject]
+    private HttpClient HttpClient { get; set; }
+
+    [Inject]
+    private PageHeaderService PageHeaderService { get; set; }
+
+    private Dashboard _dashboard = new();
+    private List<Node> _nodes = new();
+
+    protected override async Task OnParametersSetAsync() {
+        await LoadDashboard();
+        await LoadNodes();
+        PageHeaderService.CurrentPageTitle = $"/ Dashboards / {_dashboard.Name}";
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task LoadDashboard() {
+        _dashboard = await HttpClient.GetFromJsonAsync<Dashboard>($"api/dashboards/{DashboardId}");
+    }
+
+    private async Task LoadNodes() {
+        _nodes = await HttpClient.GetFromJsonAsync<List<Node>>($"api/dashboards/{DashboardId}/nodes");
+    }
+
+}
