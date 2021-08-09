@@ -14,6 +14,7 @@
 }
 
 <MudButton>Edit</MudButton>
+<MudButton OnClick="RemoveDashboard">Remove</MudButton>
 
 @code {
 
@@ -62,5 +63,11 @@
 
     public void Dispose() {
         NotificationsHub.DashboardConfigurationChanged -= HandleDashboardConfigurationChanged;
+    }
+
+    private async Task RemoveDashboard() {
+        var config = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+        config.RemoveAll(r => r.DashboardId == DashboardId);
+        await HttpClient.PutAsJsonAsync("api/dashboards/configuration", config);
     }
 }
