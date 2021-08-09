@@ -29,10 +29,15 @@ namespace Bhd.Server.Controllers {
             demoNode1.NodeName = "Demo node 1";
             demo1.Nodes.Add(demoNode1);
 
+            var demoProperty = new PropertyConfig();
+            demoProperty.PropertyName = "Custom name test";
+            demoProperty.PropertyPath = "/api/devices/shelly1pm-68c63afadff9/nodes/basic/properties/actual-relay-state";
+            demoNode1.Properties.Add(demoProperty);
+
             var demoNode2 = new NodeConfig();
             demoNode2.NodeId = "node2";
             demoNode2.NodeName = "Demo node 2";
-            demo1.Nodes.Add(demoNode1);
+            demo1.Nodes.Add(demoNode2);
 
             _configs.Add(demo1);
         }
@@ -43,8 +48,9 @@ namespace Bhd.Server.Controllers {
 
             foreach (var dashboardConfig in _configs) {
                 var dashboard = new Dashboard();
-                dashboard.DashboardId = dashboardConfig.DashboardId;
+                dashboard.Id = dashboardConfig.DashboardId;
                 dashboard.Name = dashboardConfig.DashboardName;
+                dashboard.Nodes = $"/api/dashboards/{dashboard.Id}/nodes";
                dashboards.Add(dashboard);
             }
 
@@ -53,20 +59,24 @@ namespace Bhd.Server.Controllers {
 
         [HttpGet("{dashboardId}")]
         public Dashboard GetDashboard(string dashboardId) {
-            return Get().First(d => d.DashboardId == dashboardId);
+            return Get().First(d => d.Id == dashboardId);
         }
 
         [HttpGet("{dashboardId}/Nodes")]
-        public IEnumerable<Node> GetNodes(string dashboardId) {
-            var nodes = new List<Node>();
+        public IEnumerable<DashboardNode> GetNodes(string dashboardId) {
+            var nodes = new List<DashboardNode>();
 
             var dashboardConfig = _configs.First(d => d.DashboardId == dashboardId);
 
             foreach (var nodeConfig in dashboardConfig.Nodes) {
-                var node = new Node();
+                var node = new DashboardNode();
                 node.Name = nodeConfig.NodeName;
                 node.Id = nodeConfig.NodeId;
                 nodes.Add(node);
+
+                foreach (var propertyConfig in nodeConfig.Properties) {
+                    node.Properties[propertyConfig.PropertyName] = propertyConfig.PropertyPath;
+                }
             }
 
             //var node1 = new Node();

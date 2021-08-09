@@ -35,7 +35,7 @@
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Dashboards" Expanded="true">
         @foreach (var dashboard in _dashboards) {
-            <MudNavLink Href="@("dashboards/" + dashboard.DashboardId)" Icon="@Icons.Filled.Dashboard">
+            <MudNavLink Href="@("dashboards/" + dashboard.Id)" Icon="@Icons.Filled.Dashboard">
                 @dashboard.Name
             </MudNavLink>
         }

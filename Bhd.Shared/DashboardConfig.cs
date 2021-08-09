@@ -16,7 +16,6 @@ namespace Bhd.Shared {
 
     public class PropertyConfig {
         public string PropertyName { get; set; }
-        public string PropertyId { get; set; }
         public string PropertyPath { get; set; }
     }
 }

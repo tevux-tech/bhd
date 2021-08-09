@@ -4,7 +4,7 @@
 <MudCard Elevation="2">
     <MudCardHeader Class="pa-2">
         <CardHeaderContent>
-            <MudText @onclick="CancelEdit" Align="Align.Center">@_property.Name</MudText>
+            <MudText @onclick="CancelEdit" Align="Align.Center">@(PropertyName ?? _property.Name)</MudText>
         </CardHeaderContent>
     </MudCardHeader>
 
@@ -65,6 +65,9 @@
 
     [Parameter]
     public string PropertyPath { get; set; }
+
+    [Parameter]
+    public string PropertyName { get; set; }
 
     [Inject]
     public NotificationsHub NotificationsHub { get; set; }

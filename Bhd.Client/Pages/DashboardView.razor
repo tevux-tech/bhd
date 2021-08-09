@@ -6,7 +6,7 @@
     <MudGrid Class="my-1 d-flex">
         @foreach (var property in node.Properties) {
             <MudItem Class="pa-1 flex-grow-1">
-                <PropertyView Property="@property"></PropertyView>
+                <PropertyView PropertyName="@property.Key" PropertyPath="@property.Value"></PropertyView>
             </MudItem>
         }
     </MudGrid>
@@ -24,7 +24,7 @@
     private PageHeaderService PageHeaderService { get; set; }
 
     private Dashboard _dashboard = new();
-    private List<Node> _nodes = new();
+    private List<DashboardNode> _nodes = new();
 
     protected override async Task OnParametersSetAsync() {
         await LoadDashboard();
@@ -38,7 +38,7 @@
     }
 
     private async Task LoadNodes() {
-        _nodes = await HttpClient.GetFromJsonAsync<List<Node>>($"api/dashboards/{DashboardId}/nodes");
+        _nodes = await HttpClient.GetFromJsonAsync<List<DashboardNode>>($"api/dashboards/{DashboardId}/nodes");
     }
 
 }
