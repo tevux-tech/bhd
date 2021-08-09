@@ -5,13 +5,14 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="_dashboardName" Label="Name" />
+        <MudTextField @bind-Value="_dashboardName" Label="Name"/>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="CreateDashboard">Create</MudButton>
     </DialogActions>
 </MudDialog>
+
 @code {
 
     [CascadingParameter]
@@ -20,13 +21,25 @@
     [Inject]
     ISnackbar Snackbar { get; set; }
 
+    [Inject]
+    private HttpClient HttpClient { get; set; }
+
     private string _dashboardName = "";
 
     private void Cancel() {
         MudDialog.Cancel();
     }
 
-    private void CreateDashboard() {
+    private async Task CreateDashboard() {
+        var config = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+
+        config.Add(new DashboardConfig {
+            DashboardId = _dashboardName.Replace(" ", "-").Trim().ToLower(), 
+            DashboardName = _dashboardName
+        });
+
+        await HttpClient.PutAsJsonAsync("api/dashboards/configuration", config);
+
         Snackbar.Add(_dashboardName + " created", Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }
