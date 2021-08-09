@@ -69,6 +69,11 @@
             StateHasChanged();
         };
 
+        NotificationsHub.DashboardConfigurationChanged += async () => {
+            await LoadDashboards();
+            StateHasChanged();
+        };
+
         await LoadDevices();
         await LoadDashboards();
         await base.OnInitializedAsync();

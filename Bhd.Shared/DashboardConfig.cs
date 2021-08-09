@@ -9,8 +9,6 @@ namespace Bhd.Shared {
 
     public class NodeConfig {
         public string NodeName { get; set; }
-        public string NodeId { get; set; }
-
         public List<PropertyConfig> Properties { get; set; } = new();
     }
 

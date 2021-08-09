@@ -1,4 +1,5 @@
 ﻿@page "/dashboards/{DashboardId}"
+@implements IDisposable
 
 @foreach (var node in _nodes) {
     <MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
@@ -12,6 +13,8 @@
     </MudGrid>
 }
 
+<MudButton>Edit</MudButton>
+
 @code {
 
     [Parameter]
@@ -23,8 +26,24 @@
     [Inject]
     private PageHeaderService PageHeaderService { get; set; }
 
+    [Inject]
+    private NotificationsHub NotificationsHub { get; set; }
+
     private Dashboard _dashboard = new();
     private List<DashboardNode> _nodes = new();
+
+    protected override async Task OnInitializedAsync() {
+        NotificationsHub.DashboardConfigurationChanged += HandleDashboardConfigurationChanged;
+        await base.OnInitializedAsync();
+    }
+
+    private void HandleDashboardConfigurationChanged() {
+        Task.Run(async () => {
+            await LoadDashboard();
+            await LoadNodes();
+            StateHasChanged();
+        });
+    }
 
     protected override async Task OnParametersSetAsync() {
         await LoadDashboard();
@@ -41,4 +60,7 @@
         _nodes = await HttpClient.GetFromJsonAsync<List<DashboardNode>>($"api/dashboards/{DashboardId}/nodes");
     }
 
+    public void Dispose() {
+        NotificationsHub.DashboardConfigurationChanged -= HandleDashboardConfigurationChanged;
+    }
 }

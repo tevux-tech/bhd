@@ -7,10 +7,12 @@ namespace Bhd.Client {
         private readonly HubConnection _connection;
 
         public delegate void DeviceStateChangedDelegate(string deviceId);
+        public delegate void ConfigurationChanged();
         public delegate void DevicePropertyChangedDelegate(string propertyPath);
 
         public event DeviceStateChangedDelegate DeviceStateChanged;
         public event DevicePropertyChangedDelegate DevicePropertyChanged;
+        public event ConfigurationChanged DashboardConfigurationChanged;
 
         public NotificationsHub(NavigationManager navigationManager) {
             _connection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("api/NotificationsHub")).WithAutomaticReconnect(new HubReconnectPolicy()).Build();
@@ -22,6 +24,10 @@ namespace Bhd.Client {
 
             _connection.On("DevicePropertyChanged", (string propertyPath) => {
                 DevicePropertyChanged?.Invoke(propertyPath);
+            });
+
+            _connection.On("DashboardConfigurationChanged", () => {
+                DashboardConfigurationChanged?.Invoke();
             });
         }
 

@@ -1,4 +1,5 @@
 ﻿@page "/devices/{DeviceId}"
+@implements IDisposable
 
 @if (_device.State == DeviceState.Lost) {
     <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Device is lost!</MudAlert>
@@ -41,15 +42,18 @@
     }
 
     protected override async Task OnInitializedAsync() {
-        NotificationsHub.DeviceStateChanged += async deviceId => {
+        NotificationsHub.DeviceStateChanged += HandleDeviceStateChanged;
+        await base.OnInitializedAsync();
+    }
+
+    private void HandleDeviceStateChanged(string deviceId) {
+        Task.Run(async () => {
             if (deviceId == DeviceId) {
                 await LoadDeviceInfo();
                 await LoadDeviceNodes();
                 StateHasChanged();
             }
-        };
-
-        await base.OnInitializedAsync();
+        });
     }
 
     private async Task LoadDeviceInfo() {
@@ -60,4 +64,7 @@
         _nodes = await HttpClient.GetFromJsonAsync<List<Node>>($"api/devices/{DeviceId}/nodes");
     }
 
+    public void Dispose() {
+        NotificationsHub.DeviceStateChanged -= HandleDeviceStateChanged;
+    }
 }
