@@ -26,22 +26,3 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
-
-@code {
-    bool _drawerOpen = true;
-
-    [Inject]
-    private PageHeaderService HeaderService { get; set; }
-
-    protected override Task OnInitializedAsync() {
-        HeaderService.PropertyChanged += (sender, args) => {
-            StateHasChanged();
-        };
-
-        return base.OnInitializedAsync();
-    }
-
-    void DrawerToggle() {
-        _drawerOpen = !_drawerOpen;
-    }
-}
