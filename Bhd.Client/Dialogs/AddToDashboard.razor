@@ -1,11 +1,11 @@
 ﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
-            Add property to dashboard
+            Add Property to Dashboard
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="_propertyName" Label="Name"/>
+        <MudTextField @bind-Value="_propertyName" Label="Name" Required="true"/>
 
         <MudSelect T="DashboardConfig" Label="Dashboard" Required="true" @bind-Value="_selectedDashboard">
             <Iterations Items="_dashboards ?? new List<DashboardConfig>()" Context="dashboard">
