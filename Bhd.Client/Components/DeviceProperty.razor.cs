@@ -6,6 +6,7 @@ using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using Direction = Bhd.Shared.DTOs.Direction;
 
 namespace Bhd.Client.Components {
     public partial class DeviceProperty : IDisposable {
@@ -69,20 +70,16 @@ namespace Bhd.Client.Components {
             _isEditing = false;
         }
 
-        private string GetChoiceIcon(string choice) {
-            if (_property.TextValue == choice) {
-                return Icons.Filled.Check;
+        private Color GetChoiceColor(string choice) {
+            if (_property.Direction == Direction.Write) {
+                return Color.Default;
             }
 
-            return null;
-        }
-
-        private Color GetChoiceColor(string choice) {
-           if (_property.TextValue == choice) {
+            if (_property.TextValue == choice) {
                return Color.Primary;
-           }
+            }
 
-           return Color.Default;
+            return Color.Default;
         }
 
         private void Edit() {

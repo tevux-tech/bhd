@@ -16,26 +16,12 @@
         </CardHeaderContent>
     </MudCardHeader>
 
-    <Condition Evaluation="_property.Type == PropertyType.Choice && _property.Direction == Direction.Write">
+    <Condition Evaluation="_property.Type == PropertyType.Choice && (_property.Direction == Direction.Write | _property.Direction == Direction.ReadWrite) ">
         <Match>
             <MudCardActions>
                 <MudGrid Class="mx-1 mb-1 d-flex">
                     <Iterations Items="_property.Choices" Context="choice">
-                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default" OnClick="() => SetTextValue(choice)">
-                            @choice
-                        </MudButton>
-                    </Iterations>
-                </MudGrid>
-            </MudCardActions>
-        </Match>
-    </Condition>
-
-    <Condition Evaluation="_property.Type == PropertyType.Choice && _property.Direction == Direction.ReadWrite">
-        <Match>
-            <MudCardActions >
-                <MudGrid Class="mx-1 mb-1 d-flex">
-                    <Iterations Items="_property.Choices" Context="choice">
-                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" StartIcon="@GetChoiceIcon(choice)" Color="@GetChoiceColor(choice)" OnClick="() => SetTextValue(choice)">
+                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="@GetChoiceColor(choice)" OnClick="() => SetTextValue(choice)">
                             @choice
                         </MudButton>
                     </Iterations>
