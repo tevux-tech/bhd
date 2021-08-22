@@ -77,6 +77,12 @@ namespace Bhd.Client.Pages {
             var result = await DialogService.Show<AddDashboardNode>(null, dialogParameters).Result;
         }
 
+        private async Task RenameDashboard() {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["Dashboard"] = _dashboard;
+            var result = await DialogService.Show<RenameDashboard>(null, dialogParameters).Result;
+        }
+
         private bool CanMoveUp(DashboardNode node, DashboardProperty property) {
             if (node.Properties.Count == 1) {
                 return false;
