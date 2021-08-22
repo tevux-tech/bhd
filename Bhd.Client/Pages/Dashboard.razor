@@ -2,7 +2,25 @@
 @implements IDisposable
 
 <Iterations Items="_nodes" Context="node">
-    <MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
+    <div class="d-flex">
+        <MudText Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
+        
+        <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.MoreVert">
+            <MudMenuItem>
+                <div class="d-flex">
+                    <MudIcon Class="mr-2" Icon="@Icons.Filled.Edit" Size="Size.Small"/>
+                    <MudText>Rename node</MudText>
+                </div>
+            </MudMenuItem>
+
+            <MudMenuItem OnClick="() => RemoveNode(node)">
+                <div class="d-flex">
+                    <MudIcon Class="mr-2" Icon="@Icons.Filled.DeleteForever" Size="Size.Small"/>
+                    <MudText>Remove node</MudText>
+                </div>
+            </MudMenuItem>
+        </MudMenu>
+    </div>
 
     <MudGrid Class="my-1 d-flex">
         <Iterations Items="node.Properties" Context="property">
@@ -11,24 +29,24 @@
                     <Buttons>
                         <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.MoreVert">
                             <MudMenuItem Disabled="!CanMoveUp(node, property)" OnClick="() => MoveProperty(node, property, -1)">
-                                <MudGrid Class="pa-2">
-                                    <MudIcon Icon="@Icons.Filled.ArrowUpward" Size="Size.Small"/>
+                                <div class="d-flex">
+                                    <MudIcon Class="mr-2" Icon="@Icons.Filled.ArrowUpward" Size="Size.Small"/>
                                     <MudText>Move up</MudText>
-                                </MudGrid>
+                                </div>
                             </MudMenuItem>
 
                             <MudMenuItem Disabled="!CanMoveDown(node, property)" OnClick="() => MoveProperty(node, property, +1)">
-                                <MudGrid Class="pa-2">
-                                    <MudIcon Icon="@Icons.Filled.ArrowDownward" Size="Size.Small"/>
+                                <div class="d-flex">
+                                    <MudIcon Class="mr-2" Icon="@Icons.Filled.ArrowDownward" Size="Size.Small"/>
                                     <MudText>Move down</MudText>
-                                </MudGrid>
+                                </div>
                             </MudMenuItem>
 
                             <MudMenuItem OnClick="() => RemoveProperty(node, property)">
-                                <MudGrid Class="pa-2">
-                                    <MudIcon Icon="@Icons.Filled.DeleteForever" Size="Size.Small"/>
+                                <div class="d-flex">
+                                    <MudIcon Class="mr-2"  Icon="@Icons.Filled.DeleteForever" Size="Size.Small"/>
                                     <MudText>Remove</MudText>
-                                </MudGrid>
+                                </div>
                             </MudMenuItem>
                         </MudMenu>
                     </Buttons>

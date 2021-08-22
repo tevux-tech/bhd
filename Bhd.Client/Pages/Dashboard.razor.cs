@@ -122,5 +122,16 @@ namespace Bhd.Client.Pages {
                 await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
             }
         }
+
+        private async Task RemoveNode(DashboardNode node) {
+            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == DashboardId);
+            var nodeConfig = dashboardConfig?.Nodes.FirstOrDefault(n => n.NodeName == node.Name);
+
+            if (nodeConfig != null) {
+                dashboardConfig.Nodes.Remove(nodeConfig);
+                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+            }
+        }
     }
 }
