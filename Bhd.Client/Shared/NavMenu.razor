@@ -1,43 +1,44 @@
 ﻿<MudNavMenu>
-
-    <div hidden="@(!_isScanning)">
-        <MudAlert Square="true" Severity="Severity.Info" Variant="Variant.Filled">Scanning...</MudAlert>
-    </div>
-
-    <div hidden="@(_isScanning)">
-        <MudButton OnClick="HandleRescanButtonClick" StartIcon="@Icons.Filled.Search" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Rescan</MudButton>
-    </div>
+    <Condition Evaluation="_isScanning">
+        <Match>
+            <MudAlert Square="true" Severity="Severity.Info" Variant="Variant.Filled">Scanning...</MudAlert>
+        </Match>
+        
+        <NotMatch>
+            <MudButton OnClick="HandleRescanButtonClick" StartIcon="@Icons.Filled.Search" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Rescan</MudButton>
+        </NotMatch>
+    </Condition>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Ready Devices" Expanded="true">
-        @foreach (var device in _devices.Where(d => d.State == DeviceState.Ready).OrderBy(d => d.Id)) {
-            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
-                @device.Name
+        <Iterations Items="GetReadyDevices()">
+            <MudNavLink Href="@("devices/" + context.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
+                @context.Name
             </MudNavLink>
-        }
+        </Iterations>
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Alerts" Expanded="true">
-        @foreach (var device in _devices.Where(d => d.State == DeviceState.Alert).OrderBy(d => d.Id)) {
-            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
-                @device.Name
+        <Iterations Items="GetAlertDevices()">
+            <MudNavLink Href="@("devices/" + context.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
+                @context.Name
             </MudNavLink>
-        }
+        </Iterations>
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Lost Devices" Expanded="false">
-        @foreach (var device in _devices.Where(d => d.State == DeviceState.Lost).OrderBy(d => d.Id)) {
-            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
-                @device.Name
+        <Iterations Items="GetLostDevices()">
+            <MudNavLink Href="@("devices/" + context.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
+                @context.Name
             </MudNavLink>
-        }
+        </Iterations>
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Dashboards" Expanded="true">
-        @foreach (var dashboard in _dashboards) {
-            <MudNavLink Href="@("dashboards/" + dashboard.Id)" Icon="@Icons.Filled.Dashboard">
-                @dashboard.Name
+        <Iterations Items="_dashboards">
+            <MudNavLink Href="@("dashboards/" + context.Id)" Icon="@Icons.Filled.Dashboard">
+                @context.Name
             </MudNavLink>
-        }
+        </Iterations>
 
         <MudButton OnClick="HandleCreateDashboardClick" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Create new</MudButton>
     </MudNavGroup>

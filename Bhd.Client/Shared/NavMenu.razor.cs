@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -42,6 +43,18 @@ namespace Bhd.Client.Shared {
             await LoadDevices();
             await LoadDashboards();
             await base.OnInitializedAsync();
+        }
+
+        private IEnumerable<Device> GetReadyDevices() {
+            return _devices.Where(d => d.State == DeviceState.Ready).OrderBy(d => d.Id);
+        }
+
+        private IEnumerable<Device> GetAlertDevices() {
+            return _devices.Where(d => d.State == DeviceState.Alert).OrderBy(d => d.Id);
+        }
+
+        private IEnumerable<Device> GetLostDevices() {
+            return _devices.Where(d => d.State == DeviceState.Lost).OrderBy(d => d.Id);
         }
 
         private async Task LoadDevices() {
