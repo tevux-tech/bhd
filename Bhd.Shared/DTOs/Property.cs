@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Bhd.Shared {
+namespace Bhd.Shared.DTOs {
     public class Property {
         public string Name { get; set; }
         public PropertyType Type { get; set; }

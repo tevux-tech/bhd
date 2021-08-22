@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using Bhd.Server.Hubs;
 using Bhd.Shared;
+using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Bhd.Server.Services {

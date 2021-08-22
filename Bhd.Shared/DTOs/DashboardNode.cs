@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Bhd.Shared {
+namespace Bhd.Shared.DTOs {
     public class DashboardNode {
         public string Id { get; set; }
         public string Name { get; set; }

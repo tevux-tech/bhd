@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Shared;
+using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 
 namespace Bhd.Client.Pages {
@@ -19,7 +20,7 @@ namespace Bhd.Client.Pages {
         [Inject]
         private NotificationsHub NotificationsHub { get; set; }
 
-        private Bhd.Shared.Dashboard _dashboard = new();
+        private Bhd.Shared.DTOs.Dashboard _dashboard = new();
         private List<DashboardNode> _nodes = new();
 
         protected override async Task OnInitializedAsync() {
@@ -43,7 +44,7 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task LoadDashboard() {
-            _dashboard = await HttpClient.GetFromJsonAsync<Bhd.Shared.Dashboard>($"api/dashboards/{DashboardId}");
+            _dashboard = await HttpClient.GetFromJsonAsync<Bhd.Shared.DTOs.Dashboard>($"api/dashboards/{DashboardId}");
         }
 
         private async Task LoadNodes() {

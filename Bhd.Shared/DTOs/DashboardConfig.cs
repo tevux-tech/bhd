@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Bhd.Shared {
+namespace Bhd.Shared.DTOs {
     public class DashboardConfig {
         public string DashboardName { get; set; }
         public string DashboardId { get; set; }

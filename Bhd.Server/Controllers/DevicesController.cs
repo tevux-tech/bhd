@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Bhd.Server.Services;
 using Bhd.Shared;
+using Bhd.Shared.DTOs;
 using DevBot9.Protocols.Homie;
-using Device = Bhd.Shared.Device;
+using Device = Bhd.Shared.DTOs.Device;
 
 namespace Bhd.Server.Controllers {
     [ApiController]

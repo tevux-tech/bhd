@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bhd.Shared {
+﻿namespace Bhd.Shared.DTOs {
     public class Device {
         public string Id { get; set; }
         public string Name { get; set; }

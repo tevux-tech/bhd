@@ -2,6 +2,7 @@
 using System.Linq;
 using Bhd.Server.Services;
 using Bhd.Shared;
+using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 

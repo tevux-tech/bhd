@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Bhd.Shared;
+using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 
 namespace Bhd.Client.Pages {
-    public partial class Device {
+    public partial class Device : IDisposable {
         [Parameter]
         public string DeviceId { get; set; }
 
@@ -20,7 +21,7 @@ namespace Bhd.Client.Pages {
         private PageHeaderService PageHeaderService { get; set; }
 
         private List<Node> _nodes = new();
-        private Bhd.Shared.Device _device = new();
+        private Bhd.Shared.DTOs.Device _device = new();
 
         protected override async Task OnParametersSetAsync() {
             await LoadDeviceInfo();
@@ -45,7 +46,7 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task LoadDeviceInfo() {
-            _device = await HttpClient.GetFromJsonAsync<Bhd.Shared.Device>($"api/devices/{DeviceId}");
+            _device = await HttpClient.GetFromJsonAsync<Bhd.Shared.DTOs.Device>($"api/devices/{DeviceId}");
         }
 
         private async Task LoadDeviceNodes() {
