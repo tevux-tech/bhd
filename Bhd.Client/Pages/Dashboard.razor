@@ -1,17 +1,17 @@
 ﻿@page "/dashboards/{DashboardId}"
 @implements IDisposable
 
-@foreach (var node in _nodes) {
+<Iterations Items="_nodes" Context="node">
     <MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
 
     <MudGrid Class="my-1 d-flex">
-        @foreach (var property in node.Properties) {
+        <Iterations Items="node.Properties" Context="property">
             <MudItem Class="pa-1 flex-grow-1">
-                <DeviceProperty CustomPropertyName="@property.AlternativeName" PropertyPath="@property.ActualPropertyPath"/>
+                <DeviceProperty CustomPropertyName="@property.AlternativeName" PropertyPath="@property.ActualPropertyPath" />
             </MudItem>
-        }
+        </Iterations>
     </MudGrid>
-}
+</Iterations>
 
 <MudButton>Edit</MudButton>
 <MudButton OnClick="RemoveDashboard">Remove</MudButton>

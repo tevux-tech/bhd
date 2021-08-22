@@ -1,18 +1,20 @@
 ﻿@page "/devices/{DeviceId}"
 @implements IDisposable
 
-@if (_device.State == DeviceState.Lost) {
-    <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Device is lost!</MudAlert>
-}
+<Condition Evaluation="_device.State == DeviceState.Lost">
+    <Match>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Device is lost!</MudAlert>
+    </Match>
+</Condition>
 
-@foreach (var node in _nodes) {
+<Iterations Items="_nodes" Context="node">
     <MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
 
     <MudGrid Class="my-1 d-flex">
-        @foreach (var property in node.Properties) {
+        <Iterations Items="node.Properties" Context="property">
             <MudItem Class="pa-1 flex-grow-1">
                 <DeviceProperty PropertyPath="@property"></DeviceProperty>
             </MudItem>
-        }
+        </Iterations>
     </MudGrid>
-}
+</Iterations>

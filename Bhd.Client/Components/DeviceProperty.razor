@@ -20,9 +20,9 @@
         <Match>
             <MudCardActions>
                 <MudGrid Class="mx-1 mb-1 d-flex">
-                    <Iterations Items="_property.Choices">
-                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default" OnClick="() => SetTextValue(context)">
-                            @context
+                    <Iterations Items="_property.Choices" Context="choice">
+                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default" OnClick="() => SetTextValue(choice)">
+                            @choice
                         </MudButton>
                     </Iterations>
                 </MudGrid>
@@ -34,9 +34,9 @@
         <Match>
             <MudCardActions >
                 <MudGrid Class="mx-1 mb-1 d-flex">
-                    <Iterations Items="_property.Choices">
-                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" StartIcon="@GetChoiceIcon(context)" Color="@GetChoiceColor(context)" OnClick="() => SetTextValue(context)">
-                            @context
+                    <Iterations Items="_property.Choices" Context="choice">
+                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" StartIcon="@GetChoiceIcon(choice)" Color="@GetChoiceColor(choice)" OnClick="() => SetTextValue(choice)">
+                            @choice
                         </MudButton>
                     </Iterations>
                 </MudGrid>

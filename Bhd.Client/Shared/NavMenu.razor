@@ -10,33 +10,33 @@
     </Condition>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Ready Devices" Expanded="true">
-        <Iterations Items="GetReadyDevices()">
-            <MudNavLink Href="@("devices/" + context.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
-                @context.Name
+        <Iterations Items="GetReadyDevices()" Context="device">
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
+                @device.Name
             </MudNavLink>
         </Iterations>
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Alerts" Expanded="true">
-        <Iterations Items="GetAlertDevices()">
-            <MudNavLink Href="@("devices/" + context.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
-                @context.Name
+        <Iterations Items="GetAlertDevices()" Context="device">
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
+                @device.Name
             </MudNavLink>
         </Iterations>
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Lost Devices" Expanded="false">
-        <Iterations Items="GetLostDevices()">
-            <MudNavLink Href="@("devices/" + context.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
-                @context.Name
+        <Iterations Items="GetLostDevices()" Context="device">
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
+                @device.Name
             </MudNavLink>
         </Iterations>
     </MudNavGroup>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Dashboards" Expanded="true">
-        <Iterations Items="_dashboards">
-            <MudNavLink Href="@("dashboards/" + context.Id)" Icon="@Icons.Filled.Dashboard">
-                @context.Name
+        <Iterations Items="_dashboards" Context="dashboard">
+            <MudNavLink Href="@("dashboards/" + dashboard.Id)" Icon="@Icons.Filled.Dashboard">
+                @dashboard.Name
             </MudNavLink>
         </Iterations>
 
