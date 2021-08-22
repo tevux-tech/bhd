@@ -11,7 +11,7 @@
 
     <MudGrid Class="my-1 d-flex">
         <Iterations Items="node.Properties" Context="property">
-            <MudItem Class="pa-1 flex-grow-1">
+            <MudItem Class="pa-1 flex-grow-1" Style="max-width: 300px">
                 <DeviceProperty PropertyPath="@property">
                     <Buttons>
                         <MudIconButton Size="Size.Small" Title="Add to dashboard" Icon="@Icons.Filled.Dashboard" OnClick="() => AddToDashboard(property)"/>
