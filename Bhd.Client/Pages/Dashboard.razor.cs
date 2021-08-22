@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Bhd.Client.Pages {
-    public partial class Dashboard {
+    public partial class Dashboard : IDisposable {
         [Parameter]
         public string DashboardId { get; set; }
 
@@ -24,6 +25,9 @@ namespace Bhd.Client.Pages {
 
         [Inject]
         private IDialogService DialogService { get; set; }
+
+        [Inject] 
+        private NavigationManager NavigationManager { get; set; }
 
         private Bhd.Shared.DTOs.Dashboard _dashboard = new();
         private List<DashboardNode> _nodes = new();
@@ -62,8 +66,9 @@ namespace Bhd.Client.Pages {
 
         private async Task RemoveDashboard() {
             var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
-            dashboardConfigs.RemoveAll(r => r.DashboardId == DashboardId);
+            dashboardConfigs?.RemoveAll(r => r.DashboardId == DashboardId);
             await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+            NavigationManager.NavigateTo("/");
         }
 
         private async Task AddNode() {
