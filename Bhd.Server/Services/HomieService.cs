@@ -11,7 +11,7 @@ namespace Bhd.Server.Services {
 
         public List<DynamicConsumer> DynamicConsumers = new();
 
-        private HomieTopicFetcher _fetcher;
+        private readonly HomieTopicFetcher _fetcher;
         private readonly IHubContext<NotificationsHub> _notificationsHub;
 
         private readonly string _brokerIp;
@@ -74,7 +74,7 @@ namespace Bhd.Server.Services {
                         var propertyId = clientPropertyBase.PropertyId.Replace($"{clientDeviceNode.NodeId}/", "");
 
                         clientPropertyBase.PropertyChanged += async (sender, args) => {
-                            await _notificationsHub.Clients.All.SendAsync("DevicePropertyChanged", $"devices/{deviceId}/nodes/{clientDeviceNode.NodeId}/properties/{propertyId}");
+                            await _notificationsHub.Clients.All.SendAsync("DevicePropertyChanged", $"/api/devices/{deviceId}/nodes/{clientDeviceNode.NodeId}/properties/{propertyId}");
                         };
                     }
                 }

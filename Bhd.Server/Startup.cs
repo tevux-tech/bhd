@@ -23,11 +23,13 @@ namespace Bhd.Server {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
             });
             services.AddSingleton<HomieService>();
+            services.AddSingleton<UserDashboardsStorage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             app.ApplicationServices.GetService<HomieService>();
+            app.ApplicationServices.GetService<UserDashboardsStorage>();
 
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();

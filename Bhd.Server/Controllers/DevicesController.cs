@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Bhd.Server.Services;
 using Bhd.Shared;
+using Bhd.Shared.DTOs;
 using DevBot9.Protocols.Homie;
-using Device = Bhd.Shared.Device;
-using PropertyType = Bhd.Shared.PropertyType;
+using Device = Bhd.Shared.DTOs.Device;
 
 namespace Bhd.Server.Controllers {
     [ApiController]
@@ -26,8 +26,9 @@ namespace Bhd.Server.Controllers {
 
             foreach (var homieServiceDynamicConsumer in _homieService.DynamicConsumers) {
                 var device = new Device();
-                device.DeviceId = homieServiceDynamicConsumer.ClientDevice.DeviceId;
+                device.Id = homieServiceDynamicConsumer.ClientDevice.DeviceId;
                 device.Name = homieServiceDynamicConsumer.ClientDevice.Name;
+                device.Nodes = $"/api/devices/{device.Id}/nodes";
 
                 switch (homieServiceDynamicConsumer.ClientDevice.State) {
                     case HomieState.Ready:
@@ -62,7 +63,7 @@ namespace Bhd.Server.Controllers {
 
         [HttpGet("{deviceId}")]
         public Device GetDevice(string deviceId) {
-            return Get().First(d => d.DeviceId == deviceId);
+            return Get().First(d => d.Id == deviceId);
         }
 
         [HttpGet("{deviceId}/Nodes")]
@@ -72,56 +73,10 @@ namespace Bhd.Server.Controllers {
             foreach (var clientDeviceNode in dynamicConsumer.ClientDevice.Nodes) {
                 var node = new Node();
                 node.Name = clientDeviceNode.Name;
-                node.NodeId = clientDeviceNode.NodeId;
-
-                node.Properties = new List<Property>();
+                node.Id = clientDeviceNode.NodeId;
 
                 foreach (var clientPropertyBase in clientDeviceNode.Properties) {
-                    var property = new Property();
-                    property.Id = clientPropertyBase.PropertyId.Replace($"{node.NodeId}/", "");
-                    property.Path = $"devices/{deviceId}/nodes/{node.NodeId}/properties/{property.Id}";
-                    property.Name = clientPropertyBase.Name;
-                    property.Format = clientPropertyBase.Format;
-                    property.Unit = clientPropertyBase.Unit;
-
-                    switch (clientPropertyBase.Type) {
-                        case DevBot9.Protocols.Homie.PropertyType.State:
-                            property.Direction = Direction.Read;
-                            break;
-
-                        case DevBot9.Protocols.Homie.PropertyType.Command:
-                            property.Direction = Direction.Write;
-                            break;
-
-                        case DevBot9.Protocols.Homie.PropertyType.Parameter:
-                            property.Direction = Direction.ReadWrite;
-                            break;
-                    }
-
-                    switch (clientPropertyBase) {
-                        case ClientNumberProperty numberProperty:
-                            property.Type = PropertyType.Number;
-                            property.NumericValue = numberProperty.Value;
-                            node.Properties.Add(property);
-                            break;
-
-                        case ClientChoiceProperty choiceProperty:
-                            property.TextValue = choiceProperty.Value;
-                            property.Type = PropertyType.Choice;
-                            property.Choices = choiceProperty.Format.Split(",").ToList();
-                            node.Properties.Add(property);
-                            break;
-
-                        case ClientTextProperty textProperty:
-                            property.Type = PropertyType.Text;
-                            property.TextValue = textProperty.Value;
-                            node.Properties.Add(property);
-                            break;
-
-                        default:
-                            node.Properties.Add(property);
-                            break;
-                    }
+                    node.Properties.Add($"/api/devices/{deviceId}/nodes/{node.Id}/properties/{clientPropertyBase.PropertyId.Replace($"{node.Id}/", "")}");
                 }
 
                 nodes.Add(node);
@@ -133,19 +88,20 @@ namespace Bhd.Server.Controllers {
         [HttpGet("{deviceId}/Nodes/{nodeId}")]
         public Node GetNode(string deviceId, string nodeId) {
             var nodes = GetNodes(deviceId);
-            return nodes.First(n => n.NodeId == nodeId);
+            return nodes.First(n => n.Id == nodeId);
         }
 
         [HttpGet("{deviceId}/Nodes/{nodeId}/Properties")]
-        public IEnumerable<Property> GetProperties(string deviceId, string nodeId) {
+        public IEnumerable<string> GetProperties(string deviceId, string nodeId) {
             var node = GetNode(deviceId, nodeId);
             return node.Properties;
         }
 
         [HttpGet("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}")]
         public Property GetProperty(string deviceId, string nodeId, string propertyId) {
-            var properties = GetProperties(deviceId, nodeId);
-            return properties.First(p => p.Id == propertyId);
+            var propertyBase = GetPropertyBase(deviceId, nodeId, propertyId);
+            var property = PropertyFactory.Create(propertyBase);
+            return property;
         }
 
         [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/TextValue")]

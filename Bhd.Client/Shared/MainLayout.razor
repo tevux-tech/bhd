@@ -16,29 +16,8 @@
             <MudText Typo="Typo.subtitle2">BHD @HeaderService.CurrentPageTitle</MudText>
         </MudHidden>
 
-        @*<MudButton Variant="Variant.Outlined" Color="Color.Secondary">Bybis</MudButton>
-        <MudButton Variant="Variant.Filled">Bybis</MudButton>
-        <MudButton Variant="Variant.Filled">Bybis</MudButton>
-        <MudButton Variant="Variant.Filled">Bybis</MudButton>*@
-
-        @*<MudNavMenu>
-           
-            </MudNavLink>
-           
-            <MudNavLink Href="fetchdata" Icon="@Icons.Filled.FileDownload" IconColor="Color.Inherit">Fetch data</MudNavLink>
-        </MudNavMenu>*@
-
-
-        @*<MudAppBarSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
-        <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" />*@
-
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
-        @*<MudDrawerHeader>
-            <MudText Typo="Typo.h5">My devices</MudText>
-        </MudDrawerHeader>
-        <MudDivider />*@
         <NavMenu/>
     </MudDrawer>
     <MudMainContent Class="px-8" MaxWidth="MaxWidth.False">
@@ -47,25 +26,3 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
-
-@code {
-    bool _drawerOpen = true;
-
-    [Inject]
-    private PageHeaderService HeaderService { get; set; }
-
-    protected override Task OnInitializedAsync() {
-        HeaderService.PropertyChanged += (sender, args) => {
-            StateHasChanged();
-        };
-
-        return base.OnInitializedAsync();
-    }
-
-    void DrawerToggle() {
-        _drawerOpen = !_drawerOpen;
-    }
-
-
-
-}

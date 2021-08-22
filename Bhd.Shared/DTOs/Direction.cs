@@ -1,6 +1,4 @@
-﻿// unset
-
-namespace Bhd.Shared {
+﻿namespace Bhd.Shared.DTOs {
     public enum Direction {
         Read,
         ReadWrite,
