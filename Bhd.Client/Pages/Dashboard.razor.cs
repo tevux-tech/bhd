@@ -133,5 +133,12 @@ namespace Bhd.Client.Pages {
                 await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
             }
         }
+
+        private async Task RenameNode(DashboardNode node) {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["DashboardId"] = DashboardId;
+            dialogParameters["DashboardNode"] = node;
+            var result = await DialogService.Show<RenameDashboardNode>(null, dialogParameters).Result;
+        }
     }
 }
