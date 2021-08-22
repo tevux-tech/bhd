@@ -2,9 +2,10 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Bhd.Shared;
+using Bhd.Client.Dialogs;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Bhd.Client.Pages {
     public partial class Dashboard {
@@ -19,6 +20,9 @@ namespace Bhd.Client.Pages {
 
         [Inject]
         private NotificationsHub NotificationsHub { get; set; }
+
+        [Inject]
+        private IDialogService DialogService { get; set; }
 
         private Bhd.Shared.DTOs.Dashboard _dashboard = new();
         private List<DashboardNode> _nodes = new();
@@ -59,6 +63,12 @@ namespace Bhd.Client.Pages {
             var config = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
             config.RemoveAll(r => r.DashboardId == DashboardId);
             await HttpClient.PutAsJsonAsync("api/dashboards/configuration", config);
+        }
+
+        private async Task AddNode() {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["DashboardId"] = DashboardId;
+            var result = await DialogService.Show<AddDashboardNode>(null, dialogParameters).Result;
         }
     }
 }
