@@ -15,7 +15,7 @@ namespace Bhd.Client.Components {
         public string PropertyPath { get; set; }
 
         [Parameter]
-        public string CustomPropertyName { get; set; }
+        public string AlternativePropertyName { get; set; }
 
         [Inject]
         public NotificationsHub NotificationsHub { get; set; }

@@ -4,9 +4,9 @@
     <MudCardHeader Class="pa-2">
         <CardHeaderContent>
             <MudText @onclick="CancelEdit" Align="Align.Center">
-                <Condition Evaluation="CustomPropertyName != null">
+                <Condition Evaluation="AlternativePropertyName != null">
                     <Match>
-                        @CustomPropertyName
+                        @AlternativePropertyName
                     </Match>
                     <NotMatch>
                         @_property.Name
