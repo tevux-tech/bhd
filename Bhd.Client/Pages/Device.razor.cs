@@ -6,7 +6,7 @@ using Bhd.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace Bhd.Client.Pages {
-    public partial class DeviceView {
+    public partial class Device {
         [Parameter]
         public string DeviceId { get; set; }
 
@@ -20,7 +20,7 @@ namespace Bhd.Client.Pages {
         private PageHeaderService PageHeaderService { get; set; }
 
         private List<Node> _nodes = new();
-        private Device _device = new();
+        private Bhd.Shared.Device _device = new();
 
         protected override async Task OnParametersSetAsync() {
             await LoadDeviceInfo();
@@ -45,7 +45,7 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task LoadDeviceInfo() {
-            _device = await HttpClient.GetFromJsonAsync<Device>($"api/devices/{DeviceId}");
+            _device = await HttpClient.GetFromJsonAsync<Bhd.Shared.Device>($"api/devices/{DeviceId}");
         }
 
         private async Task LoadDeviceNodes() {

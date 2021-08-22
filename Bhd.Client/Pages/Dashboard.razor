@@ -1,9 +1,5 @@
-﻿@page "/devices/{DeviceId}"
+﻿@page "/dashboards/{DashboardId}"
 @implements IDisposable
-
-@if (_device.State == DeviceState.Lost) {
-    <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Device is lost!</MudAlert>
-}
 
 @foreach (var node in _nodes) {
     <MudText Class="mb-2" Typo="Typo.h6" Color="Color.Primary">@node.Name</MudText>
@@ -11,8 +7,11 @@
     <MudGrid Class="my-1 d-flex">
         @foreach (var property in node.Properties) {
             <MudItem Class="pa-1 flex-grow-1">
-                <PropertyView PropertyPath="@property"></PropertyView>
+                <DeviceProperty CustomPropertyName="@property.AlternativeName" PropertyPath="@property.ActualPropertyPath"/>
             </MudItem>
         }
     </MudGrid>
 }
+
+<MudButton>Edit</MudButton>
+<MudButton OnClick="RemoveDashboard">Remove</MudButton>

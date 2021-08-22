@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Shared;
@@ -7,13 +8,13 @@ using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
 namespace Bhd.Client.Components {
-    public partial class PropertyView {
+    public partial class DeviceProperty : IDisposable {
 
         [Parameter]
         public string PropertyPath { get; set; }
 
         [Parameter]
-        public string PropertyName { get; set; }
+        public string CustomPropertyName { get; set; }
 
         [Inject]
         public NotificationsHub NotificationsHub { get; set; }
@@ -43,6 +44,7 @@ namespace Bhd.Client.Components {
         }
 
         protected override async Task OnParametersSetAsync() {
+            _isEditing = false;
             await Refresh();
         }
 
@@ -65,6 +67,22 @@ namespace Bhd.Client.Components {
 
         private void CancelEdit() {
             _isEditing = false;
+        }
+
+        private string GetChoiceIcon(string choice) {
+            if (_property.TextValue == choice) {
+                return Icons.Filled.Check;
+            }
+
+            return null;
+        }
+
+        private Color GetChoiceColor(string choice) {
+           if (_property.TextValue == choice) {
+               return Color.Primary;
+           }
+
+           return Color.Default;
         }
 
         private void Edit() {

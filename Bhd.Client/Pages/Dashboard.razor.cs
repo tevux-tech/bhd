@@ -6,7 +6,7 @@ using Bhd.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace Bhd.Client.Pages {
-    public partial class DashboardView {
+    public partial class Dashboard {
         [Parameter]
         public string DashboardId { get; set; }
 
@@ -19,7 +19,7 @@ namespace Bhd.Client.Pages {
         [Inject]
         private NotificationsHub NotificationsHub { get; set; }
 
-        private Dashboard _dashboard = new();
+        private Bhd.Shared.Dashboard _dashboard = new();
         private List<DashboardNode> _nodes = new();
 
         protected override async Task OnInitializedAsync() {
@@ -43,7 +43,7 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task LoadDashboard() {
-            _dashboard = await HttpClient.GetFromJsonAsync<Dashboard>($"api/dashboards/{DashboardId}");
+            _dashboard = await HttpClient.GetFromJsonAsync<Bhd.Shared.Dashboard>($"api/dashboards/{DashboardId}");
         }
 
         private async Task LoadNodes() {

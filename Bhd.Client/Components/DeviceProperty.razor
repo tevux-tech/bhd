@@ -1,0 +1,97 @@
+@using Direction = Bhd.Shared.Direction
+
+<MudCard Elevation="2">
+    <MudCardHeader Class="pa-2">
+        <CardHeaderContent>
+            <MudText @onclick="CancelEdit" Align="Align.Center">
+                <Condition Evaluation="CustomPropertyName != null">
+                    <Match>
+                        @CustomPropertyName
+                    </Match>
+                    <NotMatch>
+                        @_property.Name
+                    </NotMatch>
+                </Condition>
+            </MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+
+    <Condition Evaluation="_property.Type == PropertyType.Choice && _property.Direction == Direction.Write">
+        <Match>
+            <MudCardActions>
+                <MudGrid Class="mx-1 mb-1 d-flex">
+                    <Iterations Items="_property.Choices">
+                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="Color.Default" OnClick="() => SetTextValue(context)">
+                            @context
+                        </MudButton>
+                    </Iterations>
+                </MudGrid>
+            </MudCardActions>
+        </Match>
+    </Condition>
+
+    <Condition Evaluation="_property.Type == PropertyType.Choice && _property.Direction == Direction.ReadWrite">
+        <Match>
+            <MudCardActions >
+                <MudGrid Class="mx-1 mb-1 d-flex">
+                    <Iterations Items="_property.Choices">
+                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" StartIcon="@GetChoiceIcon(context)" Color="@GetChoiceColor(context)" OnClick="() => SetTextValue(context)">
+                            @context
+                        </MudButton>
+                    </Iterations>
+                </MudGrid>
+            </MudCardActions>
+        </Match>
+    </Condition>
+
+    <Condition Evaluation="(_property.Type == PropertyType.Text | _property.Type == PropertyType.Choice) && _property.Direction == Direction.Read">
+        <Match>
+            <MudCardContent Class="pt-0 pb-5">
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">@_property.TextValue</MudText>
+            </MudCardContent>
+        </Match>
+    </Condition>
+
+    <Condition Evaluation="_property.Type == PropertyType.Number && _property.Direction == Direction.Read">
+        <Match>
+            <MudCardContent Class="pt-0 pb-5">
+                <MudText style="min-width: 144px;" Typo="Typo.h6" Align="Align.Center">
+                    @(_property.NumericValue + " " + _property.Unit)
+                </MudText>
+            </MudCardContent>
+        </Match>
+    </Condition>
+
+    <Condition Evaluation="_property.Type == PropertyType.Number && _property.Direction == Direction.ReadWrite">
+        <Match>
+            <Condition Evaluation="_isEditing">
+                <Match>
+                    <MudCardContent Class="pt-0 pb-3">
+                        <div>
+                            <MudGrid Class="d-flex" Justify="Justify.Center">
+                                <MudItem Class="px-0">
+                                    <MudNumericField @ref="_targetNumericField" style="width: 100px;" OnKeyPress="HandleNudKeyPress" HideSpinButtons="false" Class="ma-0" Margin="Margin.Dense" Immediate="true" Label="New value" @bind-Value="_targetValue" Variant="Variant.Outlined"/>
+                                </MudItem>
+
+                                <MudItem Class="align-self-center px-0">
+                                    <MudButton OnClick="HandleSetButtonClick" Class="ml-1" Variant="Variant.Filled" Color="Color.Primary">
+                                        SET
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudCardContent>
+                </Match>
+                <NotMatch>
+                    <MudCardContent Class="pt-0 pb-5">
+                        <MudText Align="Align.Center" @onclick="Edit">
+                            <MudLink style="min-width: 144px;" Typo="Typo.h6" Href="javascript:;">
+                                @(_property.NumericValue + " " + _property.Unit)
+                            </MudLink>
+                        </MudText>
+                    </MudCardContent>
+                </NotMatch>
+            </Condition>
+        </Match>
+    </Condition>
+</MudCard>
