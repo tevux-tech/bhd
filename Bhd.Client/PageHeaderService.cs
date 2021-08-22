@@ -6,7 +6,9 @@ namespace Bhd.Client {
         public string CurrentPageTitle {
             get => _currentPageTitle;
             set {
-                if (_currentPageTitle == value) return;
+                if (_currentPageTitle == value) {
+                    return;
+                }
 
                 _currentPageTitle = value;
                 NotifyPropertyChanged(nameof(CurrentPageTitle));
