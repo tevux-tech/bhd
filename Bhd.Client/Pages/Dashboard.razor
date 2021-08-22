@@ -41,6 +41,13 @@
                                     <MudText>Move down</MudText>
                                 </div>
                             </MudMenuItem>
+                            
+                            <MudMenuItem OnClick="() => RenameProperty(node, property)">
+                                <div class="d-flex">
+                                    <MudIcon Class="mr-2" Icon="@Icons.Filled.Edit" Size="Size.Small"/>
+                                    <MudText>Rename</MudText>
+                                </div>
+                            </MudMenuItem>
 
                             <MudMenuItem OnClick="() => RemoveProperty(node, property)">
                                 <div class="d-flex">

@@ -134,6 +134,14 @@ namespace Bhd.Client.Pages {
             }
         }
 
+        private async Task RenameProperty(DashboardNode node, DashboardProperty dashboardProperty) {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["DashboardId"] = DashboardId;
+            dialogParameters["DashboardNode"] = node;
+            dialogParameters["DashboardProperty"] = dashboardProperty;
+            var result = await DialogService.Show<RenameDashboardProperty>(null, dialogParameters).Result;
+        }
+
         private async Task RenameNode(DashboardNode node) {
             var dialogParameters = new DialogParameters();
             dialogParameters["DashboardId"] = DashboardId;

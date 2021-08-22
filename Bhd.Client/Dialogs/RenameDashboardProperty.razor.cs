@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Bhd.Client.Dialogs {
-    public partial class RenameDashboardNode {
+    public partial class RenameDashboardProperty {
         [CascadingParameter]
         MudDialogInstance MudDialog { get; set; }
 
@@ -24,10 +24,13 @@ namespace Bhd.Client.Dialogs {
         [Parameter]
         public DashboardNode DashboardNode { get; set; }
 
-        private string _newNodeName = "";
+        [Parameter]
+        public DashboardProperty DashboardProperty { get; set; }
+
+        private string _newPropertyName = "";
 
         protected override void OnParametersSet() {
-            _newNodeName = DashboardNode.Name;
+            _newPropertyName = DashboardProperty.AlternativeName;
             base.OnParametersSet();
         }
 
@@ -35,19 +38,20 @@ namespace Bhd.Client.Dialogs {
             MudDialog.Cancel();
         }
 
-        private async Task RenameNode() {
+        private async Task RenameProperty() {
             var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
 
             var dashboard = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == DashboardId);
             var node = dashboard?.Nodes.FirstOrDefault(n => n.NodeName == DashboardNode.Name);
+            var property = node?.Properties.FirstOrDefault(p => p.PropertyName == DashboardProperty.AlternativeName && p.PropertyPath == DashboardProperty.ActualPropertyPath);
 
-            if (node != null) {
-                node.NodeName = _newNodeName;
+            if (property != null) {
+                property.PropertyName = _newPropertyName;
                 await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
-                Snackbar.Add($"Node renamed to \"{_newNodeName}\"", Severity.Success);
+                Snackbar.Add($"Property renamed to \"{_newPropertyName}\"", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
             } else {
-                Snackbar.Add($"Node \"{DashboardNode.Name}\" not found.", Severity.Error);
+                Snackbar.Add($"Property \"{DashboardProperty.AlternativeName}\" not found.", Severity.Error);
                 MudDialog.Close(DialogResult.Ok(true));
             }
         }
