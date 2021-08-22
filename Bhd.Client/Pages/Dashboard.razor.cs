@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -60,15 +61,66 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task RemoveDashboard() {
-            var config = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
-            config.RemoveAll(r => r.DashboardId == DashboardId);
-            await HttpClient.PutAsJsonAsync("api/dashboards/configuration", config);
+            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            dashboardConfigs.RemoveAll(r => r.DashboardId == DashboardId);
+            await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
         }
 
         private async Task AddNode() {
             var dialogParameters = new DialogParameters();
             dialogParameters["DashboardId"] = DashboardId;
             var result = await DialogService.Show<AddDashboardNode>(null, dialogParameters).Result;
+        }
+
+        private bool CanMoveUp(DashboardNode node, DashboardProperty property) {
+            if (node.Properties.Count == 1) {
+                return false;
+            }
+
+            if (node.Properties.IndexOf(property) == 0) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool CanMoveDown(DashboardNode node, DashboardProperty property) {
+            if (node.Properties.Count == 1) {
+                return false;
+            }
+
+            if (node.Properties.IndexOf(property) == node.Properties.Count - 1) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task RemoveProperty(DashboardNode node, DashboardProperty property) {
+            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == DashboardId);
+            var nodeConfig = dashboardConfig?.Nodes.FirstOrDefault(n => n.NodeName == node.Name);
+            var propertyConfig = nodeConfig?.Properties.FirstOrDefault(p => p.PropertyPath == property.ActualPropertyPath);
+
+            if (propertyConfig != null) {
+                nodeConfig.Properties.Remove(propertyConfig);
+                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+            }
+        }
+
+        private async Task MoveProperty(DashboardNode node, DashboardProperty property, int offset) {
+            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == DashboardId);
+            var nodeConfig = dashboardConfig?.Nodes.FirstOrDefault(n => n.NodeName == node.Name);
+            var propertyConfig = nodeConfig?.Properties.FirstOrDefault(p => p.PropertyPath == property.ActualPropertyPath);
+
+            if (propertyConfig != null) {
+                var oldIndex = nodeConfig.Properties.IndexOf(propertyConfig);
+                var newIndex = oldIndex + offset;
+                nodeConfig.Properties.RemoveAt(oldIndex);
+                nodeConfig.Properties.Insert(newIndex, propertyConfig);
+                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+            }
         }
     }
 }

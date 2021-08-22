@@ -16,6 +16,9 @@ namespace Bhd.Client.Components {
         public string PropertyPath { get; set; }
 
         [Parameter]
+        public RenderFragment Buttons { get; set; }
+
+        [Parameter]
         public string AlternativePropertyName { get; set; }
 
         [Inject]
@@ -23,9 +26,6 @@ namespace Bhd.Client.Components {
 
         [Inject]
         public HttpClient HttpClient { get; set; }
-
-        [Inject]
-        private IDialogService DialogService { get; set; }
 
         public MudNumericField<double> _targetNumericField;
 
@@ -100,12 +100,6 @@ namespace Bhd.Client.Components {
         private async Task HandleSetButtonClick(MouseEventArgs obj) {
             await SetNumericValue(_targetValue);
             _isEditing = false;
-        }
-
-        private async Task HandleAddToDashboardButtonClick(MouseEventArgs obj) {
-            var dialogParameters = new DialogParameters();
-            dialogParameters["PropertyPath"] = PropertyPath;
-            var result = await DialogService.Show<AddToDashboard>(null, dialogParameters).Result;
         }
 
         private async Task HandleNudKeyPress(KeyboardEventArgs obj) {

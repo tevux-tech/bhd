@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Bhd.Client.Dialogs;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Bhd.Client.Pages {
     public partial class Device : IDisposable {
@@ -19,6 +21,9 @@ namespace Bhd.Client.Pages {
 
         [Inject]
         private PageHeaderService PageHeaderService { get; set; }
+
+        [Inject]
+        private IDialogService DialogService { get; set; }
 
         private List<Node> _nodes = new();
         private Bhd.Shared.DTOs.Device _device = new();
@@ -55,6 +60,12 @@ namespace Bhd.Client.Pages {
 
         public void Dispose() {
             NotificationsHub.DeviceStateChanged -= HandleDeviceStateChanged;
+        }
+
+        private async Task AddToDashboard(string propertyPath) {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["PropertyPath"] = propertyPath;
+            var result = await DialogService.Show<AddToDashboard>(null, dialogParameters).Result;
         }
     }
 }

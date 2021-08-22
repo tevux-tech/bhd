@@ -7,11 +7,19 @@
                 <Condition Evaluation="AlternativePropertyName != null">
                     <Match>
                         @AlternativePropertyName
-                        <MudIconButton Style="float: right" Size="Size.Small" Title="Add to dashboard" Icon="@Icons.Filled.Dashboard" OnClick="HandleAddToDashboardButtonClick" />
+                        
+                        <span style="float: right">
+                            @Buttons
+                        </span>
+                        @*<MudIconButton Style="float: right" Size="Size.Small" Title="Add to dashboard" Icon="@Icons.Filled.Dashboard" OnClick="HandleAddToDashboardButtonClick" />*@
                     </Match>
                     <NotMatch>
-                        @_property.Name 
-                        <MudIconButton Style="float: right" Size="Size.Small" Title="Add to dashboard" Icon="@Icons.Filled.Dashboard" OnClick="HandleAddToDashboardButtonClick"/>
+                        @_property.Name
+
+                        <span style="float: right">
+                            @Buttons
+                        </span>
+                        @*<MudIconButton Style="float: right" Size="Size.Small" Title="Add to dashboard" Icon="@Icons.Filled.Dashboard" OnClick="HandleAddToDashboardButtonClick"/>*@
                     </NotMatch>
                 </Condition>
             </MudText>
