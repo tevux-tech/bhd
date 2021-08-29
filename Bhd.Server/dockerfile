@@ -14,12 +14,7 @@ RUN dotnet build "Bhd.Server.csproj" -c Release -o /app/build
 ARG VERSION_SUFFIX
 FROM build AS publish
 
-RUN if [ -z "$VERSION_SUFFIX" ] ;\
-    then \
-        dotnet publish "Bhd.Server.csproj" -c Release -o /app/publish ;\
-    else \
-        dotnet publish "Bhd.Server.csproj" -c Release -o /app/publish --version-suffix $VERSION_SUFFIX ;\
-    fi
+RUN dotnet publish "Bhd.Server.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

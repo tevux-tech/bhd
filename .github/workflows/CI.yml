@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: Development
+    tags:
+      - "Versions/*"
 
 jobs:
   build:
@@ -23,6 +24,6 @@ jobs:
           docker buildx build --push \
             -f "Bhd.Server/Dockerfile" \
             --build-arg VERSION_SUFFIX=${GITHUB_SHA::8} \
-            --tag girdauskas/bhd:${GITHUB_SHA::8} \
+            --tag girdauskas/bhd:${GITHUB_REF#refs/tags/Versions/} \
             --tag girdauskas/bhd:latest \
             --platform linux/amd64,linux/arm/v7,linux/arm64 .
