@@ -42,6 +42,11 @@ namespace Bhd.Server {
                     property.Type = PropertyType.Text;
                     property.TextValue = textProperty.Value;
                     break;
+
+                case ClientColorProperty colorProperty:
+                    property.Type = PropertyType.Color;
+                    property.TextValue = colorProperty.Value.ToRgbString();
+                    break;
             }
 
             return property;

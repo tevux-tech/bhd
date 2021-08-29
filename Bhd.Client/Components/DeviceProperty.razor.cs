@@ -7,6 +7,7 @@ using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using MudBlazor.Utilities;
 using Direction = Bhd.Shared.DTOs.Direction;
 
 namespace Bhd.Client.Components {
@@ -27,10 +28,13 @@ namespace Bhd.Client.Components {
         [Inject]
         public HttpClient HttpClient { get; set; }
 
+        [Inject]
+        private IDialogService DialogService { get; set; }
+
         public MudNumericField<double> _targetNumericField;
 
         private bool _isEditing;
-        private double _targetValue;
+        private double _targetNumericValue;
 
         private Property _property = new();
 
@@ -86,8 +90,19 @@ namespace Bhd.Client.Components {
             return Color.Default;
         }
 
+
+        private async Task EditColor() {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["ActualColor"] = _property.TextValue;
+            var result = await DialogService.Show<MyColorPicker>(null, dialogParameters).Result;
+
+            if (result.Cancelled == false) {
+                await SetTextValue(result.Data.ToString());
+            }
+        }
+
         private void Edit() {
-            _targetValue = _property.NumericValue;
+            _targetNumericValue = _property.NumericValue;
             _isEditing = true;
 
             // Selecting text in the control after some time. Doesn't work if control is not yet visible ant it takes some time for visibilities to update.
@@ -97,14 +112,18 @@ namespace Bhd.Client.Components {
             });
         }
 
+        private string GetColorIndicatorBackgroundStyle() {
+            return $"background-color: rgb({_property.TextValue})";
+        }
+
         private async Task HandleSetButtonClick(MouseEventArgs obj) {
-            await SetNumericValue(_targetValue);
+            await SetNumericValue(_targetNumericValue);
             _isEditing = false;
         }
 
         private async Task HandleNudKeyPress(KeyboardEventArgs obj) {
             if (obj.Key == "Enter") {
-                await SetNumericValue(_targetValue);
+                await SetNumericValue(_targetNumericValue);
                 _isEditing = false;
             }
         }

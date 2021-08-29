@@ -2,6 +2,7 @@
     public enum PropertyType {
         Number,
         Text,
-        Choice
+        Choice,
+        Color
     }
 }
