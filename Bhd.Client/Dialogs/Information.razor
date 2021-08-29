@@ -1,0 +1,20 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Versions
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTable Items="_versions">
+            <HeaderContent>
+                <MudTh>Component</MudTh>
+                <MudTh>Version</MudTh>
+            </HeaderContent>
+            
+            <RowTemplate>
+                <MudTd DataLabel="Component">@context.Component</MudTd>
+                <MudTd DataLabel="Version">@context.VersionNumber</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+</MudDialog>
