@@ -6,9 +6,15 @@ Self-hosted web app for basic MQTT [homie](https://homieiot.github.io/)-based de
 
 ![Screen shot](images/screen1.png?raw=true)
 
+
 ## Running using docker
+Create volume for user data (to preserve dashboards and other data if you update BHD latter):
 ```
-docker pull girdauskas/bhd:latest
-docker run --rm -it -p 80:80 -e MQTT_SERVER=192.168.2.2 girdauskas/bhd:latest
+docker volume create bhd-data
 ```
 
+Start newest version:
+```
+docker pull girdauskas/bhd:latest
+docker run --rm -it -p 80:80 -e MQTT_SERVER=192.168.2.2 -v bhd-data:/app/data girdauskas/bhd:latest
+```
