@@ -1,0 +1,46 @@
+﻿<MudNavMenu>
+    <Condition Evaluation="_isScanning">
+        <Match>
+            <MudAlert Square="true" Severity="Severity.Info" Variant="Variant.Filled">Scanning...</MudAlert>
+        </Match>
+        
+        <NotMatch>
+            <MudButton OnClick="HandleRescanButtonClick" StartIcon="@Icons.Filled.Search" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Rescan</MudButton>
+        </NotMatch>
+    </Condition>
+
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Ready Devices" Expanded="true">
+        <Iterations Items="GetReadyDevices()" Context="device">
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Success">
+                @device.Name
+            </MudNavLink>
+        </Iterations>
+    </MudNavGroup>
+
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Alerts" Expanded="true">
+        <Iterations Items="GetAlertDevices()" Context="device">
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Error">
+                @device.Name
+            </MudNavLink>
+        </Iterations>
+    </MudNavGroup>
+
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Lost Devices" Expanded="false">
+        <Iterations Items="GetLostDevices()" Context="device">
+            <MudNavLink Href="@("devices/" + device.Id)" Icon="@Icons.Filled.Apps" IconColor="Color.Warning">
+                @device.Name
+            </MudNavLink>
+        </Iterations>
+    </MudNavGroup>
+
+    <MudNavGroup Icon="@Icons.Filled.List" Title="Dashboards" Expanded="true">
+        <Iterations Items="_dashboards" Context="dashboard">
+            <MudNavLink Href="@("dashboards/" + dashboard.Id)" Icon="@Icons.Filled.Dashboard">
+                @dashboard.Name
+            </MudNavLink>
+        </Iterations>
+
+        <MudButton OnClick="HandleCreateDashboardClick" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Create new</MudButton>
+    </MudNavGroup>
+
+</MudNavMenu>

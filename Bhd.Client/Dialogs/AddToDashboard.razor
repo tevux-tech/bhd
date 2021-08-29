@@ -1,0 +1,31 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Add Property to Dashboard
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="_propertyName" Label="Name" Required="true"/>
+
+        <MudSelect T="DashboardConfig" Label="Dashboard" Required="true" @bind-Value="_selectedDashboard">
+            <Iterations Items="_dashboards ?? new List<DashboardConfig>()" Context="dashboard">
+                <MudSelectItem Value="dashboard">
+                    @dashboard.DashboardName
+                </MudSelectItem>
+            </Iterations>
+        </MudSelect>
+        
+        <MudSelect T="NodeConfig" Label="Node" Required="true" @bind-Value="_selectedDashboardNode">
+            <Iterations Items="_selectedDashboard?.Nodes ?? new List<NodeConfig>()" Context="node">
+                <MudSelectItem Value="node">
+                    @node.NodeName
+                </MudSelectItem>
+            </Iterations>
+        </MudSelect>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Add">Add</MudButton>
+    </DialogActions>
+</MudDialog>
