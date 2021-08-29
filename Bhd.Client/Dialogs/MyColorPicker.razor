@@ -5,7 +5,7 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudColorPicker PickerVariant="PickerVariant.Static" @bind-Text="_selectedValue" DisableToolbar="false" DisableAlpha="true" />
+        <MudColorPicker PickerVariant="PickerVariant.Static" @bind-Value="_selectedColor" ColorPickerView="ColorPickerView.Grid" DisableAlpha="true" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>

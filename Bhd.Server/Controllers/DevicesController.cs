@@ -116,6 +116,10 @@ namespace Bhd.Server.Controllers {
                 case ClientTextProperty textProperty:
                     textProperty.Value = textValue;
                     break;
+
+                case ClientColorProperty colorProperty:
+                    colorProperty.Value = HomieColor.FromRgbString(textValue);
+                    break;
             }
         }
 

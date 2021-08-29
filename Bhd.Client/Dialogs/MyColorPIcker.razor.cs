@@ -9,8 +9,7 @@ namespace Bhd.Client.Dialogs {
 
         [Parameter]
         public string ActualColor { get; set; }
-
-        private string _selectedValue;
+        private MudColor _selectedColor;
 
         private void Cancel() {
             MudDialog.Cancel();
@@ -22,15 +21,15 @@ namespace Bhd.Client.Dialogs {
                 var r = int.Parse(colorSplits[0]);
                 var g = int.Parse(colorSplits[1]);
                 var b = int.Parse(colorSplits[2]);
-                _selectedValue = $"#{r:x2}{g:x2}{b:x2}";
+
+                _selectedColor = new MudColor(r, g, b, 255);
             }
 
             base.OnParametersSet();
         }
 
         private void Set() {
-            var mudColorParser = new MudColor(_selectedValue);
-            var rgbColor = $"{mudColorParser.R},{mudColorParser.G},{mudColorParser.B}";
+            var rgbColor = $"{_selectedColor.R},{_selectedColor.G},{_selectedColor.B}";
             MudDialog.Close(DialogResult.Ok(rgbColor));
         }
     }
