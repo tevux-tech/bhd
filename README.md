@@ -8,7 +8,7 @@ Self-hosted web app for basic MQTT [homie](https://homieiot.github.io/)-based de
 
 
 ## Running using docker
-Create volume for user data (to preserve dashboards and other data if you update BHD latter):
+Create volume for user data (to preserve dashboards and other data if you update BHD later):
 ```
 docker volume create bhd-data
 ```
