@@ -65,10 +65,13 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task RemoveDashboard() {
-            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
-            dashboardConfigs?.RemoveAll(r => r.DashboardId == DashboardId);
-            await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
-            NavigationManager.NavigateTo("/");
+            var dialogParameters = new DialogParameters();
+            dialogParameters["Dashboard"] = _dashboard;
+            var result = await DialogService.Show<DeleteDashboard>(null, dialogParameters).Result;
+
+            if (result.Cancelled == false) {
+                NavigationManager.NavigateTo("/");
+            }
         }
 
         private async Task AddNode() {
