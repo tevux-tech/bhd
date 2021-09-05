@@ -22,7 +22,7 @@ namespace Bhd.Client.Dialogs {
             MudDialog.Close(DialogResult.Ok(Value));
         }
 
-        public void HandleNudKeyPress(KeyboardEventArgs obj) {
+        public void HandleKeyDown(KeyboardEventArgs obj) {
             if (obj.Key == "Enter") {
                 MudDialog.Close(DialogResult.Ok(Value));
             }

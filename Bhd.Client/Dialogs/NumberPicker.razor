@@ -1,9 +1,4 @@
-﻿@code {
-    private void Callback(KeyboardEventArgs obj) {
-        throw new NotImplementedException();
-    }
-}
-<MudDialog  @onkeydown="HandleNudKeyPress">
+﻿<MudDialog  @onkeydown="HandleKeyDown">
     <DialogContent>
         <MudNumericField @bind-Value="Value" Variant="Variant.Outlined" Immediate="true" Adornment="Adornment.End" AdornmentText="@Unit" HideSpinButtons="true"></MudNumericField>
     </DialogContent>
