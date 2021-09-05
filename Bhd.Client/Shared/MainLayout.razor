@@ -17,6 +17,11 @@
         </MudHidden>
         
         <MudSpacer />
+        
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-5" Typo="Typo.subtitle2">@_dateTime</MudText>
+        </MudHidden>
+
         <MudIconButton OnClick="OpenInformationDialog" Icon="@Icons.Outlined.Info" Color="Color.Inherit" />
         <MudIconButton Link="https://github.com/Girdauskas/BlazorHomieDashboard" Target="blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
 
