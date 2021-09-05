@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Globalization;
+using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
+using Bhd.Client.Services;
+using Bhd.Client.SignalR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -13,10 +17,23 @@ namespace Bhd.Client.Shared {
         [Inject]
         private IDialogService DialogService { get; set; }
 
+        [Inject]
+        private NotificationsHub NotificationsHub { get; set; }
+
+        private string _dateTime;
+
         protected override Task OnInitializedAsync() {
             HeaderService.PropertyChanged += (sender, args) => {
                 StateHasChanged();
             };
+
+            Task.Run(async () => {
+                while (true) {
+                    _dateTime = DateTime.Now.ToString(CultureInfo.CurrentCulture);
+                    StateHasChanged();
+                    await Task.Delay(1000);
+                }
+            });
 
             return base.OnInitializedAsync();
         }

@@ -1,13 +1,15 @@
 ﻿<MudNavMenu>
-    <Condition Evaluation="_isScanning">
-        <Match>
-            <MudAlert Square="true" Severity="Severity.Info" Variant="Variant.Filled">Scanning...</MudAlert>
-        </Match>
-        
-        <NotMatch>
-            <MudButton OnClick="HandleRescanButtonClick" StartIcon="@Icons.Filled.Search" FullWidth="true" Variant="Variant.Text" Color="Color.Default">Rescan</MudButton>
-        </NotMatch>
-    </Condition>
+    <MudButton Disabled="_isScanning" OnClick="HandleRescanButtonClick" StartIcon="@Icons.Filled.Search" FullWidth="true" Variant="Variant.Text" Color="Color.Default">
+        <Condition Evaluation="_isScanning">
+            <Match>
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">Scanning...</MudText>
+            </Match>
+            <NotMatch>
+                <MudText>Rescan</MudText>
+            </NotMatch>
+        </Condition>
+    </MudButton>
 
     <MudNavGroup Icon="@Icons.Filled.List" Title="Ready Devices" Expanded="true">
         <Iterations Items="GetReadyDevices()" Context="device">

@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
+using Bhd.Client.Services;
+using Bhd.Client.SignalR;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -14,7 +16,7 @@ namespace Bhd.Client.Pages {
         public string DeviceId { get; set; }
 
         [Inject]
-        private HttpClient HttpClient { get; set; }
+        private IRestService RestService { get; set; }
 
         [Inject]
         private NotificationsHub NotificationsHub { get; set; }
@@ -51,11 +53,11 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task LoadDeviceInfo() {
-            _device = await HttpClient.GetFromJsonAsync<Bhd.Shared.DTOs.Device>($"api/devices/{DeviceId}");
+            _device = await RestService.GetAsync<Bhd.Shared.DTOs.Device>($"api/devices/{DeviceId}");
         }
 
         private async Task LoadDeviceNodes() {
-            _nodes = await HttpClient.GetFromJsonAsync<List<Node>>($"api/devices/{DeviceId}/nodes");
+            _nodes = await RestService.GetAsync<List<Node>>($"api/devices/{DeviceId}/nodes");
         }
 
         public void Dispose() {

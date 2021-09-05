@@ -4,6 +4,8 @@ using MudBlazor.Services;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Bhd.Client.Services;
+using Bhd.Client.SignalR;
 using MudBlazor;
 
 namespace Bhd.Client {
@@ -17,6 +19,8 @@ namespace Bhd.Client {
             builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddScoped<IRestService, JsonRestService>();
+
             builder.Services.AddSingleton<NotificationsHub>();
             builder.Services.AddSingleton<PageHeaderService>();
             builder.Services.AddMudServices(config => {

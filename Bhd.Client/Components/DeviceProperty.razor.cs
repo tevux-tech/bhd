@@ -3,11 +3,11 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
+using Bhd.Client.Services;
+using Bhd.Client.SignalR;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
-using MudBlazor.Utilities;
 using Direction = Bhd.Shared.DTOs.Direction;
 
 namespace Bhd.Client.Components {
@@ -26,15 +26,10 @@ namespace Bhd.Client.Components {
         public NotificationsHub NotificationsHub { get; set; }
 
         [Inject]
-        public HttpClient HttpClient { get; set; }
+        public IRestService RestService { get; set; }
 
         [Inject]
         private IDialogService DialogService { get; set; }
-
-        public MudNumericField<double> _targetNumericField;
-
-        private bool _isEditing;
-        private double _targetNumericValue;
 
         private Property _property = new();
 
@@ -53,13 +48,12 @@ namespace Bhd.Client.Components {
         }
 
         protected override async Task OnParametersSetAsync() {
-            _isEditing = false;
             await Refresh();
         }
 
 
         private async Task Refresh() {
-            _property = await HttpClient.GetFromJsonAsync<Property>(PropertyPath);
+            _property = await RestService.GetAsync<Property>(PropertyPath);
         }
 
         public void Dispose() {
@@ -67,15 +61,11 @@ namespace Bhd.Client.Components {
         }
 
         private async Task SetTextValue(string valueToSet) {
-            await HttpClient.PutAsJsonAsync($"{PropertyPath}/TextValue", valueToSet);
+            await RestService.PutAsync($"{PropertyPath}/TextValue", valueToSet);
         }
 
         private async Task SetNumericValue(double valueToSet) {
-            await HttpClient.PutAsJsonAsync($"{PropertyPath}/NumericValue", valueToSet);
-        }
-
-        private void CancelEdit() {
-            _isEditing = false;
+            await RestService.PutAsync($"{PropertyPath}/NumericValue", valueToSet);
         }
 
         private Color GetChoiceColor(string choice) {
@@ -94,39 +84,27 @@ namespace Bhd.Client.Components {
         private async Task EditColor() {
             var dialogParameters = new DialogParameters();
             dialogParameters["ActualColor"] = _property.TextValue;
-            var result = await DialogService.Show<MyColorPicker>(null, dialogParameters).Result;
+            var result = await DialogService.Show<ColorPicker>(_property.Name, dialogParameters).Result;
 
             if (result.Cancelled == false) {
                 await SetTextValue(result.Data.ToString());
             }
         }
 
-        private void Edit() {
-            _targetNumericValue = _property.NumericValue;
-            _isEditing = true;
+        private async Task EditNumber() {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["Unit"] = _property.Unit;
+            dialogParameters["Value"] = _property.NumericValue;
 
-            // Selecting text in the control after some time. Doesn't work if control is not yet visible ant it takes some time for visibilities to update.
-            Task.Run(async () => {
-                await Task.Delay(200);
-                await _targetNumericField.SelectAsync();
-            });
+            var result = await DialogService.Show<NumberPicker>(_property.Name, dialogParameters).Result;
+
+            if (result.Cancelled == false) {
+                await SetNumericValue((double)result.Data);
+            }
         }
 
         private string GetColorIndicatorBackgroundStyle() {
             return $"background-color: rgb({_property.TextValue})";
         }
-
-        private async Task HandleSetButtonClick(MouseEventArgs obj) {
-            await SetNumericValue(_targetNumericValue);
-            _isEditing = false;
-        }
-
-        private async Task HandleNudKeyPress(KeyboardEventArgs obj) {
-            if (obj.Key == "Enter") {
-                await SetNumericValue(_targetNumericValue);
-                _isEditing = false;
-            }
-        }
-
     }
 }

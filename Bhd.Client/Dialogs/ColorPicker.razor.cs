@@ -3,7 +3,7 @@ using MudBlazor;
 using MudBlazor.Utilities;
 
 namespace Bhd.Client.Dialogs {
-    public partial class MyColorPicker {
+    public partial class ColorPicker {
         [CascadingParameter]
         MudDialogInstance MudDialog { get; set; }
 

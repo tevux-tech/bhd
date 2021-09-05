@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
+using Bhd.Client.Services;
+using Bhd.Client.SignalR;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -15,7 +17,7 @@ namespace Bhd.Client.Pages {
         public string DashboardId { get; set; }
 
         [Inject]
-        private HttpClient HttpClient { get; set; }
+        private IRestService RestService { get; set; }
 
         [Inject]
         private PageHeaderService PageHeaderService { get; set; }
@@ -53,11 +55,11 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task LoadDashboard() {
-            _dashboard = await HttpClient.GetFromJsonAsync<Bhd.Shared.DTOs.Dashboard>($"api/dashboards/{DashboardId}");
+            _dashboard = await RestService.GetAsync<Bhd.Shared.DTOs.Dashboard>($"api/dashboards/{DashboardId}");
         }
 
         private async Task LoadNodes() {
-            _nodes = await HttpClient.GetFromJsonAsync<List<DashboardNode>>($"api/dashboards/{DashboardId}/nodes");
+            _nodes = await RestService.GetAsync<List<DashboardNode>>($"api/dashboards/{DashboardId}/nodes");
         }
 
         public void Dispose() {
@@ -111,19 +113,19 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task RemoveProperty(DashboardNode node, DashboardProperty property) {
-            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigs = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
             var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == DashboardId);
             var nodeConfig = dashboardConfig?.Nodes.FirstOrDefault(n => n.NodeName == node.Name);
             var propertyConfig = nodeConfig?.Properties.FirstOrDefault(p => p.PropertyPath == property.ActualPropertyPath);
 
             if (propertyConfig != null) {
                 nodeConfig.Properties.Remove(propertyConfig);
-                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+                await RestService.PutAsync("api/dashboards/configuration", dashboardConfigs);
             }
         }
 
         private async Task MoveProperty(DashboardNode node, DashboardProperty property, int offset) {
-            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigs = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
             var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == DashboardId);
             var nodeConfig = dashboardConfig?.Nodes.FirstOrDefault(n => n.NodeName == node.Name);
             var propertyConfig = nodeConfig?.Properties.FirstOrDefault(p => p.PropertyPath == property.ActualPropertyPath);
@@ -133,18 +135,18 @@ namespace Bhd.Client.Pages {
                 var newIndex = oldIndex + offset;
                 nodeConfig.Properties.RemoveAt(oldIndex);
                 nodeConfig.Properties.Insert(newIndex, propertyConfig);
-                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+                await RestService.PutAsync("api/dashboards/configuration", dashboardConfigs);
             }
         }
 
         private async Task RemoveNode(DashboardNode node) {
-            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigs = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
             var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == DashboardId);
             var nodeConfig = dashboardConfig?.Nodes.FirstOrDefault(n => n.NodeName == node.Name);
 
             if (nodeConfig != null) {
                 dashboardConfig.Nodes.Remove(nodeConfig);
-                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+                await RestService.PutAsync("api/dashboards/configuration", dashboardConfigs);
             }
         }
 

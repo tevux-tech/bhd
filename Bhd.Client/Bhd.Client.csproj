@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +14,7 @@
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.9" />
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.9" PrivateAssets="all" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.9" />
-      <PackageReference Include="MudBlazor" Version="5.1.1" />
+      <PackageReference Include="MudBlazor" Version="5.1.2" />
       <PackageReference Include="PrettyBlazor" Version="1.2.0" />
   </ItemGroup>
 

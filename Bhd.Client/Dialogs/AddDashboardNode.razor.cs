@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Bhd.Client.Services;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -16,7 +17,7 @@ namespace Bhd.Client.Dialogs {
         ISnackbar Snackbar { get; set; }
 
         [Inject]
-        private HttpClient HttpClient { get; set; }
+        private IRestService RestService { get; set; }
 
         [Parameter]
         public string DashboardId { get; set; }
@@ -32,13 +33,13 @@ namespace Bhd.Client.Dialogs {
                 return;
             }
 
-            var dashboards = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboards = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
 
             var dashboardToModify = dashboards?.FirstOrDefault(d => d.DashboardId == DashboardId);
 
             if (dashboardToModify != null) {
                 dashboardToModify.Nodes.Add(new NodeConfig() { NodeName = _nodeName });
-                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboards);
+                await RestService.PutAsync("api/dashboards/configuration", dashboards);
                 Snackbar.Add($"\"{_nodeName}\" added to \"{dashboardToModify.DashboardName}\"", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
             } else {
