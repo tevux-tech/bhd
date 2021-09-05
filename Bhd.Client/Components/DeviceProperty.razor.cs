@@ -82,7 +82,7 @@ namespace Bhd.Client.Components {
         private async Task EditColor() {
             var dialogParameters = new DialogParameters();
             dialogParameters["ActualColor"] = _property.TextValue;
-            var result = await DialogService.Show<MyColorPicker>(null, dialogParameters).Result;
+            var result = await DialogService.Show<ColorPicker>(null, dialogParameters).Result;
 
             if (result.Cancelled == false) {
                 await SetTextValue(result.Data.ToString());
