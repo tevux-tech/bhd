@@ -2,7 +2,7 @@
     <DialogContent>
         <MudGrid Spacing="1" Style="width:300px;">
             <MudItem xs="12" @onkeydown="HandleKeyDown">
-                <MudNumericField @bind-Value="Value" Variant="Variant.Outlined" Immediate="true" Adornment="Adornment.End" AdornmentText="@Unit" HideSpinButtons="true"></MudNumericField>
+                <MudNumericField @bind-Value="Value" Variant="Variant.Outlined" Immediate="true" Adornment="Adornment.End" AdornmentText="@Unit"></MudNumericField>
             </MudItem>
             
             <MudItem xs="4"/>
@@ -60,7 +60,7 @@
             </MudItem>
             
             <MudItem xs="4">
-                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="Comma">,</MudButton>
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="EnterComma">,</MudButton>
             </MudItem>
         </MudGrid>
     </DialogContent>

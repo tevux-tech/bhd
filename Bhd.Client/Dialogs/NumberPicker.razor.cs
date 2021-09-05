@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -13,19 +12,26 @@ namespace Bhd.Client.Dialogs {
         [Parameter]
         public string Unit { get; set; }
 
-        [Parameter]
-        public double Value { get; set; }
-
-
         private string _valueString;
+
+        [Parameter]
+        public double Value {
+            get {
+                if (double.TryParse(_valueString, out var result)) {
+                    return result;
+                }
+
+                return 0;
+            }
+
+            set {
+                _valueString = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
 
         private void Cancel() {
             MudDialog.Cancel();
-        }
-
-        protected override void OnParametersSet() {
-            _valueString = Value.ToString(CultureInfo.InvariantCulture);
-            base.OnParametersSet();
         }
 
         private void Set() {
@@ -33,8 +39,7 @@ namespace Bhd.Client.Dialogs {
         }
 
         private void Clear() {
-            Value = 0;
-            _valueString = Value.ToString(CultureInfo.InvariantCulture);
+            _valueString = "0";
         }
 
         private void Backspace() {
@@ -43,21 +48,16 @@ namespace Bhd.Client.Dialogs {
             } else {
                 _valueString = _valueString.Remove(_valueString.Length - 1);
             }
-
-            Value = double.Parse(_valueString, CultureInfo.InvariantCulture);
         }
 
         private void EnterDigit(int digit) {
             _valueString += digit.ToString(CultureInfo.InvariantCulture);
-            Value = double.Parse(_valueString, CultureInfo.InvariantCulture);
         }
 
-        private void Comma() {
+        private void EnterComma() {
             if (_valueString.Contains('.') == false) {
                 _valueString += ".";
             }
-
-            Value = double.Parse(_valueString, CultureInfo.InvariantCulture);
         }
 
         private void Negate() {
@@ -66,8 +66,6 @@ namespace Bhd.Client.Dialogs {
             } else {
                 _valueString = "-" + _valueString;
             }
-
-            Value = double.Parse(_valueString, CultureInfo.InvariantCulture);
         }
 
         public void HandleKeyDown(KeyboardEventArgs obj) {
