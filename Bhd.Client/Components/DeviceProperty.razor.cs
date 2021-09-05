@@ -101,7 +101,19 @@ namespace Bhd.Client.Components {
             }
         }
 
-        private void Edit() {
+        private async Task Edit() {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["Unit"] = _property.Unit;
+            dialogParameters["Value"] = _property.NumericValue;
+
+            var result = await DialogService.Show<NumberPicker>(_property.Name, dialogParameters).Result;
+
+            if (result.Cancelled == false) {
+                await SetNumericValue((double)result.Data);
+            }
+
+            return;
+
             _targetNumericValue = _property.NumericValue;
             _isEditing = true;
 
