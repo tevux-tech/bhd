@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using Bhd.Shared;
 using Bhd.Shared.DTOs;
 using DevBot9.Protocols.Homie;
@@ -46,6 +47,11 @@ namespace Bhd.Server {
                 case ClientColorProperty colorProperty:
                     property.Type = PropertyType.Color;
                     property.TextValue = colorProperty.Value.ToRgbString();
+                    break;
+
+                case ClientDateTimeProperty dateTimeProperty:
+                    property.Type = PropertyType.Text;
+                    property.TextValue = dateTimeProperty.Value.ToString(CultureInfo.InvariantCulture);
                     break;
             }
 
