@@ -70,6 +70,7 @@ namespace Bhd.Client.Dialogs {
 
         public void HandleKeyDown(KeyboardEventArgs obj) {
             if (obj.Key == "Enter") {
+                // If I call MudDialog.Close(..) without starting a new task, some nasty error is thrown in client-side. Probably because dialog is closed while HandleKeyDown is still being processed.
                 Task.Run(() => {
                     MudDialog.Close(DialogResult.Ok(Value));
                 });
