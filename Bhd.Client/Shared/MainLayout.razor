@@ -1,8 +1,14 @@
-﻿@inherits LayoutComponentBase
+﻿@using MudBlazor.Utilities
+@inherits LayoutComponentBase
 
 <MudThemeProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
+
+<MudOverlay Absolute="true" Visible="@NotificationsHub.IsReconnecting" DarkBackground="true" ZIndex="99999">
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    <MudText Align="Align.Center" Typo="Typo.subtitle1">Reconnecting...</MudText>
+</MudOverlay>
 
 <MudLayout>
     <MudAppBar Elevation="1" Dense="true">
@@ -15,15 +21,15 @@
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
             <MudText Typo="Typo.subtitle2">BHD @HeaderService.CurrentPageTitle</MudText>
         </MudHidden>
-        
-        <MudSpacer />
-        
+
+        <MudSpacer/>
+
         <MudHidden Breakpoint="Breakpoint.Xs">
             <MudText Class="mr-5" Typo="Typo.subtitle2">@_dateTime</MudText>
         </MudHidden>
 
-        <MudIconButton OnClick="OpenInformationDialog" Icon="@Icons.Outlined.Info" Color="Color.Inherit" />
-        <MudIconButton Link="https://github.com/Girdauskas/BlazorHomieDashboard" Target="blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+        <MudIconButton OnClick="OpenInformationDialog" Icon="@Icons.Outlined.Info" Color="Color.Inherit"/>
+        <MudIconButton Link="https://github.com/Girdauskas/BlazorHomieDashboard" Target="blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"/>
 
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
