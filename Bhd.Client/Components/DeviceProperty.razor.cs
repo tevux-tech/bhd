@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
-using MudBlazor.Utilities;
 using Direction = Bhd.Shared.DTOs.Direction;
 
 namespace Bhd.Client.Components {
@@ -31,11 +29,6 @@ namespace Bhd.Client.Components {
         [Inject]
         private IDialogService DialogService { get; set; }
 
-        public MudNumericField<double> _targetNumericField;
-
-        private bool _isEditing;
-        private double _targetNumericValue;
-
         private Property _property = new();
 
         protected override Task OnInitializedAsync() {
@@ -53,7 +46,6 @@ namespace Bhd.Client.Components {
         }
 
         protected override async Task OnParametersSetAsync() {
-            _isEditing = false;
             await Refresh();
         }
 
@@ -72,10 +64,6 @@ namespace Bhd.Client.Components {
 
         private async Task SetNumericValue(double valueToSet) {
             await HttpClient.PutAsJsonAsync($"{PropertyPath}/NumericValue", valueToSet);
-        }
-
-        private void CancelEdit() {
-            _isEditing = false;
         }
 
         private Color GetChoiceColor(string choice) {
@@ -101,32 +89,20 @@ namespace Bhd.Client.Components {
             }
         }
 
-        private void Edit() {
-            _targetNumericValue = _property.NumericValue;
-            _isEditing = true;
+        private async Task EditNumber() {
+            var dialogParameters = new DialogParameters();
+            dialogParameters["Unit"] = _property.Unit;
+            dialogParameters["Value"] = _property.NumericValue;
 
-            // Selecting text in the control after some time. Doesn't work if control is not yet visible ant it takes some time for visibilities to update.
-            Task.Run(async () => {
-                await Task.Delay(200);
-                await _targetNumericField.SelectAsync();
-            });
+            var result = await DialogService.Show<NumberPicker>(_property.Name, dialogParameters).Result;
+
+            if (result.Cancelled == false) {
+                await SetNumericValue((double)result.Data);
+            }
         }
 
         private string GetColorIndicatorBackgroundStyle() {
             return $"background-color: rgb({_property.TextValue})";
         }
-
-        private async Task HandleSetButtonClick(MouseEventArgs obj) {
-            await SetNumericValue(_targetNumericValue);
-            _isEditing = false;
-        }
-
-        private async Task HandleNudKeyPress(KeyboardEventArgs obj) {
-            if (obj.Key == "Enter") {
-                await SetNumericValue(_targetNumericValue);
-                _isEditing = false;
-            }
-        }
-
     }
 }
