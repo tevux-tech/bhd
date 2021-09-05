@@ -1,6 +1,68 @@
-﻿<MudDialog  @onkeydown="HandleKeyDown">
+﻿<MudDialog>
     <DialogContent>
-        <MudNumericField @bind-Value="Value" Variant="Variant.Outlined" Immediate="true" Adornment="Adornment.End" AdornmentText="@Unit" HideSpinButtons="true"></MudNumericField>
+        <MudGrid Spacing="1" Style="width:300px;">
+            <MudItem xs="12" @onkeydown="HandleKeyDown">
+                <MudNumericField @bind-Value="Value" Variant="Variant.Outlined" Immediate="true" Adornment="Adornment.End" AdornmentText="@Unit" HideSpinButtons="true"></MudNumericField>
+            </MudItem>
+            
+            <MudItem xs="4"/>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" OnClick="Clear">Clear</MudButton>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Backspace" OnClick="Backspace">Bs</MudButton>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(7)">7</MudButton>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(8)">8</MudButton>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(9)">9</MudButton>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(4)">4</MudButton>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(5)">5</MudButton>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(6)">6</MudButton>
+            </MudItem>
+            
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(1)">1</MudButton>
+            </MudItem>
+            
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(2)">2</MudButton>
+            </MudItem>
+            
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(3)">3</MudButton>
+            </MudItem>
+            
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="Negate">⁺/₋</MudButton>
+            </MudItem>
+            
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => EnterDigit(0)">0</MudButton>
+            </MudItem>
+            
+            <MudItem xs="4">
+                <MudButton Size="Size.Small" FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary" OnClick="Comma">,</MudButton>
+            </MudItem>
+        </MudGrid>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
