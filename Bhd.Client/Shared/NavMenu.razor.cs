@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
+using Bhd.Client.Services;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -16,7 +17,7 @@ namespace Bhd.Client.Shared {
         private List<Dashboard> _dashboards = new();
 
         [Inject]
-        private HttpClient HttpClient { get; set; }
+        private IRestService RestService { get; set; }
 
         [Inject]
         private ILogger<NavMenu> Logger { get; set; }
@@ -58,11 +59,11 @@ namespace Bhd.Client.Shared {
         }
 
         private async Task LoadDevices() {
-            _devices = await HttpClient.GetFromJsonAsync<List<Device>>("api/devices");
+            _devices = await RestService.GetAsync<List<Device>>("api/devices");
         }
 
         private async Task LoadDashboards() {
-            _dashboards = await HttpClient.GetFromJsonAsync<List<Dashboard>>("api/dashboards");
+            _dashboards = await RestService.GetAsync<List<Dashboard>>("api/dashboards");
         }
 
         private async Task HandleCreateDashboardClick(MouseEventArgs args) {
@@ -72,7 +73,7 @@ namespace Bhd.Client.Shared {
 
         private async Task HandleRescanButtonClick(MouseEventArgs args) {
             _isScanning = true;
-            await HttpClient.PostAsync("api/devices/rescan", new StringContent(""));
+            await RestService.PostAsync("api/devices/rescan", new StringContent(""));
             _isScanning = false;
         }
     }

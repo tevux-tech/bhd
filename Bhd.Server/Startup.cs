@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Bhd.Server.Hubs;
 using Bhd.Server.Services;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +22,7 @@ namespace Bhd.Server {
             services.AddRazorPages();
             services.AddControllers().AddJsonOptions(options => {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
             services.AddSingleton<HomieService>();
             services.AddSingleton<UserDashboardsStorage>();

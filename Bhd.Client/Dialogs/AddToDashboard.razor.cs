@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Bhd.Client.Services;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -15,7 +16,7 @@ namespace Bhd.Client.Dialogs {
         ISnackbar Snackbar { get; set; }
 
         [Inject]
-        private HttpClient HttpClient { get; set; }
+        private IRestService RestService { get; set; }
 
         [Parameter]
         public string PropertyPath { get; set; }
@@ -29,8 +30,8 @@ namespace Bhd.Client.Dialogs {
         private string _propertyName;
 
         protected async override Task OnParametersSetAsync() {
-            var property = await HttpClient.GetFromJsonAsync<Property>(PropertyPath);
-            _dashboards = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var property = await RestService.GetAsync<Property>(PropertyPath);
+            _dashboards = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
             _propertyName = property.Name;
             await base.OnParametersSetAsync();
         }
@@ -46,7 +47,7 @@ namespace Bhd.Client.Dialogs {
 
             _selectedDashboardNode.Properties.Add(new PropertyConfig { PropertyName = _propertyName, PropertyPath = PropertyPath });
 
-            await HttpClient.PutAsJsonAsync("api/dashboards/configuration", _dashboards);
+            await RestService.PutAsync("api/dashboards/configuration", _dashboards);
             Snackbar.Add($"\"{_propertyName}\" added to \"{_selectedDashboard.DashboardName}\"", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
         }
