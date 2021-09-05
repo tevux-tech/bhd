@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Bhd.Client {
+namespace Bhd.Client.Services {
     public class PageHeaderService : INotifyPropertyChanged {
         private string _currentPageTitle;
         public string CurrentPageTitle {

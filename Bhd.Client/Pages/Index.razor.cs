@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Bhd.Client.Services;
+using Microsoft.AspNetCore.Components;
 
 namespace Bhd.Client.Pages {
     public partial class Index {

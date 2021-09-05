@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace Bhd.Client {
+namespace Bhd.Client.SignalR {
     public class NotificationsHub : IDisposable {
         private readonly HubConnection _connection;
 

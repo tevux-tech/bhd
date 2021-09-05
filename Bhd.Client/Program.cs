@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bhd.Client.Services;
+using Bhd.Client.SignalR;
 using MudBlazor;
 
 namespace Bhd.Client {

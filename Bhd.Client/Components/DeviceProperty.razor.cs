@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
 using Bhd.Client.Services;
+using Bhd.Client.SignalR;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
