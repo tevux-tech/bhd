@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Bhd.Client.Services;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -16,7 +17,7 @@ namespace Bhd.Client.Dialogs {
         ISnackbar Snackbar { get; set; }
 
         [Inject]
-        private HttpClient HttpClient { get; set; }
+        private IRestService RestService { get; set; }
 
         [Inject]
         private NavigationManager NavigationManager { get; set; }
@@ -36,13 +37,13 @@ namespace Bhd.Client.Dialogs {
         }
 
         private async Task Rename() {
-            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigs = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
             var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == Dashboard.Id);
 
             if (dashboardConfig != null) {
                 dashboardConfig.DashboardName = _newDashboardName;
                 dashboardConfig.DashboardId = _newDashboardName.Replace(" ", "-").Trim().ToLower();
-                await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+                await RestService.PutAsync("api/dashboards/configuration", dashboardConfigs);
                 Snackbar.Add($"Dashboard renamed to \"{_newDashboardName}\"", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
 

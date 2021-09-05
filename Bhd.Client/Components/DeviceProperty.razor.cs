@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Bhd.Client.Dialogs;
+using Bhd.Client.Services;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -24,7 +25,7 @@ namespace Bhd.Client.Components {
         public NotificationsHub NotificationsHub { get; set; }
 
         [Inject]
-        public HttpClient HttpClient { get; set; }
+        public IRestService RestService { get; set; }
 
         [Inject]
         private IDialogService DialogService { get; set; }
@@ -51,7 +52,7 @@ namespace Bhd.Client.Components {
 
 
         private async Task Refresh() {
-            _property = await HttpClient.GetFromJsonAsync<Property>(PropertyPath);
+            _property = await RestService.GetAsync<Property>(PropertyPath);
         }
 
         public void Dispose() {
@@ -59,11 +60,11 @@ namespace Bhd.Client.Components {
         }
 
         private async Task SetTextValue(string valueToSet) {
-            await HttpClient.PutAsJsonAsync($"{PropertyPath}/TextValue", valueToSet);
+            await RestService.PutAsync($"{PropertyPath}/TextValue", valueToSet);
         }
 
         private async Task SetNumericValue(double valueToSet) {
-            await HttpClient.PutAsJsonAsync($"{PropertyPath}/NumericValue", valueToSet);
+            await RestService.PutAsync($"{PropertyPath}/NumericValue", valueToSet);
         }
 
         private Color GetChoiceColor(string choice) {

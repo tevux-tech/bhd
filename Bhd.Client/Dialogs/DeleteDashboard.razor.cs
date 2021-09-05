@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Bhd.Client.Services;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -15,7 +16,7 @@ namespace Bhd.Client.Dialogs {
         public Dashboard Dashboard { get; set; }
 
         [Inject]
-        private HttpClient HttpClient { get; set; }
+        private IRestService RestService { get; set; }
 
         [Inject]
         ISnackbar Snackbar { get; set; }
@@ -25,9 +26,9 @@ namespace Bhd.Client.Dialogs {
         }
 
         private async Task Delete() {
-            var dashboardConfigs = await HttpClient.GetFromJsonAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigs = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
             dashboardConfigs?.RemoveAll(r => r.DashboardId == Dashboard.Id);
-            await HttpClient.PutAsJsonAsync("api/dashboards/configuration", dashboardConfigs);
+            await RestService.PutAsync("api/dashboards/configuration", dashboardConfigs);
             Snackbar.Add($"Dashboard \"{Dashboard.Name}\" removed", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
         }
