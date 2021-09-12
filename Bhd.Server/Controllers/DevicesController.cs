@@ -21,7 +21,7 @@ namespace Bhd.Server.Controllers {
         }
 
         [HttpGet]
-        public IEnumerable<Device> Get() {
+        public ActionResult<IEnumerable<Device>> Get() {
             var devices = new List<Device>();
 
             foreach (var homieServiceDynamicConsumer in _homieService.DynamicConsumers) {
@@ -52,7 +52,6 @@ namespace Bhd.Server.Controllers {
                 }
             }
 
-
             return devices;
         }
 
@@ -62,13 +61,24 @@ namespace Bhd.Server.Controllers {
         }
 
         [HttpGet("{deviceId}")]
-        public Device GetDevice(string deviceId) {
-            return Get().First(d => d.Id == deviceId);
+        public ActionResult<Device> GetDevice(string deviceId) {
+            var device = Get().Value.FirstOrDefault(d => d.Id == deviceId);
+
+            if (device != null) {
+                return device;
+            } else {
+                return NotFound();
+            }
         }
 
         [HttpGet("{deviceId}/Nodes")]
-        public IEnumerable<Node> GetNodes(string deviceId) {
-            var dynamicConsumer = _homieService.DynamicConsumers.First(d => d.ClientDevice.DeviceId == deviceId);
+        public ActionResult<IEnumerable<Node>> GetNodes(string deviceId) {
+            var dynamicConsumer = _homieService.DynamicConsumers.FirstOrDefault(d => d.ClientDevice.DeviceId == deviceId);
+
+            if (dynamicConsumer == null) {
+                return NotFound();
+            }
+
             var nodes = new List<Node>();
             foreach (var clientDeviceNode in dynamicConsumer.ClientDevice.Nodes) {
                 var node = new Node();
@@ -86,59 +96,92 @@ namespace Bhd.Server.Controllers {
         }
 
         [HttpGet("{deviceId}/Nodes/{nodeId}")]
-        public Node GetNode(string deviceId, string nodeId) {
+        public ActionResult<Node> GetNode(string deviceId, string nodeId) {
             var nodes = GetNodes(deviceId);
-            return nodes.First(n => n.Id == nodeId);
+
+            var node = nodes.Value?.FirstOrDefault(n => n.Id == nodeId);
+
+            if (node != null) {
+                return node;
+            } else {
+                return NotFound();
+            }
         }
 
         [HttpGet("{deviceId}/Nodes/{nodeId}/Properties")]
-        public IEnumerable<string> GetProperties(string deviceId, string nodeId) {
+        public ActionResult<IEnumerable<string>> GetProperties(string deviceId, string nodeId) {
             var node = GetNode(deviceId, nodeId);
-            return node.Properties;
+
+            var properties = node.Value?.Properties;
+
+            if (properties != null) {
+                return properties;
+            } else {
+                return NotFound();
+            }
         }
 
         [HttpGet("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}")]
-        public Property GetProperty(string deviceId, string nodeId, string propertyId) {
+        public ActionResult<Property> GetProperty(string deviceId, string nodeId, string propertyId) {
             var propertyBase = GetPropertyBase(deviceId, nodeId, propertyId);
+            
+            if (propertyBase == null) {
+                return NotFound();
+            }
+
             var property = PropertyFactory.Create(propertyBase);
-            return property;
+            return Ok(property);
         }
 
         [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/TextValue")]
-        public void SetTextValue(string deviceId, string nodeId, string propertyId, [FromBody]string textValue) {
+        public ActionResult SetTextValue(string deviceId, string nodeId, string propertyId, [FromBody]string textValue) {
             var property = GetPropertyBase(deviceId, nodeId, propertyId);
+
+            if (property == null) {
+                return NotFound();
+            }
 
             switch (property) {
                 case ClientChoiceProperty choiceProperty:
                     choiceProperty.Value = textValue;
-                    break;
+                    return Ok();
 
                 case ClientTextProperty textProperty:
                     textProperty.Value = textValue;
-                    break;
+                    return Ok();
 
                 case ClientColorProperty colorProperty:
                     colorProperty.Value = HomieColor.FromRgbString(textValue);
-                    break;
+                    return Ok();
+
+                default:
+                    return Forbid();
             }
         }
 
         [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/NumericValue")]
-        public void SetNumericValue(string deviceId, string nodeId, string propertyId, [FromBody] double numericValue) {
+        public ActionResult SetNumericValue(string deviceId, string nodeId, string propertyId, [FromBody] double numericValue) {
             var property = GetPropertyBase(deviceId, nodeId, propertyId);
+
+            if (property == null) {
+                return NotFound();
+            }
 
             switch (property) {
                 case ClientNumberProperty numberProperty:
                     numberProperty.Value = numericValue;
-                    break;
+                    return Ok();
+                   
+                default:
+                    return Forbid();
             }
         }
 
         private ClientPropertyBase GetPropertyBase(string deviceId, string nodeId, string propertyId) {
             propertyId = $"{nodeId}/{propertyId}";
-            var device = _homieService.DynamicConsumers.First(d => d.ClientDevice.DeviceId == deviceId);
-            var node = device.ClientDevice.Nodes.First(n => n.NodeId == nodeId);
-            var property = node.Properties.First(p => p.PropertyId == propertyId);
+            var device = _homieService.DynamicConsumers.FirstOrDefault(d => d.ClientDevice.DeviceId == deviceId);
+            var node = device?.ClientDevice.Nodes.FirstOrDefault(n => n.NodeId == nodeId);
+            var property = node?.Properties.FirstOrDefault(p => p.PropertyId == propertyId);
             return property;
         }
     }
