@@ -1,6 +1,6 @@
 @using Direction = Bhd.Shared.DTOs.Direction
 
-<MudCard Elevation="2">
+<MudCard Elevation="2" Style="position: relative;">
     <MudCardHeader Class="pa-2">
         <CardHeaderContent>
             <MudText Align="Align.Center">
@@ -23,61 +23,73 @@
         </CardHeaderContent>
     </MudCardHeader>
 
-    <Condition Evaluation="_property.Type == PropertyType.Choice && (_property.Direction == Direction.Write | _property.Direction == Direction.ReadWrite)">
+    <Condition Evaluation="_isInErrorState == false">
         <Match>
-            <MudCardActions>
-                <MudGrid Class="mx-1 mb-1 d-flex">
-                    <Iterations Items="_property.Choices" Context="choice">
-                        <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="@GetChoiceColor(choice)" OnClick="() => SetTextValue(choice)">
-                            @choice
-                        </MudButton>
-                    </Iterations>
-                </MudGrid>
-            </MudCardActions>
+            <Condition Evaluation="_property.Type == PropertyType.Choice && (_property.Direction == Direction.Write | _property.Direction == Direction.ReadWrite)">
+                <Match>
+                    <MudCardActions>
+                        <MudGrid Class="mx-1 mb-1 d-flex">
+                            <Iterations Items="_property.Choices" Context="choice">
+                                <MudButton Class="ma-1 flex-grow-1" Variant="Variant.Filled" Color="@GetChoiceColor(choice)" OnClick="() => SetTextValue(choice)">
+                                    @choice
+                                </MudButton>
+                            </Iterations>
+                        </MudGrid>
+                    </MudCardActions>
+                </Match>
+            </Condition>
+
+            <Condition Evaluation="(_property.Type == PropertyType.Text | _property.Type == PropertyType.Choice) && _property.Direction == Direction.Read">
+                <Match>
+                    <MudCardContent Class="pt-0 pb-5">
+                        <MudText Typo="Typo.h6" Align="Align.Center">@_property.TextValue</MudText>
+                    </MudCardContent>
+                </Match>
+            </Condition>
+
+            <Condition Evaluation="_property.Type == PropertyType.Number && _property.Direction == Direction.Read">
+                <Match>
+                    <MudCardContent Class="pt-0 pb-5">
+                        <MudText Typo="Typo.h6" Align="Align.Center">
+                            @(_property.NumericValue + " " + _property.Unit)
+                        </MudText>
+                    </MudCardContent>
+                </Match>
+            </Condition>
+
+            <Condition Evaluation="_property.Type == PropertyType.Number && _property.Direction == Direction.ReadWrite">
+                <Match>
+                    <MudCardContent Class="pt-0 pb-5">
+                        <MudText Align="Align.Center" @onclick="EditNumber">
+                            <MudLink Typo="Typo.h6" Href="javascript:;">
+                                @(_property.NumericValue + " " + _property.Unit)
+                            </MudLink>
+                        </MudText>
+                    </MudCardContent>
+                </Match>
+            </Condition>
+
+            <Condition Evaluation="_property.Type == PropertyType.Color && _property.Direction == Direction.ReadWrite">
+                <Match>
+                    <MudCardContent Class="pt-0 pb-5">
+                        <div style="@GetColorIndicatorBackgroundStyle()">
+                            <MudText Align="Align.Center" @onclick="EditColor">
+                                <MudLink Href="javascript:;" Typo="Typo.h6">
+                                    @_property.TextValue
+                                </MudLink>
+                            </MudText>
+                        </div>
+                    </MudCardContent>
+                </Match>
+            </Condition>
         </Match>
+
+        <NotMatch>
+            <MudCardContent Class="pt-0 pb-5">
+                <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Error">Property not found</MudText>
+            </MudCardContent>
+        </NotMatch>
     </Condition>
 
-    <Condition Evaluation="(_property.Type == PropertyType.Text | _property.Type == PropertyType.Choice) && _property.Direction == Direction.Read">
-        <Match>
-            <MudCardContent Class="pt-0 pb-5">
-                <MudText Typo="Typo.h6" Align="Align.Center">@_property.TextValue</MudText>
-            </MudCardContent>
-        </Match>
-    </Condition>
 
-    <Condition Evaluation="_property.Type == PropertyType.Number && _property.Direction == Direction.Read">
-        <Match>
-            <MudCardContent Class="pt-0 pb-5">
-                <MudText Typo="Typo.h6" Align="Align.Center">
-                    @(_property.NumericValue + " " + _property.Unit)
-                </MudText>
-            </MudCardContent>
-        </Match>
-    </Condition>
-
-    <Condition Evaluation="_property.Type == PropertyType.Number && _property.Direction == Direction.ReadWrite">
-        <Match>
-            <MudCardContent Class="pt-0 pb-5">
-                <MudText Align="Align.Center" @onclick="EditNumber">
-                    <MudLink Typo="Typo.h6" Href="javascript:;">
-                        @(_property.NumericValue + " " + _property.Unit)
-                    </MudLink>
-                </MudText>
-            </MudCardContent>
-        </Match>
-    </Condition>
-
-    <Condition Evaluation="_property.Type == PropertyType.Color && _property.Direction == Direction.ReadWrite">
-        <Match>
-            <MudCardContent Class="pt-0 pb-5">
-                <div style="@GetColorIndicatorBackgroundStyle()">
-                    <MudText Align="Align.Center" @onclick="EditColor">
-                        <MudLink Href="javascript:;" Typo="Typo.h6">
-                            @_property.TextValue
-                        </MudLink>
-                    </MudText>
-                </div>
-            </MudCardContent>
-        </Match>
-    </Condition>
 </MudCard>

@@ -35,6 +35,7 @@ namespace Bhd.Client.Components {
         [Inject]
         private IDialogService DialogService { get; set; }
 
+        private bool _isInErrorState;
         private Property _property = new();
 
         protected override Task OnInitializedAsync() {
@@ -60,7 +61,9 @@ namespace Bhd.Client.Components {
             var propertyResponse = await RestService.GetAsync<Property>(PropertyPath);
             if (propertyResponse.StatusCode == HttpStatusCode.OK) {
                 _property = propertyResponse.Body;
+                _isInErrorState = false;
             } else {
+                _isInErrorState = true;
                 Logger.LogError($"Can't refresh property \"{PropertyPath}\" because API responded with {propertyResponse.StatusCode}");
             }
         }
