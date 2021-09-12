@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -18,25 +19,41 @@ namespace Bhd.Client.Services {
             _httpClient = httpClient;
         }
 
-        public Task<T> GetAsync<T>(string url) {
-            return _httpClient.GetFromJsonAsync<T>(url, _jsonSerializerOptions);
+        public async Task<RestResponse<T>> GetAsync<T>(string url) {
+            var httpResponse = await _httpClient.GetAsync(url);
+            var restResponse = new RestResponse<T>();
+            restResponse.StatusCode = httpResponse.StatusCode;
+            restResponse.Body = await httpResponse.Content.ReadFromJsonAsync<T>(_jsonSerializerOptions);
+            return restResponse;
         }
 
-        public Task PutAsync<T>(string url, T newValue) {
-           return _httpClient.PutAsJsonAsync(url, newValue, _jsonSerializerOptions);
+        public async Task<HttpStatusCode> PutAsync<T>(string url, T newValue) {
+            var httpContent = JsonContent.Create(newValue, null, _jsonSerializerOptions);
+            var httpResponse = await _httpClient.PutAsync(url, httpContent);
+            return httpResponse.StatusCode;
         }
 
-        public Task Post(string url) {
-            return _httpClient.PostAsync(url, new ByteArrayContent(new byte[0]));
+        public async Task<HttpStatusCode> PostAsync(string url) {
+            var httpContent = new ByteArrayContent(new byte[0]);
+            var httpResponse = await _httpClient.PostAsync(url, httpContent);
+            return httpResponse.StatusCode;
         }
 
-        public Task PostAsync<T>(string url, T body) {
-            return _httpClient.PostAsJsonAsync(url, body, _jsonSerializerOptions);
+        public async Task<HttpStatusCode> PostAsync<T>(string url, T body) {
+            var httpContent = JsonContent.Create(body, null, _jsonSerializerOptions);
+            var httpResponse = await _httpClient.PostAsync(url, httpContent);
+            return httpResponse.StatusCode;
         }
 
-        public async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest body) {
-            var response =  await  _httpClient.PostAsJsonAsync(url, body, _jsonSerializerOptions);
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+        public async Task<RestResponse<TResponse>> PostAsync<TRequest, TResponse>(string url, TRequest body) {
+            var httpContent = JsonContent.Create(body, null, _jsonSerializerOptions);
+            var httpResponse = await _httpClient.PostAsync(url, httpContent);
+
+            var restResponse = new RestResponse<TResponse>();
+            restResponse.StatusCode = httpResponse.StatusCode;
+            restResponse.Body = await httpResponse.Content.ReadFromJsonAsync<TResponse>(_jsonSerializerOptions);
+
+            return restResponse;
         }
     }
 }

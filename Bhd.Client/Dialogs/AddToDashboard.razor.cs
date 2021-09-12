@@ -30,9 +30,11 @@ namespace Bhd.Client.Dialogs {
         private string _propertyName;
 
         protected async override Task OnParametersSetAsync() {
-            var property = await RestService.GetAsync<Property>(PropertyPath);
-            _dashboards = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
-            _propertyName = property.Name;
+            var propertyResponse = await RestService.GetAsync<Property>(PropertyPath);
+            var configurationResponse = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+
+            _dashboards = configurationResponse.Body;
+            _propertyName = propertyResponse.Body.Name;
             await base.OnParametersSetAsync();
         }
 

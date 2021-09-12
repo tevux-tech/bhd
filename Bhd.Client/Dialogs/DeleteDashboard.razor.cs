@@ -26,7 +26,9 @@ namespace Bhd.Client.Dialogs {
         }
 
         private async Task Delete() {
-            var dashboardConfigs = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigsResponse = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigs = dashboardConfigsResponse.Body;
+
             dashboardConfigs?.RemoveAll(r => r.DashboardId == Dashboard.Id);
             await RestService.PutAsync("api/dashboards/configuration", dashboardConfigs);
             Snackbar.Add($"Dashboard \"{Dashboard.Name}\" removed", Severity.Success);

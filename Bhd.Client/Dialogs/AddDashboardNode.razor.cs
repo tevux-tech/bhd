@@ -33,7 +33,8 @@ namespace Bhd.Client.Dialogs {
                 return;
             }
 
-            var dashboards = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardsResponse = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboards = dashboardsResponse.Body;
 
             var dashboardToModify = dashboards?.FirstOrDefault(d => d.DashboardId == DashboardId);
 

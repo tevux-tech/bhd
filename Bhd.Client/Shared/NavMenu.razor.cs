@@ -60,11 +60,13 @@ namespace Bhd.Client.Shared {
         }
 
         private async Task LoadDevices() {
-            _devices = await RestService.GetAsync<List<Device>>("api/devices");
+            var devicesResponse = await RestService.GetAsync<List<Device>>("api/devices");
+            _devices = devicesResponse.Body;
         }
 
         private async Task LoadDashboards() {
-            _dashboards = await RestService.GetAsync<List<Dashboard>>("api/dashboards");
+            var dashboardsResponse = await RestService.GetAsync<List<Dashboard>>("api/dashboards");
+            _dashboards = dashboardsResponse.Body;
         }
 
         private async Task HandleCreateDashboardClick(MouseEventArgs args) {

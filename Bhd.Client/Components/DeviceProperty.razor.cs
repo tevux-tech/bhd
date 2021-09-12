@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -7,11 +8,14 @@ using Bhd.Client.Services;
 using Bhd.Client.SignalR;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using MudBlazor;
 using Direction = Bhd.Shared.DTOs.Direction;
 
 namespace Bhd.Client.Components {
     public partial class DeviceProperty : IDisposable {
+        [Inject]
+        private ILogger<DeviceProperty> Logger { get; set; }
 
         [Parameter]
         public string PropertyPath { get; set; }
@@ -53,7 +57,12 @@ namespace Bhd.Client.Components {
 
 
         private async Task Refresh() {
-            _property = await RestService.GetAsync<Property>(PropertyPath);
+            var propertyResponse = await RestService.GetAsync<Property>(PropertyPath);
+            if (propertyResponse.StatusCode == HttpStatusCode.OK) {
+                _property = propertyResponse.Body;
+            } else {
+                Logger.LogError($"Can't refresh property \"{PropertyPath}\" because API responded with {propertyResponse.StatusCode}");
+            }
         }
 
         public void Dispose() {
