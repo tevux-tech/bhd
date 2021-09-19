@@ -20,7 +20,9 @@ namespace Bhd.Client.Dialogs {
         protected async override Task OnInitializedAsync() {
             MudDialog.Options.CloseButton = true;
             MudDialog.SetOptions(MudDialog.Options);
-            _versions = await RestService.GetAsync<List<Version>>("api/Versions");
+
+            var versionsResponse = await RestService.GetAsync<List<Version>>("api/Versions");
+            _versions = versionsResponse.Body;
             await base.OnInitializedAsync();
         }
     }

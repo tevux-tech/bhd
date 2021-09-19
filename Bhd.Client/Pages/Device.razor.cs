@@ -53,11 +53,13 @@ namespace Bhd.Client.Pages {
         }
 
         private async Task LoadDeviceInfo() {
-            _device = await RestService.GetAsync<Bhd.Shared.DTOs.Device>($"api/devices/{DeviceId}");
+            var deviceResponse = await RestService.GetAsync<Bhd.Shared.DTOs.Device>($"api/devices/{DeviceId}");
+            _device = deviceResponse.Body;
         }
 
         private async Task LoadDeviceNodes() {
-            _nodes = await RestService.GetAsync<List<Node>>($"api/devices/{DeviceId}/nodes");
+            var nodesResponse = await RestService.GetAsync<List<Node>>($"api/devices/{DeviceId}/nodes");
+            _nodes = nodesResponse.Body;
         }
 
         public void Dispose() {

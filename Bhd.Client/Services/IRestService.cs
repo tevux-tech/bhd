@@ -1,11 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 
 namespace Bhd.Client.Services {
     public interface IRestService {
-        Task<T> GetAsync<T>(string url);
-        Task PutAsync<T>(string url, T newValue);
-        Task Post(string url);
-        Task PostAsync<T>(string url, T body);
-        Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest body);
+        Task<RestResponse<T>> GetAsync<T>(string url);
+        Task<HttpStatusCode> PutAsync<T>(string url, T newValue);
+        Task<HttpStatusCode> PostAsync(string url);
+        Task<HttpStatusCode> PostAsync<T>(string url, T body);
+        Task<RestResponse<TResponse>> PostAsync<TRequest, TResponse>(string url, TRequest body);
+    }
+
+    public class RestResponse<T> {
+        public HttpStatusCode StatusCode { get; set; }
+        public T Body { get; set; }
     }
 }

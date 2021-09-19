@@ -37,7 +37,9 @@ namespace Bhd.Client.Dialogs {
         }
 
         private async Task Rename() {
-            var dashboardConfigs = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigsResponse = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var dashboardConfigs = dashboardConfigsResponse.Body;
+
             var dashboardConfig = dashboardConfigs?.FirstOrDefault(d => d.DashboardId == Dashboard.Id);
 
             if (dashboardConfig != null) {

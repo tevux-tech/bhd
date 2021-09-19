@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -25,11 +26,11 @@ namespace Bhd.Client.Dialogs {
         }
 
         private async Task CreateDashboard() {
-            var config = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
+            var configResponse = await RestService.GetAsync<List<DashboardConfig>>("api/dashboards/configuration");
 
-            config.Add(new DashboardConfig { DashboardId = _dashboardName.Replace(" ", "-").Trim().ToLower(), DashboardName = _dashboardName });
-
-            await RestService.PutAsync("api/dashboards/configuration", config);
+            var newConfig = configResponse.Body;
+            newConfig.Add(new DashboardConfig { DashboardId = _dashboardName.Replace(" ", "-").Trim().ToLower(), DashboardName = _dashboardName });
+            await RestService.PutAsync("api/dashboards/configuration", newConfig);
 
             Snackbar.Add(_dashboardName + " created", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));

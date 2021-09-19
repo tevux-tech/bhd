@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bhd.Server.Services;
-using Bhd.Shared;
 using Bhd.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -44,15 +43,24 @@ namespace Bhd.Server.Controllers {
         }
 
         [HttpGet("{dashboardId}")]
-        public Dashboard GetDashboard(string dashboardId) {
-            return Get().First(d => d.Id == dashboardId);
+        public ActionResult<Dashboard> GetDashboard(string dashboardId) {
+            var dashboard = Get().FirstOrDefault(d => d.Id == dashboardId);
+            
+            if (dashboard != null) {
+                return dashboard;
+            } else {
+                return NotFound();
+            }
         }
 
         [HttpGet("{dashboardId}/Nodes")]
-        public IEnumerable<DashboardNode> GetNodes(string dashboardId) {
+        public ActionResult<IEnumerable<DashboardNode>> GetNodes(string dashboardId) {
             var nodes = new List<DashboardNode>();
 
-            var dashboardConfig = _storage.Dashboards.First(d => d.DashboardId == dashboardId);
+            var dashboardConfig = _storage.Dashboards.FirstOrDefault(d => d.DashboardId == dashboardId);
+            if (dashboardConfig == null) {
+                return NotFound();
+            }
 
             foreach (var nodeConfig in dashboardConfig.Nodes) {
                 var node = new DashboardNode();
