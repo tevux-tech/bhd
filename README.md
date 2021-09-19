@@ -15,6 +15,6 @@ docker volume create bhd-data
 
 Start newest version:
 ```
-docker pull girdauskas/bhd:latest
-docker run --rm -it -p 80:80 -e MQTT_SERVER=192.168.2.2 -v bhd-data:/app/data girdauskas/bhd:latest
+docker pull ghcr.io/tevux-tech/bhd:latest
+docker run --rm -it -p 80:80 -e MQTT_SERVER=192.168.2.2 -v bhd-data:/app/data ghcr.io/tevux-tech/bhd:latest
 ```
