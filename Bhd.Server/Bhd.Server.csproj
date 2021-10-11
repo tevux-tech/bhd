@@ -7,14 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DevBot9.Protocols.Homie" Version="0.11.1" />
+    <PackageReference Include="DevBot9.Protocols.Homie.Utilities" Version="0.11.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Bhd.Client\Bhd.Client.csproj" />
     <ProjectReference Include="..\Bhd.Shared\Bhd.Shared.csproj" />
-    <ProjectReference Include="..\Yahi\Yahi-bigNET\Yahi-bigNET.csproj" />
-    <ProjectReference Include="..\Yahi\Yahi.Utilities-bigNET\Yahi.Utilities-bigNET.csproj" />
   </ItemGroup>
 
 </Project>

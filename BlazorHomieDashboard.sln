@@ -3,14 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yahi-bigNET", "Yahi\Yahi-bigNET\Yahi-bigNET.csproj", "{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Yahi", "Yahi", "{BCC75431-F3EB-48C6-9195-6CF9151EB2F8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yahi.Utilities-bigNET", "Yahi\Yahi.Utilities-bigNET\Yahi.Utilities-bigNET.csproj", "{D6511F2A-2987-4B35-860B-FB29A597FA4F}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Yahi.CommonCode", "Yahi\Yahi.CommonCode\Yahi.CommonCode.shproj", "{698E87AA-0B1B-4C20-A16F-F53BC7289F00}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bhd.Client", "Bhd.Client\Bhd.Client.csproj", "{DC19009F-5F02-4261-9476-73231EF073B3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bhd.Server", "Bhd.Server\Bhd.Server.csproj", "{D4F9CD88-4ABB-4A79-A782-DEB770FA0FDD}"
@@ -23,11 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Yahi\Yahi.CommonCode\Yahi.CommonCode.projitems*{2f0b03a3-091e-4c17-86be-fe11f3ccbd57}*SharedItemsImports = 5
-		Yahi\Yahi.CommonCode\Yahi.CommonCode.projitems*{698e87aa-0b1b-4c20-a16f-f53bc7289f00}*SharedItemsImports = 13
-		Yahi\Yahi.Utilities.CommonCode\Yahi.Utilities.CommonCode.projitems*{d6511f2a-2987-4b35-860b-fb29a597fa4f}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -35,22 +22,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Debug|x86.Build.0 = Debug|Any CPU
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|x86.ActiveCfg = Release|Any CPU
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57}.Release|x86.Build.0 = Release|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Debug|x86.Build.0 = Debug|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|x86.ActiveCfg = Release|Any CPU
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F}.Release|x86.Build.0 = Release|Any CPU
 		{DC19009F-5F02-4261-9476-73231EF073B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DC19009F-5F02-4261-9476-73231EF073B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC19009F-5F02-4261-9476-73231EF073B3}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -78,11 +49,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{2F0B03A3-091E-4C17-86BE-FE11F3CCBD57} = {BCC75431-F3EB-48C6-9195-6CF9151EB2F8}
-		{D6511F2A-2987-4B35-860B-FB29A597FA4F} = {BCC75431-F3EB-48C6-9195-6CF9151EB2F8}
-		{698E87AA-0B1B-4C20-A16F-F53BC7289F00} = {BCC75431-F3EB-48C6-9195-6CF9151EB2F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5273E144-EE15-480A-B105-F38361BC5363}
