@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevBot9.Protocols.Homie" Version="0.12.0-preview.5" />
-    <PackageReference Include="DevBot9.Protocols.Homie.Utilities" Version="0.12.0-preview.5" />
+    <PackageReference Include="DevBot9.Protocols.Homie" Version="0.12.0-preview.8" />
+    <PackageReference Include="DevBot9.Protocols.Homie.Utilities" Version="0.12.0-preview.8" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.9" />
   </ItemGroup>
 

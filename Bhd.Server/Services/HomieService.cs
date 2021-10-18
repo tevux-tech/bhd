@@ -45,7 +45,7 @@ namespace Bhd.Server.Services {
                 dynamicConsumer.Dispose();
             }
 
-            _fetcher.FetchTopics(DeviceFactory.BaseTopic + "/#", out var topicDump);
+            _fetcher.FetchDevices(DeviceFactory.BaseTopic, out var topicDump);
 
             var parsedDeviceMetadata = HomieTopicTreeParser.Parse(topicDump, DeviceFactory.BaseTopic, out var errorList, out var warningsList);
 

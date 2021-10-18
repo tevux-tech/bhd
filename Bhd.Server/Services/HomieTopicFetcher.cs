@@ -9,6 +9,7 @@ namespace Bhd.Server.Services {
         private MqttClient _mqttClient = new MqttClient();
         private Dictionary<string, string> _responses = new();
         private ChannelConnectionOptions _channelConnectionOptions;
+        private DateTime _timeOfLastUniqueTopic = DateTime.Now;
 
 
         public void Initialize(ChannelConnectionOptions channelOptions) {
@@ -27,9 +28,9 @@ namespace Bhd.Server.Services {
 
             _mqttClient.Subscribe(filter, QosLevel.AtLeastOnce);
 
-            Thread.Sleep(5000);
-            //_mqttClient.Unsubscribe(filter);
-            //_mqttClient.Disconnect();
+            Thread.Sleep(2000);
+            _mqttClient.Unsubscribe(filter);
+            _mqttClient.Disconnect();
 
             topics = new string[_responses.Count];
             var i = 0;
@@ -38,7 +39,7 @@ namespace Bhd.Server.Services {
                 i++;
             }
 
-            //while (_mqttClient.IsConnected) { Thread.Sleep(100); }
+            while (_mqttClient.IsConnected) { Thread.Sleep(100); }
         }
 
         public void FetchDevices(string baseTopic, out string[] topics) {
@@ -50,8 +51,8 @@ namespace Bhd.Server.Services {
             }
 
             _responses.Clear();
-            _mqttClient.Subscribe($"{baseTopic}/+/$homie", QosLevel.AtLeastOnce);
-            Thread.Sleep(1000);
+            _mqttClient.SubscribeAndWait($"{baseTopic}/+/$homie", QosLevel.AtLeastOnce);
+            Thread.Sleep(500);
             _mqttClient.Unsubscribe($"{baseTopic}/+/$homie");
 
             Console.WriteLine($"Found {_responses.Count} homie devices.");
@@ -61,14 +62,16 @@ namespace Bhd.Server.Services {
                 devices.Add(deviceName);
                 Console.Write(deviceName + " ");
             }
-
             Console.WriteLine();
 
             foreach (var device in devices) {
                 _responses.Clear();
-                _mqttClient.Subscribe($"{baseTopic}/{device}/#", QosLevel.AtLeastOnce);
-                Thread.Sleep(100);
-                _mqttClient.Unsubscribe($"{baseTopic}/{device}/#");
+
+                _mqttClient.SubscribeAndWait($"{baseTopic}/{device}/#", QosLevel.AtLeastOnce);
+                while ((DateTime.Now - _timeOfLastUniqueTopic).TotalMilliseconds < 500) {
+                    Thread.Sleep(100);
+                }
+                _mqttClient.UnsubscribeAndWait($"{baseTopic}/{device}/#");
 
                 Console.WriteLine($"{_responses.Count} topics for {device}.");
                 foreach (var topic in _responses) {
@@ -86,7 +89,12 @@ namespace Bhd.Server.Services {
         private void HandlePublishReceived(object sender, PublishReceivedEventArgs e) {
             var payload = Encoding.UTF8.GetString(e.Message);
 
-            if (_responses.ContainsKey(e.Topic) == false) { _responses.Add(e.Topic, payload); } else { _responses[e.Topic] = payload; }
+            if (_responses.ContainsKey(e.Topic) == false) {
+                _responses.Add(e.Topic, payload);
+                _timeOfLastUniqueTopic = DateTime.Now;
+            } else {
+                _responses[e.Topic] = payload;
+            }
         }
     }
 }
