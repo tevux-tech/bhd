@@ -2,27 +2,34 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using uPLibrary.Networking.M2Mqtt;
+using Tevux.Protocols.Mqtt;
 
 namespace Bhd.Server.Services {
     public class HomieTopicFetcher {
-        private MqttClient _mqttClient;
-        private readonly string _mqttClientGuid = Guid.NewGuid().ToString();
+        private MqttClient _mqttClient = new MqttClient();
         private Dictionary<string, string> _responses = new();
+        private ChannelConnectionOptions _channelConnectionOptions;
 
-        public void Initialize(string mqttBrokerIpAddress) {
-            _mqttClient = new MqttClient(mqttBrokerIpAddress);
-            _mqttClient.MqttMsgPublishReceived += HandlePublishReceived;
+
+        public void Initialize(ChannelConnectionOptions channelOptions) {
+            _channelConnectionOptions = channelOptions;
+            _mqttClient.Initialize();
+
+            _mqttClient.PublishReceived += HandlePublishReceived;
         }
 
         public void FetchTopics(string filter, out string[] topics) {
             _responses.Clear();
-            _mqttClient.Connect(_mqttClientGuid);
-            _mqttClient.Subscribe(new[] { filter }, new byte[] { 1 });
+            _mqttClient.Connect(_channelConnectionOptions);
+            while (_mqttClient.IsConnected == false) {
+                Thread.Sleep(100);
+            }
 
-            Thread.Sleep(2000);
-            _mqttClient.Unsubscribe(new[] { filter });
-            _mqttClient.Disconnect();
+            _mqttClient.Subscribe(filter, QosLevel.AtLeastOnce);
+
+            Thread.Sleep(5000);
+            //_mqttClient.Unsubscribe(filter);
+            //_mqttClient.Disconnect();
 
             topics = new string[_responses.Count];
             var i = 0;
@@ -31,20 +38,21 @@ namespace Bhd.Server.Services {
                 i++;
             }
 
-            while (_mqttClient.IsConnected) {
-                Thread.Sleep(100);
-            }
+            //while (_mqttClient.IsConnected) { Thread.Sleep(100); }
         }
 
         public void FetchDevices(string baseTopic, out string[] topics) {
             var allTheTopics = new List<string>();
 
-            _mqttClient.Connect(_mqttClientGuid);
+            _mqttClient.Connect(_channelConnectionOptions);
+            while (_mqttClient.IsConnected == false) {
+                Thread.Sleep(100);
+            }
 
             _responses.Clear();
-            _mqttClient.Subscribe(new[] { $"{baseTopic}/+/$homie" }, new byte[] { 1 });
+            _mqttClient.Subscribe($"{baseTopic}/+/$homie", QosLevel.AtLeastOnce);
             Thread.Sleep(1000);
-            _mqttClient.Unsubscribe(new[] { $"{baseTopic}/+/$homie" });
+            _mqttClient.Unsubscribe($"{baseTopic}/+/$homie");
 
             Console.WriteLine($"Found {_responses.Count} homie devices.");
             var devices = new List<string>();
@@ -58,9 +66,9 @@ namespace Bhd.Server.Services {
 
             foreach (var device in devices) {
                 _responses.Clear();
-                _mqttClient.Subscribe(new[] { $"{baseTopic}/{device}/#" }, new byte[] { 1 });
+                _mqttClient.Subscribe($"{baseTopic}/{device}/#", QosLevel.AtLeastOnce);
                 Thread.Sleep(100);
-                _mqttClient.Unsubscribe(new[] { $"{baseTopic}/{device}/#" });
+                _mqttClient.Unsubscribe($"{baseTopic}/{device}/#");
 
                 Console.WriteLine($"{_responses.Count} topics for {device}.");
                 foreach (var topic in _responses) {
@@ -72,19 +80,13 @@ namespace Bhd.Server.Services {
 
             topics = allTheTopics.ToArray();
 
-            while (_mqttClient.IsConnected) {
-                Thread.Sleep(100);
-            }
+            while (_mqttClient.IsConnected) { Thread.Sleep(100); }
         }
 
-        private void HandlePublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e) {
+        private void HandlePublishReceived(object sender, PublishReceivedEventArgs e) {
             var payload = Encoding.UTF8.GetString(e.Message);
 
-            if (_responses.ContainsKey(e.Topic) == false) {
-                _responses.Add(e.Topic, payload);
-            } else {
-                _responses[e.Topic] = payload;
-            }
+            if (_responses.ContainsKey(e.Topic) == false) { _responses.Add(e.Topic, payload); } else { _responses[e.Topic] = payload; }
         }
     }
 }

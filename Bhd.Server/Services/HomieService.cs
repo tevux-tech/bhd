@@ -4,6 +4,7 @@ using Bhd.Server.Hubs;
 using DevBot9.Protocols.Homie;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Tevux.Protocols.Mqtt;
 
 namespace Bhd.Server.Services {
     public class HomieService {
@@ -29,7 +30,10 @@ namespace Bhd.Server.Services {
 
             DeviceFactory.Initialize(_baseTopic);
             _fetcher = new HomieTopicFetcher();
-            _fetcher.Initialize(_brokerIp);
+
+            var options = new ChannelConnectionOptions();
+            options.SetHostname(_brokerIp);
+            _fetcher.Initialize(options);
 
             Rescan();
         }

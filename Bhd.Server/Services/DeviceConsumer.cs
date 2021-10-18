@@ -2,10 +2,11 @@
 using System.Diagnostics;
 using DevBot9.Protocols.Homie;
 using DevBot9.Protocols.Homie.Utilities;
+using Tevux.Protocols.Mqtt;
 
 namespace Bhd.Server.Services {
     public class DynamicConsumer : IDisposable {
-        private PahoClientDeviceConnection _broker = new PahoClientDeviceConnection();
+        private YahiTevuxClientConnection _broker = new();
 
         public ClientDevice ClientDevice;
 
@@ -13,7 +14,11 @@ namespace Bhd.Server.Services {
 
         public void Initialize(string mqttBrokerIpAddress, ClientDeviceMetadata clientDeviceMetadata) {
             ClientDevice = DeviceFactory.CreateClientDevice(clientDeviceMetadata);
-            _broker.Initialize(mqttBrokerIpAddress);
+
+            var connectOptions = new ChannelConnectionOptions();
+            connectOptions.SetHostname(mqttBrokerIpAddress);
+
+            _broker.Initialize(connectOptions);
             ClientDevice.Initialize(_broker, (severity, message) => { Console.WriteLine($"{severity}:{message}"); });
         }
 
