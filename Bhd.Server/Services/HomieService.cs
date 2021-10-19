@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Bhd.Server.Hubs;
 using DevBot9.Protocols.Homie;
 using DevBot9.Protocols.Homie.Utilities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using NLog;
 using Tevux.Protocols.Mqtt;
 
 namespace Bhd.Server.Services {
@@ -29,6 +30,14 @@ namespace Bhd.Server.Services {
 
             _logger.LogInformation($"MQTT_SERVER is \"{_brokerIp}\"");
             _logger.LogInformation($"BASE_TOPIC is \"{_baseTopic}\"");
+
+            // Configure NLog.
+            var config = new NLog.Config.LoggingConfiguration();
+            var logconsole = new NLog.Targets.ColoredConsoleTarget("console");
+            var logdebug = new NLog.Targets.DebuggerTarget("debugger");
+            config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+            config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logdebug);
+            LogManager.Configuration = config;
 
             DeviceFactory.Initialize(_baseTopic);
             _fetcher = new HomieTopicFetcher();
