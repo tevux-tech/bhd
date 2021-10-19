@@ -39,6 +39,7 @@ namespace Bhd.Server.Services {
                 devices.Add(deviceName);
                 Console.Write(deviceName + " ");
             }
+
             Console.WriteLine();
 
             foreach (var device in devices) {
@@ -48,6 +49,7 @@ namespace Bhd.Server.Services {
                 while ((DateTime.Now - _timeOfLastUniqueTopic).TotalMilliseconds < 500) {
                     Thread.Sleep(100);
                 }
+
                 _mqttClient.UnsubscribeAndWait($"{baseTopic}/{device}/#");
 
                 Console.WriteLine($"{_responses.Count} topics for {device}.");
