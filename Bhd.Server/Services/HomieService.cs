@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Bhd.Server.Hubs;
 using DevBot9.Protocols.Homie;
+using DevBot9.Protocols.Homie.Utilities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Tevux.Protocols.Mqtt;
@@ -17,6 +18,7 @@ namespace Bhd.Server.Services {
 
         private readonly string _brokerIp;
         private readonly string _baseTopic;
+        private readonly IClientDeviceConnection _brokerConnection = new YahiTevuxClientConnection();
 
         public HomieService(ILogger<HomieService> logger, IHubContext<NotificationsHub> notificationsHub) {
             _logger = logger;
@@ -34,6 +36,9 @@ namespace Bhd.Server.Services {
             var options = new ChannelConnectionOptions();
             options.SetHostname(_brokerIp);
             _fetcher.Initialize(options);
+
+            ((YahiTevuxClientConnection)_brokerConnection).Initialize(options);
+            _brokerConnection.Connect();
 
             Rescan();
         }
@@ -59,11 +64,12 @@ namespace Bhd.Server.Services {
 
             var dynamicConsumers = new List<DynamicConsumer>();
 
+
             foreach (var clientDeviceMetadata in parsedDeviceMetadata) {
                 _logger.LogInformation($"Creating device \"{clientDeviceMetadata.Id}\"");
 
                 var consumer = new DynamicConsumer();
-                consumer.Initialize(_brokerIp, clientDeviceMetadata);
+                consumer.Initialize(_brokerConnection, clientDeviceMetadata);
 
                 var deviceId = consumer.ClientDevice.DeviceId;
 
