@@ -24,13 +24,13 @@ namespace Bhd.Server.Controllers {
         public ActionResult<IEnumerable<Device>> Get() {
             var devices = new List<Device>();
 
-            foreach (var clientDevice in _homieService.Devices) {
+            foreach (var homieClientDevice in _homieService.HomieClientDevices) {
                 var device = new Device();
-                device.Id = clientDevice.DeviceId;
-                device.Name = clientDevice.Name;
+                device.Id = homieClientDevice.DeviceId;
+                device.Name = homieClientDevice.Name;
                 device.Nodes = $"/api/devices/{device.Id}/nodes";
 
-                switch (clientDevice.State) {
+                switch (homieClientDevice.State) {
                     case HomieState.Ready:
                         device.State = DeviceState.Ready;
                         devices.Add(device);
@@ -73,19 +73,19 @@ namespace Bhd.Server.Controllers {
 
         [HttpGet("{deviceId}/Nodes")]
         public ActionResult<IEnumerable<Node>> GetNodes(string deviceId) {
-            var clientDevice = _homieService.Devices.FirstOrDefault(d => d.DeviceId == deviceId);
+            var homieClientDevice = _homieService.HomieClientDevices.FirstOrDefault(d => d.DeviceId == deviceId);
 
-            if (clientDevice == null) {
+            if (homieClientDevice == null) {
                 return NotFound();
             }
 
             var nodes = new List<Node>();
-            foreach (var clientDeviceNode in clientDevice.Nodes) {
+            foreach (var homieNode in homieClientDevice.Nodes) {
                 var node = new Node();
-                node.Name = clientDeviceNode.Name;
-                node.Id = clientDeviceNode.NodeId;
+                node.Name = homieNode.Name;
+                node.Id = homieNode.NodeId;
 
-                foreach (var clientPropertyBase in clientDeviceNode.Properties) {
+                foreach (var clientPropertyBase in homieNode.Properties) {
                     node.Properties.Add($"/api/devices/{deviceId}/nodes/{node.Id}/properties/{clientPropertyBase.PropertyId.Replace($"{node.Id}/", "")}");
                 }
 
@@ -179,7 +179,7 @@ namespace Bhd.Server.Controllers {
 
         private ClientPropertyBase GetPropertyBase(string deviceId, string nodeId, string propertyId) {
             propertyId = $"{nodeId}/{propertyId}";
-            var clientDevice = _homieService.Devices.FirstOrDefault(d => d.DeviceId == deviceId);
+            var clientDevice = _homieService.HomieClientDevices.FirstOrDefault(d => d.DeviceId == deviceId);
             var node = clientDevice?.Nodes.FirstOrDefault(n => n.NodeId == nodeId);
             var property = node?.Properties.FirstOrDefault(p => p.PropertyId == propertyId);
             return property;

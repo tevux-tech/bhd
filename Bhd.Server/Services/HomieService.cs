@@ -12,7 +12,7 @@ namespace Bhd.Server.Services {
     public class HomieService {
         private readonly ILogger<HomieService> _logger;
 
-        public List<ClientDevice> Devices = new();
+        public List<ClientDevice> HomieClientDevices { get; private set; } = new();
 
         private readonly HomieTopicFetcher _fetcher;
         private readonly IHubContext<NotificationsHub> _notificationsHub;
@@ -55,8 +55,8 @@ namespace Bhd.Server.Services {
         public void Rescan() {
             _logger.LogInformation("Rescanning...");
 
-            foreach (var dynamicConsumer in Devices) {
-                dynamicConsumer.Dispose();
+            foreach (var device in HomieClientDevices) {
+                device.Dispose();
             }
 
             _fetcher.FetchDevices(DeviceFactory.BaseTopic, out var topicDump);
@@ -73,10 +73,10 @@ namespace Bhd.Server.Services {
 
             var newDeviceList = new List<ClientDevice>();
 
-            foreach (var clientDeviceMetadata in parsedDeviceMetadata) {
-                _logger.LogInformation($"Creating device \"{clientDeviceMetadata.Id}\"");
+            foreach (var deviceMetadata in parsedDeviceMetadata) {
+                _logger.LogInformation($"Creating device \"{deviceMetadata.Id}\"");
 
-                var clientDevice = DeviceFactory.CreateClientDevice(clientDeviceMetadata);
+                var clientDevice = DeviceFactory.CreateClientDevice(deviceMetadata);
                 clientDevice.Initialize(_brokerConnection);
 
                 var deviceId = clientDevice.DeviceId;
@@ -86,7 +86,7 @@ namespace Bhd.Server.Services {
                 };
 
                 foreach (var clientDeviceNode in clientDevice.Nodes) {
-                    _logger.LogInformation($"Device \"{clientDeviceMetadata.Id}\" has {clientDeviceNode.Properties.Length} properties in node \"{clientDeviceNode.NodeId}\"");
+                    _logger.LogInformation($"Device \"{deviceMetadata.Id}\" has {clientDeviceNode.Properties.Length} properties in node \"{clientDeviceNode.NodeId}\"");
 
                     foreach (var clientPropertyBase in clientDeviceNode.Properties) {
                         var propertyId = clientPropertyBase.PropertyId.Replace($"{clientDeviceNode.NodeId}/", "");
@@ -100,7 +100,7 @@ namespace Bhd.Server.Services {
                 newDeviceList.Add(clientDevice);
             }
 
-            Devices = newDeviceList;
+            HomieClientDevices = newDeviceList;
 
             _logger.LogInformation("Rescanning done.");
         }
