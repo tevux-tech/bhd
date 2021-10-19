@@ -1,14 +1,9 @@
 ﻿using System;
 using DevBot9.Protocols.Homie;
-using DevBot9.Protocols.Homie.Utilities;
 
 namespace Bhd.Server.Services {
     public class DynamicConsumer : IDisposable {
-        private YahiTevuxClientConnection _broker = new();
-
-        public ClientDevice ClientDevice;
-
-        public DynamicConsumer() { }
+        public ClientDevice ClientDevice { get; private set; }
 
         public void Initialize(IClientDeviceConnection brokerConnection, ClientDeviceMetadata clientDeviceMetadata) {
             ClientDevice = DeviceFactory.CreateClientDevice(clientDeviceMetadata);
@@ -16,8 +11,7 @@ namespace Bhd.Server.Services {
         }
 
         public void Dispose() {
-            ClientDevice?.Dispose();
-            _broker.DisconnectAndWait();
+            ClientDevice.Dispose();
         }
     }
 }
