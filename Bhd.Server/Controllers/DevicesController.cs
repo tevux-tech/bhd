@@ -24,13 +24,13 @@ namespace Bhd.Server.Controllers {
         public ActionResult<IEnumerable<Device>> Get() {
             var devices = new List<Device>();
 
-            foreach (var homieServiceDynamicConsumer in _homieService.DynamicConsumers) {
+            foreach (var clientDevice in _homieService.Devices) {
                 var device = new Device();
-                device.Id = homieServiceDynamicConsumer.ClientDevice.DeviceId;
-                device.Name = homieServiceDynamicConsumer.ClientDevice.Name;
+                device.Id = clientDevice.DeviceId;
+                device.Name = clientDevice.Name;
                 device.Nodes = $"/api/devices/{device.Id}/nodes";
 
-                switch (homieServiceDynamicConsumer.ClientDevice.State) {
+                switch (clientDevice.State) {
                     case HomieState.Ready:
                         device.State = DeviceState.Ready;
                         devices.Add(device);
@@ -73,14 +73,14 @@ namespace Bhd.Server.Controllers {
 
         [HttpGet("{deviceId}/Nodes")]
         public ActionResult<IEnumerable<Node>> GetNodes(string deviceId) {
-            var dynamicConsumer = _homieService.DynamicConsumers.FirstOrDefault(d => d.ClientDevice.DeviceId == deviceId);
+            var clientDevice = _homieService.Devices.FirstOrDefault(d => d.DeviceId == deviceId);
 
-            if (dynamicConsumer == null) {
+            if (clientDevice == null) {
                 return NotFound();
             }
 
             var nodes = new List<Node>();
-            foreach (var clientDeviceNode in dynamicConsumer.ClientDevice.Nodes) {
+            foreach (var clientDeviceNode in clientDevice.Nodes) {
                 var node = new Node();
                 node.Name = clientDeviceNode.Name;
                 node.Id = clientDeviceNode.NodeId;
@@ -179,8 +179,8 @@ namespace Bhd.Server.Controllers {
 
         private ClientPropertyBase GetPropertyBase(string deviceId, string nodeId, string propertyId) {
             propertyId = $"{nodeId}/{propertyId}";
-            var device = _homieService.DynamicConsumers.FirstOrDefault(d => d.ClientDevice.DeviceId == deviceId);
-            var node = device?.ClientDevice.Nodes.FirstOrDefault(n => n.NodeId == nodeId);
+            var clientDevice = _homieService.Devices.FirstOrDefault(d => d.DeviceId == deviceId);
+            var node = clientDevice?.Nodes.FirstOrDefault(n => n.NodeId == nodeId);
             var property = node?.Properties.FirstOrDefault(p => p.PropertyId == propertyId);
             return property;
         }
