@@ -7,9 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevBot9.Protocols.Homie" Version="0.12.0-preview.8" />
-    <PackageReference Include="DevBot9.Protocols.Homie.Utilities" Version="0.12.0-preview.8" />
+    <PackageReference Include="DevBot9.Protocols.Homie" Version="0.12.0-preview.12" />
+    <PackageReference Include="DevBot9.Protocols.Homie.Utilities" Version="0.12.0-preview.12" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.9" />
+    <PackageReference Include="NLog" Version="4.7.11" />
   </ItemGroup>
 
   <ItemGroup>
