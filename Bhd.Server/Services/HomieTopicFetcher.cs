@@ -22,9 +22,8 @@ namespace Bhd.Server.Services {
         public void FetchDevices(string baseTopic, out string[] topics) {
             var allTheTopics = new List<string>();
 
-            _mqttClient.ConnectAndWait(_channelConnectionOptions);
-            while (_mqttClient.IsConnected == false) {
-                Thread.Sleep(100);
+            if (_mqttClient.IsConnected == false) {
+                _mqttClient.ConnectAndWait(_channelConnectionOptions);
             }
 
             _responses.Clear();
@@ -58,11 +57,7 @@ namespace Bhd.Server.Services {
                 }
             }
 
-            _mqttClient.DisconnectAndWait();
-
             topics = allTheTopics.ToArray();
-
-            while (_mqttClient.IsConnected) { Thread.Sleep(100); }
         }
 
         private void HandlePublishReceived(object sender, PublishReceivedEventArgs e) {
