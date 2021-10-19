@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -17,29 +17,6 @@ namespace Bhd.Server.Services {
             _mqttClient.Initialize();
 
             _mqttClient.PublishReceived += HandlePublishReceived;
-        }
-
-        public void FetchTopics(string filter, out string[] topics) {
-            _responses.Clear();
-            _mqttClient.ConnectAndWait(_channelConnectionOptions);
-            while (_mqttClient.IsConnected == false) {
-                Thread.Sleep(100);
-            }
-
-            _mqttClient.Subscribe(filter, QosLevel.AtLeastOnce);
-
-            Thread.Sleep(2000);
-            _mqttClient.Unsubscribe(filter);
-            _mqttClient.DisconnectAndWait();
-
-            topics = new string[_responses.Count];
-            var i = 0;
-            foreach (var response in _responses) {
-                topics[i] = response.Key + ":" + response.Value;
-                i++;
-            }
-
-            while (_mqttClient.IsConnected) { Thread.Sleep(100); }
         }
 
         public void FetchDevices(string baseTopic, out string[] topics) {
