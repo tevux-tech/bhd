@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Bhd.Server.Services;
-using Bhd.Shared;
 using Bhd.Shared.DTOs;
 using DevBot9.Protocols.Homie;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Device = Bhd.Shared.DTOs.Device;
 
 namespace Bhd.Server.Controllers {
@@ -66,7 +65,8 @@ namespace Bhd.Server.Controllers {
 
             if (device != null) {
                 return device;
-            } else {
+            }
+            else {
                 return NotFound();
             }
         }
@@ -103,7 +103,8 @@ namespace Bhd.Server.Controllers {
 
             if (node != null) {
                 return node;
-            } else {
+            }
+            else {
                 return NotFound();
             }
         }
@@ -116,7 +117,8 @@ namespace Bhd.Server.Controllers {
 
             if (properties != null) {
                 return properties;
-            } else {
+            }
+            else {
                 return NotFound();
             }
         }
@@ -124,7 +126,7 @@ namespace Bhd.Server.Controllers {
         [HttpGet("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}")]
         public ActionResult<Property> GetProperty(string deviceId, string nodeId, string propertyId) {
             var propertyBase = GetPropertyBase(deviceId, nodeId, propertyId);
-            
+
             if (propertyBase == null) {
                 return NotFound();
             }
@@ -134,7 +136,7 @@ namespace Bhd.Server.Controllers {
         }
 
         [HttpPut("{deviceId}/Nodes/{nodeId}/Properties/{propertyId}/TextValue")]
-        public ActionResult SetTextValue(string deviceId, string nodeId, string propertyId, [FromBody]string textValue) {
+        public ActionResult SetTextValue(string deviceId, string nodeId, string propertyId, [FromBody] string textValue) {
             var property = GetPropertyBase(deviceId, nodeId, propertyId);
 
             if (property == null) {
@@ -171,7 +173,7 @@ namespace Bhd.Server.Controllers {
                 case ClientNumberProperty numberProperty:
                     numberProperty.Value = numericValue;
                     return Ok();
-                   
+
                 default:
                     return Forbid();
             }

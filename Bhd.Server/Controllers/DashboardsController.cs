@@ -26,7 +26,7 @@ namespace Bhd.Server.Controllers {
                 dashboard.Id = dashboardConfig.DashboardId;
                 dashboard.Name = dashboardConfig.DashboardName;
                 dashboard.Nodes = $"/api/dashboards/{dashboard.Id}/nodes";
-               dashboards.Add(dashboard);
+                dashboards.Add(dashboard);
             }
 
             return dashboards;
@@ -45,10 +45,11 @@ namespace Bhd.Server.Controllers {
         [HttpGet("{dashboardId}")]
         public ActionResult<Dashboard> GetDashboard(string dashboardId) {
             var dashboard = Get().FirstOrDefault(d => d.Id == dashboardId);
-            
+
             if (dashboard != null) {
                 return dashboard;
-            } else {
+            }
+            else {
                 return NotFound();
             }
         }

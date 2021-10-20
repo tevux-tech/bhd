@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Bhd.Server.Hubs;
 using Bhd.Server.Services;
 using Microsoft.AspNetCore.Builder;
@@ -36,7 +36,8 @@ namespace Bhd.Server {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
-            } else {
+            }
+            else {
                 app.UseExceptionHandler("/Error");
             }
 

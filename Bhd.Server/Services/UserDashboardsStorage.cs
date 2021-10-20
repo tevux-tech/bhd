@@ -20,7 +20,8 @@ namespace Bhd.Server.Services {
 
             if (File.Exists("data/UserDashboards.json")) {
                 Dashboards = JsonSerializer.Deserialize<List<DashboardConfig>>(File.ReadAllText("data/UserDashboards.json"));
-            } else {
+            }
+            else {
                 Dashboards = new List<DashboardConfig>();
             }
         }

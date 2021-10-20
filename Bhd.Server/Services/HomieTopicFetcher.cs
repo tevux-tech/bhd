@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -66,7 +66,8 @@ namespace Bhd.Server.Services {
             if (_responses.ContainsKey(e.Topic) == false) {
                 _responses.Add(e.Topic, payload);
                 _timeOfLastUniqueTopic = DateTime.Now;
-            } else {
+            }
+            else {
                 _responses[e.Topic] = payload;
             }
         }

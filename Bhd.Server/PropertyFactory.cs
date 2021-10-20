@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Linq;
-using Bhd.Shared;
 using Bhd.Shared.DTOs;
 using DevBot9.Protocols.Homie;
 using PropertyType = Bhd.Shared.DTOs.PropertyType;
