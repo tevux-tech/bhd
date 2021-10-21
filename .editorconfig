@@ -1,4 +1,4 @@
-# devbotas settings 1.3
+# devbotas settings 1.4
 
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
@@ -227,3 +227,6 @@ dotnet_naming_style._camelcase.required_prefix = _
 dotnet_naming_style._camelcase.required_suffix = 
 dotnet_naming_style._camelcase.word_separator = 
 dotnet_naming_style._camelcase.capitalization = camel_case
+
+# ReSharper related stuff
+resharper_space_within_empty_braces = false
