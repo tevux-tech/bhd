@@ -229,4 +229,4 @@ dotnet_naming_style._camelcase.word_separator =
 dotnet_naming_style._camelcase.capitalization = camel_case
 
 # ReSharper related stuff
-resharper_space_within_empty_braces = false
+resharper_space_within_empty_braces = true
